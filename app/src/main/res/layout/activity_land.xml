@@ -74,7 +74,6 @@
             android:textColor="@android:color/background_dark"
             android:textSize="40sp"
             android:textStyle="bold" />
-
         <TextView
             android:id="@+id/positionText"
             android:layout_width="match_parent"

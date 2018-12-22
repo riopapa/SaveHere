@@ -37,24 +37,6 @@ public class LandActivity extends AppCompatActivity {
         utils.takeScreenShot(rootView);
     }
 
-//    private void makeFullScreen() {
-//
-//        View decorView = getWindow().getDecorView();
-// Hide the status bar.
-//        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
-//        decorView.setSystemUiVisibility(uiOptions);
-// Remember that you should never show the action bar if the
-// status bar is hidden, so hide that too if necessary.
-//        ActionBar actionBar = getActionBar();
-//        actionBar.hide();
-//    }
-
-//    public void launchPhotoApp() {
-//
-//        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-//        startActivity(cameraIntent);
-//    }
-
     public File getPublicAlbumStorageDir(String albumName) {
         // Get the directory for the user's public pictures directory.
         return new File(Environment.getExternalStoragePublicDirectory(

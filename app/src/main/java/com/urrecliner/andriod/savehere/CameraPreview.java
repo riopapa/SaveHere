@@ -191,7 +191,5 @@ class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
             // Preview must be started before you can take a picture.
             mCamera.startPreview();
         }
-
     }
-
 }

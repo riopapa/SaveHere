@@ -29,7 +29,6 @@
             android:textColor="@android:color/black"
             android:textSize="40sp"
             android:textStyle="bold" />
-
         <TextView
             android:id="@+id/addressCText1"
             android:layout_width="match_parent"

@@ -15,6 +15,7 @@ public class Vars {
     static double dblLongitude;
     static String strDateTime;
 
+
     static Camera mCamera;
     static Bitmap bitMap;
     static String tempPNGName;

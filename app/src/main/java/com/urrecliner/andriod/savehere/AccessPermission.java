@@ -73,6 +73,7 @@ public class AccessPermission {
         else return MY_PERMISSIONS_LOCATION;
     }
 
+
     public static int accessCamera(Context c, Activity a) {
         if (ContextCompat.checkSelfPermission(c,
                 Manifest.permission.CAMERA)
