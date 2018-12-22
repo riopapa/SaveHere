@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">SaveHere</string>
+
+    <string name="txtCapture">Scrn\nShot</string>
+    <string name="txtCamera">Camera\nShot</string>
+    <string name="txtPosition">Position</string>
+    <string name="txtDateTime">Date\nTime</string>
+
+    <string name="txtPlace">place info</string>
+    <string name="txtAddress">address info</string>
+    <string name="txtCountry">대한민국</string>
+    <string name="apikey">AIzaSyCEun8V0vX_idWcvan5WMxiQvYCemxIkD4</string>
+    <string name="photo">photo</string>
+
+</resources>
