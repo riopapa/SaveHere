@@ -100,6 +100,7 @@
                     android:orientation="vertical">
                 </SurfaceView>
             </FrameLayout>
+
             <Button
                 android:id="@+id/btnCamera"
                 android:layout_width="0sp"

@@ -2,16 +2,10 @@ package com.urrecliner.andriod.savehere;
 
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
-
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 import static com.urrecliner.andriod.savehere.Vars.utils;
 
@@ -36,15 +30,4 @@ public class LandActivity extends AppCompatActivity {
         View rootView = getWindow().getDecorView();
         utils.takeScreenShot(rootView);
     }
-
-    public File getPublicAlbumStorageDir(String albumName) {
-        // Get the directory for the user's public pictures directory.
-        return new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DCIM), albumName);
-    }
-    static SimpleDateFormat imgDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.KOREA);
-    private String getIMGTimeText() {
-        return imgDateFormat.format(new Date());
-    }
-
 }

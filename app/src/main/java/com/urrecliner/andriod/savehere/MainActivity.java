@@ -8,11 +8,9 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -26,9 +24,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -46,7 +41,6 @@ import static com.urrecliner.andriod.savehere.Vars.strMapPlace;
 import static com.urrecliner.andriod.savehere.Vars.strPlace;
 import static com.urrecliner.andriod.savehere.Vars.strPosition;
 import static com.urrecliner.andriod.savehere.Vars.utils;
-
 
 public class MainActivity extends AppCompatActivity {
 
@@ -114,11 +108,11 @@ public class MainActivity extends AppCompatActivity {
         try {
             intent = builder.build(MainActivity.this);
         } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
-            appendText("#PP" + e.toString());
+            utils.appendText("#PP" + e.toString());
             e.printStackTrace();
         }
         startActivityForResult(intent, PLACE_PICKER_REQUEST);
-        appendText("#ready ---");
+        utils.appendText("#ready ---");
 
     }
 
@@ -131,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
     private class MyOnConnectionFailedListener implements GoogleApiClient.OnConnectionFailedListener {
         @Override
         public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-            appendText("#oF");
+            utils.appendText("#oF");
         }
     }
 
@@ -145,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         mGoogleApiClient.disconnect();
         super.onStop();
-        appendText("#oP");
+        utils.appendText("#oP");
     }
 
     @Override
@@ -156,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        appendText("#oP");
+        utils.appendText("#oP");
     }
 
     public void showCurrentLocation() {
@@ -167,10 +161,10 @@ public class MainActivity extends AppCompatActivity {
 //            return;
 //        }
         Geocoder geocoder = new Geocoder(this, Locale.KOREA);
-        appendText("#a geocoder");
+        utils.appendText("#a geocoder");
         Location mCurrentLocation = getGPSCord();
         if (mCurrentLocation == null) {
-            appendText("Location is null");
+            utils.appendText("Location is null");
             return;
         }
         dblLatitude = mCurrentLocation.getLatitude();
@@ -179,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
 
         strPosition = String.format("%s\n%s\n%s",
                 dblLatitude, dblLongitude, dblAltitude);
-        strDateTime = getviewTimeText();
+        strDateTime = getViewTimeText();
 
         TextView mPositionTextView = findViewById(R.id.positionText);
         mPositionTextView.setText(strPosition);
@@ -189,25 +183,25 @@ public class MainActivity extends AppCompatActivity {
         String text;
         if (strMapPlace == null ) {
             strAddress = getGPSAddress(geocoder);
-            appendText("#strAddress " + strAddress);
+            utils.appendText("#strAddress " + strAddress);
             text = "\n" + strAddress;
         }
         else {
             text = strMapPlace + "\n" + strMapAddress;
         }
         mAddressTextView.setText(text);
-        appendText("#shown");
+        utils.appendText("#shown");
     }
 
     public Location getGPSCord() {
 
-        appendText("#oGPS");
+        utils.appendText("#oGPS");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "ACCESS FINE LOCATION not allowed", Toast.LENGTH_LONG).show();
             return null;
         }
         Location mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        appendText("#mLo");
+        utils.appendText("#mLo");
         return mCurrentLocation;
     }
 
@@ -289,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        appendText("#g1");
+        utils.appendText("#g1");
 
         if (resultCode == RESULT_OK) {  // user picked up place within the google map list
             Place place = PlacePicker.getPlace(this, data);
@@ -299,65 +293,12 @@ public class MainActivity extends AppCompatActivity {
             strMapPlace = null;
             strMapAddress = null;
         }
-        appendText("#g2 before showCurrentLocation");
+        utils.appendText("#g2 before showCurrentLocation");
         showCurrentLocation();
     }
 
     final SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd", Locale.ENGLISH);
     final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yy/MM/dd\nHH:mm:ss", Locale.ENGLISH);
     final SimpleDateFormat timeLogFormat = new SimpleDateFormat("yy/MM/dd HH:mm:ss", Locale.ENGLISH);
-    private String getviewTimeText() { return dateTimeFormat.format(new Date()); }
-
-    public void appendText(String textLine) {
-        File directory = new File(Environment.getExternalStorageDirectory(), "SaveHere");
-        try {
-            if (!directory.exists()) {
-                boolean result = directory.mkdirs();
-                Log.e("Directory",  directory.toString() + " created " + result);
-            }
-        } catch (Exception e) {
-            Log.e("Directory", "Create error " + directory.toString() + "_" + e.toString());
-        }
-
-        File directoryDate = new File(directory, dateFormat.format(new Date()));
-        try {
-            if (!directoryDate.exists()) {
-                if (directoryDate.mkdirs())
-                    Log.e("Directory", directoryDate.toString() + " created ");
-            }
-        } catch (Exception e) {
-            Log.e("creating Folder error", directoryDate + "_" + e.toString());
-        }
-
-        BufferedWriter bw = null;
-        FileWriter fw = null;
-        String fullName = directoryDate.toString() + "/" + "save_here.txt";
-
-        try {
-            File file = new File(fullName);
-            // if file doesnt exists, then create it
-            if (!file.exists()) {
-                if (!file.createNewFile()) {
-                    Log.e("createFile", " Error");
-                }
-            }
-            StackTraceElement[] traces;
-            traces = Thread.currentThread().getStackTrace();
-            String outText = "\n" + timeLogFormat.format(new Date()) + " " + traces[5].getMethodName() + " > " + traces[4].getMethodName() + " > " + traces[3].getMethodName() + " #" + traces[3].getLineNumber() + " [[" + textLine + "]]\n";
-            // true = append file
-            fw = new FileWriter(file.getAbsoluteFile(), true);
-            bw = new BufferedWriter(fw);
-            bw.write(outText);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                if (bw != null) bw.close();
-                if (fw != null) fw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+    private String getViewTimeText() { return dateTimeFormat.format(new Date()); }
 }

@@ -95,14 +95,9 @@ public class Utils {
     public String getIMGTimeText() {
         return imgDateFormat.format(new Date());
     }
-    static SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yy/MM/dd\nHH:mm:ss", Locale.ENGLISH);
-    public String getviewTimeText() { return dateTimeFormat.format(new Date()); }
-
-
 
     public void takeScreenShot(View view) {
 
-        utils.appendText("start TakeScreen");
         if (doubleRun)
             return;
         doubleRun = true;
