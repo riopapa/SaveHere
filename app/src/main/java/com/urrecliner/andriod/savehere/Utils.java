@@ -136,7 +136,7 @@ public class Utils {
         String filename;
         String buildId = Build.ID;
         switch (buildId) {
-            case "R16NW":  // galaxy s9+ ?
+            case "R16NW":  // galaxy s9+
                 filename = getIMGTimeText() + "_" + strPlace + ".PNG";
                 break;
             case "NMF26F":
