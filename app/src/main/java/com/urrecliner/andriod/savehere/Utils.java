@@ -1,11 +1,8 @@
 package com.urrecliner.andriod.savehere;
 
-import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
-import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 
@@ -18,9 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import static com.urrecliner.andriod.savehere.Vars.doubleRun;
 import static com.urrecliner.andriod.savehere.Vars.isRUNNING;
-import static com.urrecliner.andriod.savehere.Vars.mActivity;
 import static com.urrecliner.andriod.savehere.Vars.strPlace;
 import static com.urrecliner.andriod.savehere.Vars.utils;
 
@@ -91,43 +86,25 @@ public class Utils {
         return new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DCIM), albumName);
     }
+
     static SimpleDateFormat imgDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.KOREA);
     public String getIMGTimeText() {
         return imgDateFormat.format(new Date());
     }
 
-    public void takeScreenShot(View view) {
+    public File captureScreen(View view) {
 
-        if (doubleRun)
-            return;
-        doubleRun = true;
-        final View rootView = view;
-
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            public void run() {
-                rootView.setDrawingCacheEnabled(true);
-                utils.appendText("rootView made");
-
-                File screenShot = captureScreen(rootView);
-                if (screenShot != null) {
-                    mActivity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(screenShot)));
-
-                    mActivity.finish();
-                    System.exit(0);
-                    android.os.Process.killProcess(android.os.Process.myPid());
-                } else {
-                    appendText("Screenshot is NULL");
-                }
-            }
-        }, 10);
-    }
-
-    private File captureScreen(View view) {
-
+        view.setDrawingCacheEnabled(true);
+        view.buildDrawingCache();
         Bitmap screenBitmap = view.getDrawingCache();
+//        Bitmap screenBitmap = bitMapScreen;
+//        Bitmap src = view.getDrawingCache();
+//
+//        Bitmap screenBitmap = Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight());
 //        Bitmap screenRotated = rotateImage(screenBitmap, 90);
-
+        if (screenBitmap == null) {
+            Log.e("screen"," bitmap null");
+        }
         String filename;
         String buildId = Build.ID;
         switch (buildId) {
@@ -138,9 +115,9 @@ public class Utils {
                 filename = "IMG_" + getIMGTimeText() + "_" + "lenovo" + strPlace + ".PNG";
                 break;
             default:
-                filename = "IMG_" + getIMGTimeText() + "_" + buildId + strPlace + ".PNG";
+                filename = "IMG_" + getIMGTimeText() + "_" + buildId + "_" + strPlace + ".PNG";
         }
-        File directory = getPublicAlbumStorageDir("/Camera");
+        File directory = utils.getPublicAlbumStorageDir("/Camera");
         try {
             if (!directory.exists()) {
                 directory.mkdirs();
@@ -156,9 +133,10 @@ public class Utils {
             os.close();
 
         } catch (IOException e) {
-            appendText("Screenshot ioException");
+            utils.appendText("Screenshot ioException");
             return null;
         }
         return file;
     }
+
 }

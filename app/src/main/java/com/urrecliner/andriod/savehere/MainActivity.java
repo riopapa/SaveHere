@@ -1,18 +1,32 @@
 package com.urrecliner.andriod.savehere;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import android.hardware.Camera;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,16 +38,19 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static com.urrecliner.andriod.savehere.Vars.bitMapScreen;
 import static com.urrecliner.andriod.savehere.Vars.dblAltitude;
 import static com.urrecliner.andriod.savehere.Vars.dblLatitude;
 import static com.urrecliner.andriod.savehere.Vars.dblLongitude;
 import static com.urrecliner.andriod.savehere.Vars.mActivity;
+import static com.urrecliner.andriod.savehere.Vars.mCamera;
 import static com.urrecliner.andriod.savehere.Vars.strAddress;
 import static com.urrecliner.andriod.savehere.Vars.strDateTime;
 import static com.urrecliner.andriod.savehere.Vars.strMapAddress;
@@ -51,21 +68,23 @@ public class MainActivity extends AppCompatActivity {
     public int Permission_Write = 0;
     public int Permission_Internet = 0;
     public int Permission_Location = 0;
+    private CameraPreview mCameraPreview;
 
     //    private FusedLocationProviderClient mFusedLocationClient;
     long backKeyPressedTime;
-
+    int display_mode;
 //    private LocationListener mLocationListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        display_mode = getResources().getConfiguration().orientation;
 
         Permission_Write = AccessPermission.externalWrite(getApplicationContext(), this);
         Permission_Internet = AccessPermission.accessInternet(getApplicationContext(), this);
         Permission_Location = AccessPermission.accessLocation(getApplicationContext(), this);
-        if ( Permission_Write == 0 || Permission_Internet == 0 || Permission_Location == 0) {
+        if (Permission_Write == 0 || Permission_Internet == 0 || Permission_Location == 0) {
             Toast.makeText(getApplicationContext(),"안드로이드 허가 관계를 확인해 주세요",
                     Toast.LENGTH_LONG).show();
             finish();
@@ -80,40 +99,163 @@ public class MainActivity extends AppCompatActivity {
                     .addApi(LocationServices.API)
                     .build();
         }
+
         backKeyPressedTime = System.currentTimeMillis();
 
         final Button button = findViewById(R.id.btnCapture);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TextView mAddressTextView = findViewById(R.id.addressText);
-                strAddress = mAddressTextView.getText().toString();
-                strPlace = strAddress.substring(0, strAddress.indexOf("\n"));
-                if (strPlace.equals("")) {
-                    strPlace = "no name";
-                }
-                int backColor = 0x106410;
-                for (int i = 0; i < 2; i++) {
-                    String hexColor = String.format("#%06X", (0xFFFFFF & backColor));
-                    mAddressTextView.setBackgroundColor(Color.parseColor(hexColor));
-                    backColor += 0x070707;
-                }
+                reactClick();
                 button.setBackgroundColor(Color.parseColor("#205eaa"));
                 Intent intent = new Intent(getApplicationContext(), LandActivity.class);
                 startActivity(intent);
             }
         });
-        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-        Intent intent = null;
-        try {
-            intent = builder.build(MainActivity.this);
-        } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
-            utils.appendText("#PP" + e.toString());
-            e.printStackTrace();
+        final Button btnCamera = findViewById(R.id.btnCamera);
+        btnCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCamera.enableShutterSound(false);
+                reactClick();
+                btnCamera.setBackgroundColor(Color.parseColor("#205eaa"));
+//                mCamera.takePicture(shutterCallback, rawCallback, jpegCallback);
+                mCamera.takePicture(null, null, rawCallback, jpegCallback); // null is for silent shot
+            }
+        });
+        utils.appendText("##step 0");
+        startCamera();
+//        getScreenSize(getApplicationContext());
+        if (display_mode == Configuration.ORIENTATION_PORTRAIT) {
+            if (isNetworkAvailable()) {
+                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+                utils.appendText("##step 1");
+                Intent intent = null;
+                try {
+                    intent = builder.build(MainActivity.this);
+//                utils.appendText("##step 2");
+                } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+                    utils.appendText("#PP" + e.toString());
+                    e.printStackTrace();
+                }
+                utils.appendText("##step 3");
+                startActivityForResult(intent, PLACE_PICKER_REQUEST);
+            }
+            else {
+                utils.appendText("##step NO NETWORK");
+                showCurrentLocation();
+            }
+        } else {
+            utils.appendText("##step FOUR");
+            showCurrentLocation();
         }
-        startActivityForResult(intent, PLACE_PICKER_REQUEST);
         utils.appendText("#ready ---");
+    }
+    private void reactClick() {
+        TextView mAddressTextView = findViewById(R.id.addressText);
+        strAddress = mAddressTextView.getText().toString();
+        try {
+            strPlace = strAddress.substring(0, strAddress.indexOf("\n"));
+            if (strPlace.equals("")) {
+                strPlace = "no name";
+            }
+            strAddress = strAddress.substring(strAddress.indexOf("\n") + 1, strAddress.length());
+        } catch (Exception e) {
+            strPlace = strAddress;
+            strAddress = " ";
+        }
+        int backColor = 0x106410;
+        for (int i = 0; i < 2; i++) {
+            String hexColor = String.format("#%06X", (0xFFFFFF & backColor));
+            mAddressTextView.setBackgroundColor(Color.parseColor(hexColor));
+            backColor += 0x070707;
+        }
+        if (display_mode == Configuration.ORIENTATION_PORTRAIT)
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        }
 
+    Camera.ShutterCallback shutterCallback = new Camera.ShutterCallback() {
+        public void onShutter() {
+            //			 Log.d(TAG, "onShutter'd");
+        }
+    };
+
+    Camera.PictureCallback rawCallback = new Camera.PictureCallback() {
+        public void onPictureTaken(byte[] data, Camera camera) {
+            //			 Log.d(TAG, "onPictureTaken - raw");
+        }
+    };
+
+    Camera.PictureCallback jpegCallback = new Camera.PictureCallback() {
+        public void onPictureTaken(byte[] data, Camera camera) {
+
+            //이미지의 너비와 높이 결정
+            int w = camera.getParameters().getPictureSize().width;
+            int h = camera.getParameters().getPictureSize().height;
+
+//            int orientation = setCameraDisplayOrientation(MainActivity.this, CAMERA_FACING, camera);
+
+            //byte array를 bitmap으로 변환
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
+            //int w = bitmap.getWidth();
+            //int h = bitmap.getHeight();
+
+            //이미지를 디바이스 방향으로 회전
+            Matrix matrix = new Matrix();
+            matrix.postRotate(0);
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, w, h, matrix, true);
+
+            //bitmap을 byte array로 변환
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            bitMapScreen = bitmap;
+
+            byte[] currentData = stream.toByteArray();
+            //파일로 저장
+            new SaveImageTask().execute(currentData);
+        }
+    };
+
+    private class SaveImageTask extends AsyncTask<byte[], String , String> {
+
+        @Override
+        protected String doInBackground(byte[]... data) {
+//            FileOutputStream outStream = null;
+//            // Write to SD Card
+//            try {
+//                File sdCard = Environment.getExternalStorageDirectory();
+//                File dir = new File(sdCard.getAbsolutePath() + "/SaveHere");
+//                dir.mkdirs();
+//
+//                String wkFile = String.format("A%d.png", System.currentTimeMillis());
+//                File outFile = new File(dir, wkFile);
+//
+//                outStream = new FileOutputStream(outFile);
+//                outStream.write(data[0]);
+//                outStream.flush();
+//                outStream.close();
+//                tempPNGName = outFile.getAbsolutePath();
+//
+//                utils.appendText("onPictureTaken - wrote bytes: " + data.length + " to "
+//                        + outFile.getAbsolutePath());
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            } finally {
+//            }
+            return "";
+        }
+
+        @Override
+        protected void onPostExecute(String none) {
+            Log.w("post", "Executed");
+//            startCamera();
+            Intent intent = new Intent(getApplicationContext(), CameraActivity.class);
+            startActivity(intent);
+        }
     }
 
     private class MyConnectionCallBack implements GoogleApiClient.ConnectionCallbacks {
@@ -142,6 +284,51 @@ public class MainActivity extends AppCompatActivity {
         utils.appendText("#oP");
     }
 
+    public void startCamera() {
+
+        if (mCameraPreview == null) {
+            mCameraPreview = new CameraPreview(this, (SurfaceView) findViewById(R.id.camera_surface));
+            mCameraPreview.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT));
+            ((FrameLayout) findViewById(R.id.frame)).addView(mCameraPreview);
+            mCameraPreview.setKeepScreenOn(true);
+
+            /* 프리뷰 화면 눌렀을 때  사진을 찍음
+            preview.setOnClickListener(new OnClickListener() {
+
+                @Override
+                public void onClick(View arg0) {
+                    camera.takePicture(shutterCallback, rawCallback, jpegCallback);
+                }
+            });*/
+        }
+
+        mCameraPreview.setCamera(null);
+        if (mCamera != null) {
+            mCamera.release();
+            mCamera = null;
+        }
+        mCamera = Camera.open(0);
+        utils.appendText("Camera found");
+        try {
+            // camera orientation
+            mCamera.setDisplayOrientation(0);
+
+        } catch (RuntimeException ex) {
+            Toast.makeText(getApplicationContext(), "camera orientation " + ex.getMessage(),
+                    Toast.LENGTH_LONG).show();
+            utils.appendText("CAMERA not found " + ex.getMessage());
+        }
+        // get Camera parameters
+//            Camera.Parameters params = mCamera.getParameters();
+        // picture image orientation
+//            params.setRotation(90);
+        mCamera.startPreview();
+
+        mCameraPreview.setRotation(0);
+        mCameraPreview.setCamera(mCamera);
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -154,42 +341,43 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void showCurrentLocation() {
-//        boolean isGrantStorage = grantExternalStoragePermission();
-//        appendText("#oG");
-//
-//        if (!isGrantStorage) {
-//            return;
-//        }
+
         Geocoder geocoder = new Geocoder(this, Locale.KOREA);
         utils.appendText("#a geocoder");
         Location mCurrentLocation = getGPSCord();
         if (mCurrentLocation == null) {
             utils.appendText("Location is null");
-            return;
+            dblLatitude = 0D;
+            dblLongitude = 0D;
+            dblAltitude = 0D;
+            strPosition = "No Position";
         }
-        dblLatitude = mCurrentLocation.getLatitude();
-        dblLongitude = mCurrentLocation.getLongitude();
-        dblAltitude = mCurrentLocation.getAltitude();
-
-        strPosition = String.format("%s\n%s\n%s",
-                dblLatitude, dblLongitude, dblAltitude);
+        else {
+            dblLatitude = mCurrentLocation.getLatitude();
+            dblLongitude = mCurrentLocation.getLongitude();
+            dblAltitude = mCurrentLocation.getAltitude();
+            strPosition = String.format("%s\n%s\n%s",
+                    dblLatitude, dblLongitude, dblAltitude);
+        }
         strDateTime = getViewTimeText();
-
-        TextView mPositionTextView = findViewById(R.id.positionText);
-        mPositionTextView.setText(strPosition);
-        TextView mDateTimeTextView = findViewById(R.id.datetimeText);
-        mDateTimeTextView.setText(strDateTime);
-        TextView mAddressTextView = findViewById(R.id.addressText);
+        TextView mDTV = findViewById(R.id.datetimeText);
+        mDTV.setText(strDateTime);
         String text;
         if (strMapPlace == null ) {
-            strAddress = getGPSAddress(geocoder);
+            if (isNetworkAvailable()) {
+                strAddress = getAddressByGPSValue(geocoder);
+            }
+            else {
+                strAddress = " ";
+            }
             utils.appendText("#strAddress " + strAddress);
             text = "\n" + strAddress;
         }
         else {
             text = strMapPlace + "\n" + strMapAddress;
         }
-        mAddressTextView.setText(text);
+        TextView mAdV = findViewById(R.id.addressText);
+        mAdV.setText(text);
         utils.appendText("#shown");
     }
 
@@ -206,7 +394,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     final String noInfo = "No_Info";
-    public String getGPSAddress(Geocoder geocoder) {
+    public String getAddressByGPSValue(Geocoder geocoder) {
 
         utils.appendText("#c");
         try {
@@ -222,11 +410,10 @@ public class MainActivity extends AppCompatActivity {
                 String SubLocality = address.getSubLocality();
                 String Country = address.getCountryName();  // or getCountryName()
                 String CountryCode = address.getCountryCode();
-//                String zip = address.getPostalCode();
                 String SState = address.getSubAdminArea();
                 String State = address.getAdminArea();
-                utils.appendText("#d address vars");
-
+//                String zip = address.getPostalCode();
+//                utils.appendText("F: " + Feature + ", T: " + Thorough +  ", L: " + Locality + ", sL: " + SubLocality + ", C: " + CountryCode);
                 Feature = (Feature == null) ? noInfo : Feature;
                 Thorough = (Thorough == null) ? noInfo : Thorough;  // Kakakaua Avernue
                 SubLocality = (SubLocality == null) ? noInfo : SubLocality; // 분당구
@@ -247,7 +434,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public String MergedAddress(String Feature, String Thorough, String SubLocality, String Locality, String SState, String State, String Country, String CountryCode) {
-//        utils.appendText("#ma");
 
         if (Thorough.equals(Feature)) Feature = noInfo;
         if (SubLocality.equals(Feature)) Feature = noInfo;
@@ -257,26 +443,26 @@ public class MainActivity extends AppCompatActivity {
         if (SState.equals(Locality)) Locality = noInfo;
         if (State.equals(SState)) SState = noInfo;
 
+        utils.appendText("F: " + Feature + ", T: " + Thorough +  ", L: " + Locality + ", sL: " + SubLocality);
+
         String addressMerged = "";
-        if (CountryCode.equals("kr")) {
-            if (State.equals(noInfo)) addressMerged += " " + State;
-            if (SState.equals(noInfo)) addressMerged += " " + SState;
-            if (Locality.equals(noInfo)) addressMerged += " " + Locality;
-            if (SubLocality.equals(noInfo)) addressMerged += " " + SubLocality;
-            if (Thorough.equals(noInfo)) addressMerged += " " + Thorough;
-            if (Feature.equals(noInfo)) addressMerged += " " + Feature;
+        if (CountryCode.equals("KR")) {
+            if (!State.equals(noInfo)) addressMerged += " " + State;
+            if (!SState.equals(noInfo)) addressMerged += " " + SState;
+            if (!Locality.equals(noInfo)) addressMerged += " " + Locality;
+            if (!SubLocality.equals(noInfo)) addressMerged += " " + SubLocality;
+            if (!Thorough.equals(noInfo)) addressMerged += " " + Thorough;
+            if (!Feature.equals(noInfo)) addressMerged += " " + Feature;
         }
         else {
-            if (Feature.equals(noInfo)) addressMerged += " " + Feature;
-            if (Thorough.equals(noInfo)) addressMerged += " " + Thorough;
-            if (SubLocality.equals(noInfo)) addressMerged += " " + SubLocality;
-            if (Locality.equals(noInfo)) addressMerged += " " + Locality;
-            if (SState.equals(noInfo)) addressMerged += " " + SState;
-            if (State.equals(noInfo)) addressMerged += " " + State;
+            if (!Feature.equals(noInfo)) addressMerged += " " + Feature;
+            if (!Thorough.equals(noInfo)) addressMerged += " " + Thorough;
+            if (!SubLocality.equals(noInfo)) addressMerged += " " + SubLocality;
+            if (!Locality.equals(noInfo)) addressMerged += " " + Locality;
+            if (!SState.equals(noInfo)) addressMerged += " " + SState;
+            if (!State.equals(noInfo)) addressMerged += " " + State;
             addressMerged += " " + Country;
         }
-//        utils.appendText("#f2");
-
         return addressMerged;
     }
 
@@ -293,12 +479,28 @@ public class MainActivity extends AppCompatActivity {
             strMapPlace = null;
             strMapAddress = null;
         }
+        mCamera.enableShutterSound(true);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         utils.appendText("#g2 before showCurrentLocation");
         showCurrentLocation();
     }
 
-    final SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd", Locale.ENGLISH);
+    private boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+    }
+
     final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yy/MM/dd\nHH:mm:ss", Locale.ENGLISH);
-    final SimpleDateFormat timeLogFormat = new SimpleDateFormat("yy/MM/dd HH:mm:ss", Locale.ENGLISH);
     private String getViewTimeText() { return dateTimeFormat.format(new Date()); }
+
+//    public void getScreenSize(Context context){
+//        DisplayMetrics dm = new DisplayMetrics();
+//        WindowManager windowManager = (WindowManager) context.getSystemService(WINDOW_SERVICE);
+//        windowManager.getDefaultDisplay().getMetrics(dm);
+//        mWidthInDP = Math.round(dm.widthPixels / dm.density);
+//        mHeightInDP = Math.round(dm.heightPixels / dm.density);
+//    }
+
 }
