@@ -69,17 +69,18 @@ public class MainActivity extends AppCompatActivity {
     public int Permission_Internet = 0;
     public int Permission_Location = 0;
     private CameraPreview mCameraPreview;
+    private Location mLocation  = null;
 
     //    private FusedLocationProviderClient mFusedLocationClient;
     long backKeyPressedTime;
-    int display_mode;
+    int screenOrientation;
 //    private LocationListener mLocationListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        display_mode = getResources().getConfiguration().orientation;
+        screenOrientation = getResources().getConfiguration().orientation;
 
         Permission_Write = AccessPermission.externalWrite(getApplicationContext(), this);
         Permission_Internet = AccessPermission.accessInternet(getApplicationContext(), this);
@@ -126,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         utils.appendText("##step 0");
         startCamera();
 //        getScreenSize(getApplicationContext());
-        if (display_mode == Configuration.ORIENTATION_PORTRAIT) {
+        if (screenOrientation == Configuration.ORIENTATION_PORTRAIT) {
             if (isNetworkAvailable()) {
                 PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
                 utils.appendText("##step 1");
@@ -145,9 +146,6 @@ public class MainActivity extends AppCompatActivity {
                 utils.appendText("##step NO NETWORK");
                 showCurrentLocation();
             }
-        } else {
-            utils.appendText("##step FOUR");
-            showCurrentLocation();
         }
         utils.appendText("#ready ---");
     }
@@ -170,24 +168,24 @@ public class MainActivity extends AppCompatActivity {
             mAddressTextView.setBackgroundColor(Color.parseColor(hexColor));
             backColor += 0x070707;
         }
-        if (display_mode == Configuration.ORIENTATION_PORTRAIT)
+        if (screenOrientation == Configuration.ORIENTATION_PORTRAIT)
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
 
-    Camera.ShutterCallback shutterCallback = new Camera.ShutterCallback() {
-        public void onShutter() {
-            //			 Log.d(TAG, "onShutter'd");
-        }
-    };
+        Camera.ShutterCallback shutterCallback = new Camera.ShutterCallback() {
+            public void onShutter() {
+                //			 Log.d(TAG, "onShutter'd");
+            }
+        };
 
-    Camera.PictureCallback rawCallback = new Camera.PictureCallback() {
-        public void onPictureTaken(byte[] data, Camera camera) {
-            //			 Log.d(TAG, "onPictureTaken - raw");
-        }
-    };
+        Camera.PictureCallback rawCallback = new Camera.PictureCallback() {
+            public void onPictureTaken(byte[] data, Camera camera) {
+                //			 Log.d(TAG, "onPictureTaken - raw");
+            }
+        };
 
-    Camera.PictureCallback jpegCallback = new Camera.PictureCallback() {
-        public void onPictureTaken(byte[] data, Camera camera) {
+        Camera.PictureCallback jpegCallback = new Camera.PictureCallback() {
+            public void onPictureTaken(byte[] data, Camera camera) {
 
             //이미지의 너비와 높이 결정
             int w = camera.getParameters().getPictureSize().width;
@@ -215,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
             byte[] currentData = stream.toByteArray();
             //파일로 저장
             new SaveImageTask().execute(currentData);
-        }
+            }
     };
 
     private class SaveImageTask extends AsyncTask<byte[], String , String> {
@@ -342,10 +340,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void showCurrentLocation() {
 
-        Geocoder geocoder = new Geocoder(this, Locale.KOREA);
         utils.appendText("#a geocoder");
-        Location mCurrentLocation = getGPSCord();
-        if (mCurrentLocation == null) {
+        mLocation = getGPSCord();
+        if (mLocation == null) {
             utils.appendText("Location is null");
             dblLatitude = 0D;
             dblLongitude = 0D;
@@ -353,18 +350,19 @@ public class MainActivity extends AppCompatActivity {
             strPosition = "No Position";
         }
         else {
-            dblLatitude = mCurrentLocation.getLatitude();
-            dblLongitude = mCurrentLocation.getLongitude();
-            dblAltitude = mCurrentLocation.getAltitude();
-            strPosition = String.format("%s\n%s\n%s",
-                    dblLatitude, dblLongitude, dblAltitude);
+            dblLatitude = mLocation.getLatitude();
+            dblLongitude = mLocation.getLongitude();
+            dblAltitude = mLocation.getAltitude();
+            strPosition = String.format("%s\n%s\n%s", dblLatitude, dblLongitude, dblAltitude);
         }
+        utils.appendText(strPosition);
         strDateTime = getViewTimeText();
         TextView mDTV = findViewById(R.id.datetimeText);
         mDTV.setText(strDateTime);
         String text;
         if (strMapPlace == null ) {
             if (isNetworkAvailable()) {
+                Geocoder geocoder = new Geocoder(this, Locale.KOREA);
                 strAddress = getAddressByGPSValue(geocoder);
             }
             else {
@@ -383,14 +381,15 @@ public class MainActivity extends AppCompatActivity {
 
     public Location getGPSCord() {
 
-        utils.appendText("#oGPS");
+        Log.e("gpscord called", "here");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "ACCESS FINE LOCATION not allowed", Toast.LENGTH_LONG).show();
             return null;
         }
-        Location mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        mGoogleApiClient.connect();
+        Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         utils.appendText("#mLo");
-        return mCurrentLocation;
+        return lastLocation;
     }
 
     final String noInfo = "No_Info";
