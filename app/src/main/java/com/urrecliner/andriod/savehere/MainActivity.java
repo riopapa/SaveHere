@@ -46,9 +46,9 @@ import java.util.List;
 import java.util.Locale;
 
 import static com.urrecliner.andriod.savehere.Vars.bitMapScreen;
-import static com.urrecliner.andriod.savehere.Vars.dblAltitude;
-import static com.urrecliner.andriod.savehere.Vars.dblLatitude;
-import static com.urrecliner.andriod.savehere.Vars.dblLongitude;
+import static com.urrecliner.andriod.savehere.Vars.currActivity;
+import static com.urrecliner.andriod.savehere.Vars.latitude;
+import static com.urrecliner.andriod.savehere.Vars.longitude;
 import static com.urrecliner.andriod.savehere.Vars.mActivity;
 import static com.urrecliner.andriod.savehere.Vars.mCamera;
 import static com.urrecliner.andriod.savehere.Vars.strAddress;
@@ -80,6 +80,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        currActivity =  this.getClass().getSimpleName();
         screenOrientation = getResources().getConfiguration().orientation;
 
         Permission_Write = AccessPermission.externalWrite(getApplicationContext(), this);
@@ -111,6 +112,7 @@ public class MainActivity extends AppCompatActivity {
                 button.setBackgroundColor(Color.parseColor("#205eaa"));
                 Intent intent = new Intent(getApplicationContext(), LandActivity.class);
                 startActivity(intent);
+//                finish();
             }
         });
         final Button btnCamera = findViewById(R.id.btnCamera);
@@ -251,6 +253,8 @@ public class MainActivity extends AppCompatActivity {
         protected void onPostExecute(String none) {
             Log.w("post", "Executed");
 //            startCamera();
+            mCamera.stopPreview();
+            mCamera.release();
             Intent intent = new Intent(getApplicationContext(), CameraActivity.class);
             startActivity(intent);
         }
@@ -340,20 +344,18 @@ public class MainActivity extends AppCompatActivity {
 
     public void showCurrentLocation() {
 
+        double altitude = 0;
         utils.appendText("#a geocoder");
         mLocation = getGPSCord();
         if (mLocation == null) {
             utils.appendText("Location is null");
-            dblLatitude = 0D;
-            dblLongitude = 0D;
-            dblAltitude = 0D;
             strPosition = "No Position";
         }
         else {
-            dblLatitude = mLocation.getLatitude();
-            dblLongitude = mLocation.getLongitude();
-            dblAltitude = mLocation.getAltitude();
-            strPosition = String.format("%s\n%s\n%s", dblLatitude, dblLongitude, dblAltitude);
+            latitude = mLocation.getLatitude();
+            longitude = mLocation.getLongitude();
+            altitude = mLocation.getAltitude();
+            strPosition = String.format("%s\n%s\n%s", latitude, longitude, altitude);
         }
         utils.appendText(strPosition);
         strDateTime = getViewTimeText();
@@ -363,7 +365,7 @@ public class MainActivity extends AppCompatActivity {
         if (strMapPlace == null ) {
             if (isNetworkAvailable()) {
                 Geocoder geocoder = new Geocoder(this, Locale.KOREA);
-                strAddress = getAddressByGPSValue(geocoder);
+                strAddress = getAddressByGPSValue(geocoder, latitude, longitude);
             }
             else {
                 strAddress = " ";
@@ -381,23 +383,23 @@ public class MainActivity extends AppCompatActivity {
 
     public Location getGPSCord() {
 
-        Log.e("gpscord called", "here");
+        Log.w("gpscord called", "here");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "ACCESS FINE LOCATION not allowed", Toast.LENGTH_LONG).show();
             return null;
         }
         mGoogleApiClient.connect();
         Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        utils.appendText("#mLo");
+//        utils.appendText("#mLo");
         return lastLocation;
     }
 
     final String noInfo = "No_Info";
-    public String getAddressByGPSValue(Geocoder geocoder) {
+    public String getAddressByGPSValue(Geocoder geocoder, double latitude, double longitude) {
 
         utils.appendText("#c");
         try {
-            List<Address> addresses = geocoder.getFromLocation(dblLatitude, dblLongitude, 1);
+            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
             if (addresses.size() > 0) {
                 Address address = addresses.get(0);
 //                String Premises = address.getPremises();
@@ -442,7 +444,7 @@ public class MainActivity extends AppCompatActivity {
         if (SState.equals(Locality)) Locality = noInfo;
         if (State.equals(SState)) SState = noInfo;
 
-        utils.appendText("F: " + Feature + ", T: " + Thorough +  ", L: " + Locality + ", sL: " + SubLocality);
+//        utils.appendText("F: " + Feature + ", T: " + Thorough +  ", L: " + Locality + ", sL: " + SubLocality);
 
         String addressMerged = "";
         if (CountryCode.equals("KR")) {

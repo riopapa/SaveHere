@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import static com.urrecliner.andriod.savehere.Vars.currActivity;
 import static com.urrecliner.andriod.savehere.Vars.isRUNNING;
 import static com.urrecliner.andriod.savehere.Vars.strPlace;
 import static com.urrecliner.andriod.savehere.Vars.utils;
@@ -62,7 +63,7 @@ public class Utils {
             }
             StackTraceElement[] traces;
             traces = Thread.currentThread().getStackTrace();
-            String outText = "\n" + timeLogFormat.format(new Date()) + " " + traces[5].getMethodName() + " > " + traces[4].getMethodName() + " > " + traces[3].getMethodName() + " #" + traces[3].getLineNumber() + " [[" + textLine + "]]\n";
+            String outText = timeLogFormat.format(new Date()) + " " + currActivity + " " + traces[5].getMethodName() + " > " + traces[4].getMethodName() + " > " + traces[3].getMethodName() + " #" + traces[3].getLineNumber() + " [[" + textLine + "]]\n";
             // true = append file
             fw = new FileWriter(file.getAbsoluteFile(), true);
             bw = new BufferedWriter(fw);
@@ -127,6 +128,7 @@ public class Utils {
         }
         File file = new File(directory, filename);
         FileOutputStream os;
+        appendText("CAPTURE TO " + file.getName());
         try {
             os = new FileOutputStream(file);
             screenBitmap.compress(Bitmap.CompressFormat.PNG, 90, os);   //비트맵을 PNG파일로 변환

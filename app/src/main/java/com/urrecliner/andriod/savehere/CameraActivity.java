@@ -1,10 +1,8 @@
 package com.urrecliner.andriod.savehere;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.hardware.Camera;
-import android.media.AudioManager;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,11 +12,10 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.json.JSONObject;
-
 import java.io.File;
 
 import static com.urrecliner.andriod.savehere.Vars.bitMapScreen;
+import static com.urrecliner.andriod.savehere.Vars.currActivity;
 import static com.urrecliner.andriod.savehere.Vars.mActivity;
 import static com.urrecliner.andriod.savehere.Vars.utils;
 
@@ -29,32 +26,40 @@ public class CameraActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_camera);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        TextView pV = findViewById(R.id.placeCText1);
-        pV.setText(Vars.strPlace);
-        pV = findViewById(R.id.placeCText2);
-        pV.setText(Vars.strPlace);
-        pV = findViewById(R.id.placeCText3);
-        pV.setText(Vars.strPlace);
-        TextView pA = findViewById(R.id.placeAddress);
-        String text = Vars.strPlace + "\n" + Vars.strAddress;
-        pA.setText(text);
-        TextView mPV = findViewById(R.id.positionCText);
-        mPV.setText(Vars.strPosition);
-        TextView mDV = findViewById(R.id.datetimeCText);
-        mDV.setText(Vars.strDateTime);
+        currActivity =  this.getClass().getSimpleName();
+        int screenOrientation = getResources().getConfiguration().orientation;
+        utils.appendText("Orientation is " + screenOrientation);
+        if (screenOrientation == Configuration.ORIENTATION_PORTRAIT) {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            utils.appendText("land act PORTRAIT");
+        }
+        else {
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            TextView pV = findViewById(R.id.placeCText1);
+            pV.setText(Vars.strPlace);
+            pV = findViewById(R.id.placeCText2);
+            pV.setText(Vars.strPlace);
+            pV = findViewById(R.id.placeCText3);
+            pV.setText(Vars.strPlace);
+            TextView pA = findViewById(R.id.placeAddress);
+            String text = Vars.strPlace + "\n" + Vars.strAddress;
+            pA.setText(text);
+            TextView mPV = findViewById(R.id.positionCText);
+            mPV.setText(Vars.strPosition);
+            TextView mDV = findViewById(R.id.datetimeCText);
+            mDV.setText(Vars.strDateTime);
 
-        ImageView iV = findViewById(R.id.photoImage);
-//        imageView.setImageBitmap(BitmapFactory.decodeFile(tempPNGName));
-        iV.setImageBitmap(bitMapScreen);
-//        ViewGroup vg = findViewById (R.id.cameraLayout);
-//        vg.invalidate();
-        View rootView = getWindow().getDecorView();
-//        rootView.setVisibility(View.GONE);
-//        rootView.setVisibility(View.VISIBLE);
+            ImageView iV = findViewById(R.id.photoImage);
+            //        imageView.setImageBitmap(BitmapFactory.decodeFile(tempPNGName));
+            iV.setImageBitmap(bitMapScreen);
+            //        ViewGroup vg = findViewById (R.id.cameraLayout);
+            //        vg.invalidate();
+            View rootView = getWindow().getDecorView();
+            //        rootView.setVisibility(View.GONE);
+            //        rootView.setVisibility(View.VISIBLE);
 
-        takeScreenShot(rootView);
+            takeScreenShot(rootView);
+        }
     }
 
     public void takeScreenShot(View view) {
@@ -69,16 +74,19 @@ public class CameraActivity extends AppCompatActivity {
 
                 File screenShot = utils.captureScreen(rootView);
                 if (screenShot != null) {
+                    utils.appendText("camera screen screen OK OK OK ");
+
                     mActivity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(screenShot)));
-                    mActivity.finish();
-                    System.exit(0);
-                    android.os.Process.killProcess(android.os.Process.myPid());
+                    Intent intent = new Intent(getApplicationContext(), LandActivity.class);
+                    startActivity(intent);
+                    finish();
+//                    mActivity.finish();
+//                    System.exit(0);
+//                    android.os.Process.killProcess(android.os.Process.myPid());
                 } else {
                     utils.appendText("Screenshot is NULL");
                 }
             }
         }, 100);
     }
-
-
 }
