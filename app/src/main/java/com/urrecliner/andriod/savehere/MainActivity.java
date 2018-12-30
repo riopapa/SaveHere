@@ -3,9 +3,7 @@ package com.urrecliner.andriod.savehere;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -27,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -45,8 +44,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import static com.urrecliner.andriod.savehere.Vars.CameraMapBoth;
 import static com.urrecliner.andriod.savehere.Vars.bitMapScreen;
 import static com.urrecliner.andriod.savehere.Vars.currActivity;
+import static com.urrecliner.andriod.savehere.Vars.delayValue;
 import static com.urrecliner.andriod.savehere.Vars.latitude;
 import static com.urrecliner.andriod.savehere.Vars.longitude;
 import static com.urrecliner.andriod.savehere.Vars.mActivity;
@@ -58,6 +59,7 @@ import static com.urrecliner.andriod.savehere.Vars.strMapPlace;
 import static com.urrecliner.andriod.savehere.Vars.strPlace;
 import static com.urrecliner.andriod.savehere.Vars.strPosition;
 import static com.urrecliner.andriod.savehere.Vars.utils;
+import static com.urrecliner.andriod.savehere.Vars.zoomValue;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -69,12 +71,10 @@ public class MainActivity extends AppCompatActivity {
     public int Permission_Internet = 0;
     public int Permission_Location = 0;
     private CameraPreview mCameraPreview;
-    private Location mLocation  = null;
 
     //    private FusedLocationProviderClient mFusedLocationClient;
     long backKeyPressedTime;
     int screenOrientation;
-//    private LocationListener mLocationListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,32 +104,71 @@ public class MainActivity extends AppCompatActivity {
 
         backKeyPressedTime = System.currentTimeMillis();
 
-        final Button button = findViewById(R.id.btnCapture);
-        button.setOnClickListener(new View.OnClickListener() {
+        final Button btnCameraOnly = findViewById(R.id.btnCamera);
+        btnCameraOnly.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                reactClick();
-                button.setBackgroundColor(Color.parseColor("#205eaa"));
-                Intent intent = new Intent(getApplicationContext(), LandActivity.class);
-                startActivity(intent);
-//                finish();
-            }
-        });
-        final Button btnCamera = findViewById(R.id.btnCamera);
-        btnCamera.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mCamera.enableShutterSound(false);
-                reactClick();
-                btnCamera.setBackgroundColor(Color.parseColor("#205eaa"));
-//                mCamera.takePicture(shutterCallback, rawCallback, jpegCallback);
+                reactClick(false, btnCameraOnly);
                 mCamera.takePicture(null, null, rawCallback, jpegCallback); // null is for silent shot
             }
         });
+        final Button btnMapOnly = findViewById(R.id.btnMap);
+        btnMapOnly.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                reactClick(false, btnMapOnly);
+                Intent intent = new Intent(getApplicationContext(), LandActivity.class);
+                startActivity(intent);
+            }
+        });
+        final Button btnCameraMap = findViewById(R.id.btnCameraMap);
+        btnCameraMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mCamera.enableShutterSound(false);
+                reactClick(true, btnCameraMap);
+                mCamera.takePicture(null, null, rawCallback, jpegCallback); // null is for silent shot
+            }
+        });
+
+        final SeekBar seekZoom = findViewById(R.id.seek_bar_zoom);
+        seekZoom.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                zoomValue = seekZoom.getProgress();
+                TextView tV = findViewById(R.id.zoomText);
+                tV.setText(""+ zoomValue);
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+
+        final SeekBar seekDelay = findViewById(R.id.seek_bar_delay);
+        seekDelay.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                delayValue = seekDelay.getProgress() / 100;
+                delayValue *= 100;
+                TextView tV = findViewById(R.id.delayText);
+                tV.setText(""+ delayValue);
+                seekDelay.setProgress(delayValue);
+            }
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+        });
+
         utils.appendText("##step 0");
         startCamera();
 //        getScreenSize(getApplicationContext());
-        if (screenOrientation == Configuration.ORIENTATION_PORTRAIT) {
+//        if (screenOrientation == Configuration.ORIENTATION_PORTRAIT) {
             if (isNetworkAvailable()) {
                 PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
                 utils.appendText("##step 1");
@@ -148,16 +187,18 @@ public class MainActivity extends AppCompatActivity {
                 utils.appendText("##step NO NETWORK");
                 showCurrentLocation();
             }
-        }
+//        }
         utils.appendText("#ready ---");
     }
-    private void reactClick() {
+    private void reactClick(Boolean trueFalse, Button button) {
+        CameraMapBoth = trueFalse;
+        button.setBackgroundColor(Color.parseColor("#205eaa"));
         TextView mAddressTextView = findViewById(R.id.addressText);
         strAddress = mAddressTextView.getText().toString();
         try {
             strPlace = strAddress.substring(0, strAddress.indexOf("\n"));
             if (strPlace.equals("")) {
-                strPlace = "no name";
+                strPlace = "no place name";
             }
             strAddress = strAddress.substring(strAddress.indexOf("\n") + 1, strAddress.length());
         } catch (Exception e) {
@@ -170,8 +211,8 @@ public class MainActivity extends AppCompatActivity {
             mAddressTextView.setBackgroundColor(Color.parseColor(hexColor));
             backColor += 0x070707;
         }
-        if (screenOrientation == Configuration.ORIENTATION_PORTRAIT)
-            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//        if (screenOrientation == Configuration.ORIENTATION_PORTRAIT)
+//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
 
         Camera.ShutterCallback shutterCallback = new Camera.ShutterCallback() {
@@ -214,45 +255,20 @@ public class MainActivity extends AppCompatActivity {
 
             byte[] currentData = stream.toByteArray();
             //파일로 저장
-            new SaveImageTask().execute(currentData);
+            new SaveImageTask().execute("");
             }
     };
 
-    private class SaveImageTask extends AsyncTask<byte[], String , String> {
+    private class SaveImageTask extends AsyncTask<String, String , String> {
 
         @Override
-        protected String doInBackground(byte[]... data) {
-//            FileOutputStream outStream = null;
-//            // Write to SD Card
-//            try {
-//                File sdCard = Environment.getExternalStorageDirectory();
-//                File dir = new File(sdCard.getAbsolutePath() + "/SaveHere");
-//                dir.mkdirs();
-//
-//                String wkFile = String.format("A%d.png", System.currentTimeMillis());
-//                File outFile = new File(dir, wkFile);
-//
-//                outStream = new FileOutputStream(outFile);
-//                outStream.write(data[0]);
-//                outStream.flush();
-//                outStream.close();
-//                tempPNGName = outFile.getAbsolutePath();
-//
-//                utils.appendText("onPictureTaken - wrote bytes: " + data.length + " to "
-//                        + outFile.getAbsolutePath());
-//            } catch (FileNotFoundException e) {
-//                e.printStackTrace();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            } finally {
-//            }
+        protected String doInBackground(String ... data) {
             return "";
         }
 
         @Override
         protected void onPostExecute(String none) {
             Log.w("post", "Executed");
-//            startCamera();
             mCamera.stopPreview();
             mCamera.release();
             Intent intent = new Intent(getApplicationContext(), CameraActivity.class);
@@ -269,7 +285,7 @@ public class MainActivity extends AppCompatActivity {
     private class MyOnConnectionFailedListener implements GoogleApiClient.OnConnectionFailedListener {
         @Override
         public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-            utils.appendText("#oF");
+//            utils.appendText("#oF");
         }
     }
 
@@ -283,7 +299,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         mGoogleApiClient.disconnect();
         super.onStop();
-        utils.appendText("#oP");
+//        utils.appendText("#oP");
     }
 
     public void startCamera() {
@@ -311,10 +327,10 @@ public class MainActivity extends AppCompatActivity {
             mCamera = null;
         }
         mCamera = Camera.open(0);
-        utils.appendText("Camera found");
+//        utils.appendText("Camera found");
         try {
             // camera orientation
-            mCamera.setDisplayOrientation(0);
+            mCamera.setDisplayOrientation(90);
 
         } catch (RuntimeException ex) {
             Toast.makeText(getApplicationContext(), "camera orientation " + ex.getMessage(),
@@ -322,9 +338,9 @@ public class MainActivity extends AppCompatActivity {
             utils.appendText("CAMERA not found " + ex.getMessage());
         }
         // get Camera parameters
-//            Camera.Parameters params = mCamera.getParameters();
+            Camera.Parameters params = mCamera.getParameters();
         // picture image orientation
-//            params.setRotation(90);
+            params.setRotation(90);
         mCamera.startPreview();
 
         mCameraPreview.setRotation(0);
@@ -339,28 +355,26 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        utils.appendText("#oP");
+//        utils.appendText("#oP");
     }
 
     public void showCurrentLocation() {
 
         double altitude = 0;
-        utils.appendText("#a geocoder");
-        mLocation = getGPSCord();
-        if (mLocation == null) {
-            utils.appendText("Location is null");
+//        utils.appendText("#a geocoder");
+        Location location = getGPSCord();
+        if (location == null) {
+//            utils.appendText("Location is null");
             strPosition = "No Position";
         }
         else {
-            latitude = mLocation.getLatitude();
-            longitude = mLocation.getLongitude();
-            altitude = mLocation.getAltitude();
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+            altitude = location.getAltitude();
             strPosition = String.format("%s\n%s\n%s", latitude, longitude, altitude);
         }
-        utils.appendText(strPosition);
+//        utils.appendText(strPosition);
         strDateTime = getViewTimeText();
-        TextView mDTV = findViewById(R.id.datetimeText);
-        mDTV.setText(strDateTime);
         String text;
         if (strMapPlace == null ) {
             if (isNetworkAvailable()) {
@@ -370,7 +384,7 @@ public class MainActivity extends AppCompatActivity {
             else {
                 strAddress = " ";
             }
-            utils.appendText("#strAddress " + strAddress);
+//            utils.appendText("#strAddress " + strAddress);
             text = "\n" + strAddress;
         }
         else {
@@ -378,7 +392,7 @@ public class MainActivity extends AppCompatActivity {
         }
         TextView mAdV = findViewById(R.id.addressText);
         mAdV.setText(text);
-        utils.appendText("#shown");
+//        utils.appendText("#shown");
     }
 
     public Location getGPSCord() {
@@ -397,7 +411,7 @@ public class MainActivity extends AppCompatActivity {
     final String noInfo = "No_Info";
     public String getAddressByGPSValue(Geocoder geocoder, double latitude, double longitude) {
 
-        utils.appendText("#c");
+//        utils.appendText("#c");
         try {
             List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
             if (addresses.size() > 0) {
@@ -470,7 +484,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        utils.appendText("#g1");
+//        utils.appendText("#g1");
 
         if (resultCode == RESULT_OK) {  // user picked up place within the google map list
             Place place = PlacePicker.getPlace(this, data);
@@ -481,8 +495,8 @@ public class MainActivity extends AppCompatActivity {
             strMapAddress = null;
         }
         mCamera.enableShutterSound(true);
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-        utils.appendText("#g2 before showCurrentLocation");
+//        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//        utils.appendText("#g2 before showCurrentLocation");
         showCurrentLocation();
     }
 

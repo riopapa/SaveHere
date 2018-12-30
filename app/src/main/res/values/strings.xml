@@ -1,8 +1,9 @@
 <resources>
     <string name="app_name">SaveHere</string>
 
-    <string name="txtCapture">Scrn\nShot</string>
-    <string name="txtCamera">Camera\nShot</string>
+    <string name="txtMapOnly">Map\nShot</string>
+    <string name="txtCameraOnly">Camera\nShot</string>
+    <string name="txtCameraMap">Camera\n&amp; Map\nShot</string>
     <string name="txtPosition">Position</string>
     <string name="txtDateTime">Date\nTime</string>
 

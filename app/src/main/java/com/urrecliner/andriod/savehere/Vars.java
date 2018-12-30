@@ -21,6 +21,9 @@ public class Vars {
     static double latitude = 0;
     static double longitude = 0;
     static GoogleMap mMap = null;
+    static int zoomValue = 17;
+    static int delayValue = 100;
+    static boolean CameraMapBoth = false;
 
     static boolean isRUNNING = false;
     static Utils utils = new Utils();

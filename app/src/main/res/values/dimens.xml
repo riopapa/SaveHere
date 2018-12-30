@@ -1,10 +1,18 @@
 <resources>
     <!-- Default screen margins, per the Android Design guidelines. -->
-    <dimen name="activity_horizontal_margin">16dp</dimen>
-    <dimen name="activity_vertical_margin">16dp</dimen>
+    <dimen name="camera_datetime_width">220dp</dimen>
 
-    <dimen name="default_text_size">16sp</dimen>
-    <dimen name="ui_group_top_margin">24dp</dimen>
+    <dimen name="camera_image_width">580dp</dimen>
+    <dimen name="camera_image2_width">582dp</dimen>
+    <dimen name="camera_image4_width">584dp</dimen>
 
-    <dimen name="small_margin">10dp</dimen>
+    <dimen name="camera_image_marginTop">300dp</dimen>
+    <dimen name="camera_image2_marginTop">302dp</dimen>
+    <dimen name="camera_image4_marginTop">304dp</dimen>
+
+    <dimen name="button_width">100sp</dimen>
+
+    <dimen name="zoomMax">20</dimen>
+    <dimen name="zoomMin">10</dimen>
+
 </resources>

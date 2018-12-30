@@ -1,107 +1,126 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mainLayout"
-    android:gravity="center"
-    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:baselineAligned="false">
+    tools:context=".MainActivity">
 
-    <LinearLayout
-        android:layout_width="0sp"
-        android:layout_height="match_parent"
-        android:layout_marginTop="0sp"
-        android:layout_weight="6"
-        android:orientation="vertical">
+    <EditText
+        android:id="@+id/addressText"
+        android:layout_width="match_parent"
+        android:layout_height="240sp"
+        android:inputType="text|textMultiLine"
+        android:labelFor="@id/addressText"
+        android:lineSpacingExtra="4sp"
+        android:selectAllOnFocus="true"
+        android:text="@string/txtAddress"
+        android:textAlignment="center"
+        android:textSize="24sp"
+        android:textStyle="bold"/>
 
-        <EditText
-            android:id="@+id/addressText"
+    <SeekBar
+        android:id="@+id/seek_bar_zoom"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_below="@id/addressText"
+        android:layout_width="200sp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20sp"
+        android:thumb="@drawable/thumb_drawable"
+        android:max="18"
+        android:min="9"
+        android:progress="17"
+        android:scrollbarStyle="outsideOverlay" />
+
+    <TextView
+        android:id="@+id/zoomText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12sp"
+        android:text="17"
+        android:textSize="20sp"
+        android:layout_below="@id/seek_bar_zoom"
+        android:layout_alignLeft="@id/seek_bar_zoom" />
+
+
+    <SeekBar
+        android:id="@+id/seek_bar_delay"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_below="@id/zoomText"
+        android:layout_width="200sp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8sp"
+        android:thumb="@drawable/thumb_drawable"
+        android:max="3000"
+        android:min="500"
+        android:progress="800"
+        android:scrollbarStyle="outsideOverlay" />
+
+    <TextView
+        android:id="@+id/delayText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12sp"
+        android:text="800"
+        android:textSize="20sp"
+        android:layout_below="@id/seek_bar_delay"
+        android:layout_alignLeft="@id/seek_bar_zoom" />
+
+    <FrameLayout
+        android:id="@+id/frame"
+        android:layout_below="@id/addressText"
+        android:layout_alignEnd="@id/addressText"
+        android:layout_width="160sp"
+        android:layout_height="240sp"
+        android:layout_margin="2sp">
+        <SurfaceView
+            android:id="@+id/camera_surface"
             android:layout_width="match_parent"
-            android:layout_height="300sp"
-            android:layout_margin="4sp"
-            android:inputType="text|textMultiLine"
-            android:lineSpacingExtra="4sp"
-            android:selectAllOnFocus="true"
-            android:text="@string/txtAddress"
-            android:textAlignment="center"
-            android:textSize="28sp"
-            android:textStyle="bold"
-            android:importantForAutofill="no">
-        </EditText>
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+        </SurfaceView>
+    </FrameLayout>
 
-        <TextView
-            android:id="@+id/datetimeText"
-            android:layout_width="match_parent"
-            android:layout_height="0sp"
-            android:layout_margin="4sp"
-            android:layout_weight="2"
-            android:background="#3fb578"
-            android:gravity="center"
-            android:text="@string/txtDateTime"
-            android:textAlignment="center"
-            android:textColor="@android:color/background_dark"
-            android:textSize="14sp"
-            android:textStyle="bold" />
+    <Button
+        android:id="@+id/btnCameraMap"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_width"
+        android:layout_below="@id/frame"
+        android:layout_alignEnd="@id/addressText"
+        android:layout_marginRight="40sp"
+        android:background="#29E1D6"
+        android:rotation="90"
+        android:text="@string/txtCameraMap"
+        android:textAllCaps="false"
+        android:textColor="@android:color/black"
+        android:textStyle="bold" />
 
-    </LinearLayout>
-    <LinearLayout
-        android:layout_width="0sp"
-        android:layout_weight="2"
-        android:orientation="vertical"
-        android:layout_height="match_parent">
-        <FrameLayout
-            android:id="@+id/frame"
-            android:layout_width="match_parent"
-            android:layout_weight="4"
-            android:layout_margin="2sp"
-            android:layout_height="0sp">
-            <SurfaceView
-                android:id="@+id/camera_surface"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-            </SurfaceView>
-        </FrameLayout>
+    <Button
+        android:id="@+id/btnCamera"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_width"
+        android:layout_below="@id/frame"
+        android:layout_toLeftOf="@id/btnCameraMap"
+        android:layout_margin="0sp"
+        android:rotation="90"
+        android:background="#c0a196"
+        android:text="@string/txtCameraOnly"
+        android:textAllCaps="false"
+        android:textColor="@android:color/black"
+        android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/btnCamera"
-            android:layout_width="match_parent"
-            android:layout_height="0sp"
-            android:layout_margin="2sp"
-            android:layout_weight="5"
-            android:background="#29E1D6"
-            android:text="@string/txtCamera"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            android:textStyle="bold" />
+    <Button
+        android:id="@+id/btnMap"
+        android:layout_width="@dimen/button_width"
+        android:layout_height="@dimen/button_width"
+        android:layout_below="@id/frame"
+        android:layout_toLeftOf="@id/btnCamera"
+        android:layout_margin="0sp"
+        android:rotation="90"
+        android:background="#908126"
+        android:text="@string/txtMapOnly"
+        android:textAllCaps="false"
+        android:textColor="@android:color/black"
+        android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/btnCapture"
-            android:layout_width="match_parent"
-            android:layout_weight="1"
-            android:layout_margin="2sp"
-            android:layout_height="0sp"
-            android:background="#c0a196"
-            android:text="@string/txtCapture"
-            android:textAllCaps="false"
-            android:textColor="@android:color/white"
-            android:textStyle="bold" />
-
-        </LinearLayout>
-
-</LinearLayout>
-
-
-<!--<TextView-->
-<!--android:id="@+id/positionText"-->
-<!--android:layout_width="match_parent"-->
-<!--android:layout_weight="4"-->
-<!--android:layout_margin="2sp"-->
-<!--android:layout_height="0sp"-->
-<!--android:background="@android:color/darker_gray"-->
-<!--android:gravity="center"-->
-<!--android:text="@string/txtPosition"-->
-<!--android:textAlignment="center"-->
-<!--android:textColor="@android:color/background_dark"-->
-<!--android:textSize="12sp"-->
-<!--android:textStyle="bold" />-->
+</RelativeLayout>

@@ -93,10 +93,11 @@ public class Utils {
         return imgDateFormat.format(new Date());
     }
 
-    public File captureScreen(View view) {
+    public File captureScreen(View view, String tag) {
 
         view.setDrawingCacheEnabled(true);
         view.buildDrawingCache();
+        Log.e("capture1","shot");
         Bitmap screenBitmap = view.getDrawingCache();
 //        Bitmap screenBitmap = bitMapScreen;
 //        Bitmap src = view.getDrawingCache();
@@ -106,17 +107,23 @@ public class Utils {
         if (screenBitmap == null) {
             Log.e("screen"," bitmap null");
         }
+        File file = bitMap2File (screenBitmap, tag);
+        Log.e("capture2","file: " + file.getName());
+        return file;
+    }
+
+    public File bitMap2File (Bitmap bitmap, String tag) {
         String filename;
         String buildId = Build.ID;
         switch (buildId) {
             case "R16NW":  // galaxy s9+
-                filename = getIMGTimeText() + "_" + strPlace + ".PNG";
+                filename = getIMGTimeText() + "_" + strPlace + tag + ".PNG";
                 break;
             case "NMF26F":
-                filename = "IMG_" + getIMGTimeText() + "_" + "lenovo" + strPlace + ".PNG";
+                filename = "IMG_" + getIMGTimeText() + "_" + "lenovo" + strPlace+ tag  + ".PNG";
                 break;
             default:
-                filename = "IMG_" + getIMGTimeText() + "_" + buildId + "_" + strPlace + ".PNG";
+                filename = "IMG_" + getIMGTimeText() + "_" + buildId + "_" + strPlace + tag + ".PNG";
         }
         File directory = utils.getPublicAlbumStorageDir("/Camera");
         try {
@@ -127,18 +134,16 @@ public class Utils {
             Log.w("creating file error", e.toString());
         }
         File file = new File(directory, filename);
+        Log.e("bitmap","to file");
         FileOutputStream os;
-        appendText("CAPTURE TO " + file.getName());
         try {
             os = new FileOutputStream(file);
-            screenBitmap.compress(Bitmap.CompressFormat.PNG, 90, os);   //비트맵을 PNG파일로 변환
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);   //비트맵을 PNG파일로 변환
             os.close();
-
         } catch (IOException e) {
             utils.appendText("Screenshot ioException");
             return null;
         }
         return file;
     }
-
 }

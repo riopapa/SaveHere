@@ -14,6 +14,7 @@ import android.widget.TextView;
 
 import java.io.File;
 
+import static com.urrecliner.andriod.savehere.Vars.CameraMapBoth;
 import static com.urrecliner.andriod.savehere.Vars.bitMapScreen;
 import static com.urrecliner.andriod.savehere.Vars.currActivity;
 import static com.urrecliner.andriod.savehere.Vars.mActivity;
@@ -28,10 +29,9 @@ public class CameraActivity extends AppCompatActivity {
         setContentView(R.layout.activity_camera);
         currActivity =  this.getClass().getSimpleName();
         int screenOrientation = getResources().getConfiguration().orientation;
-        utils.appendText("Orientation is " + screenOrientation);
         if (screenOrientation == Configuration.ORIENTATION_PORTRAIT) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            utils.appendText("land act PORTRAIT");
+            utils.appendText("camera PORTRAIT");
         }
         else {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -42,7 +42,7 @@ public class CameraActivity extends AppCompatActivity {
             pV = findViewById(R.id.placeCText3);
             pV.setText(Vars.strPlace);
             TextView pA = findViewById(R.id.placeAddress);
-            String text = Vars.strPlace + "\n" + Vars.strAddress;
+            String text = Vars.strPlace + "\n\n" + Vars.strAddress;
             pA.setText(text);
             TextView mPV = findViewById(R.id.positionCText);
             mPV.setText(Vars.strPosition);
@@ -70,19 +70,21 @@ public class CameraActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             public void run() {
                 rootView.setDrawingCacheEnabled(true);
-                utils.appendText("rootView made");
+//                utils.appendText("rootView made");
 
-                File screenShot = utils.captureScreen(rootView);
+                File screenShot = utils.captureScreen(rootView, "");
                 if (screenShot != null) {
-                    utils.appendText("camera screen screen OK OK OK ");
-
                     mActivity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(screenShot)));
-                    Intent intent = new Intent(getApplicationContext(), LandActivity.class);
-                    startActivity(intent);
-                    finish();
-//                    mActivity.finish();
-//                    System.exit(0);
-//                    android.os.Process.killProcess(android.os.Process.myPid());
+                    if (CameraMapBoth) {
+                        Intent intent = new Intent(getApplicationContext(), LandActivity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                    else {
+                        mActivity.finishAffinity();
+                        System.exit(0);
+                        android.os.Process.killProcess(android.os.Process.myPid());
+                    }
                 } else {
                     utils.appendText("Screenshot is NULL");
                 }

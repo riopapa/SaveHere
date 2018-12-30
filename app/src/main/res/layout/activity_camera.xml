@@ -9,7 +9,6 @@
         android:layout_width="@dimen/camera_image_width"
         android:layout_height="match_parent"
         android:contentDescription="@string/photo" />
-    <!--android:layout_width="@dimen/camera_image_width"-->
 
     <TextView
         android:id="@+id/placeCText1"
@@ -68,9 +67,8 @@
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="@android:color/background_dark"
-        android:textSize="32sp"
+        android:textSize="28sp"
         android:textStyle="bold" />
-    <!--android:layout_marginTop="100sp"-->
 
     <TextView
         android:id="@+id/placeAddress"
@@ -85,7 +83,7 @@
         android:text="@string/txtPlace"
         android:textAlignment="center"
         android:textColor="@android:color/background_dark"
-        android:textSize="24sp"
+        android:textSize="20sp"
         android:textStyle="bold" />
 
     <TextView
@@ -100,7 +98,7 @@
         android:text="@string/txtPosition"
         android:textAlignment="center"
         android:textColor="@android:color/background_dark"
-        android:textSize="16sp"
+        android:textSize="14sp"
         android:textStyle="bold" />
 
 </RelativeLayout>
