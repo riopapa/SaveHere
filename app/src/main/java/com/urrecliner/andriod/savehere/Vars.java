@@ -22,10 +22,12 @@ public class Vars {
     static double longitude = 0;
     static GoogleMap mMap = null;
     static int zoomValue = 17;
-    static int delayValue = 100;
     static boolean CameraMapBoth = false;
 
     static boolean isRUNNING = false;
     static Utils utils = new Utils();
     static Activity mActivity;
+    static String phoneModel = null;
+    static String galaxyS9 = "SM-G965N";
+    static String nexus6P = "Nexus 6P";
 }

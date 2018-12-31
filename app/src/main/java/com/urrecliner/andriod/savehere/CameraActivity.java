@@ -31,10 +31,16 @@ public class CameraActivity extends AppCompatActivity {
         int screenOrientation = getResources().getConfiguration().orientation;
         if (screenOrientation == Configuration.ORIENTATION_PORTRAIT) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            utils.appendText("camera PORTRAIT");
         }
         else {
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//            DisplayMetrics displayMetrics = new DisplayMetrics();
+//            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+//            int height = displayMetrics.heightPixels;
+//            int width = displayMetrics.widthPixels;
+            // s9    : h: 1080, w: 2094
+            // nxs6p : h: 1440, w: 2392
+
             TextView pV = findViewById(R.id.placeCText1);
             pV.setText(Vars.strPlace);
             pV = findViewById(R.id.placeCText2);
@@ -50,7 +56,13 @@ public class CameraActivity extends AppCompatActivity {
             mDV.setText(Vars.strDateTime);
 
             ImageView iV = findViewById(R.id.photoImage);
-            //        imageView.setImageBitmap(BitmapFactory.decodeFile(tempPNGName));
+//            if (phoneModel.equals(galaxyS9)) {
+//                ViewGroup.LayoutParams params = iV.getLayoutParams();        // resize height/width
+//                params.width = params.width * 12 / 10;
+//                iV.setLayoutParams(params);
+//                utils.appendText("width adjusted to " + params.width);
+//            }
+
             iV.setImageBitmap(bitMapScreen);
             //        ViewGroup vg = findViewById (R.id.cameraLayout);
             //        vg.invalidate();
@@ -89,6 +101,6 @@ public class CameraActivity extends AppCompatActivity {
                     utils.appendText("Screenshot is NULL");
                 }
             }
-        }, 100);
+        }, 200);
     }
 }

@@ -1,7 +1,6 @@
 package com.urrecliner.andriod.savehere;
 
 import android.graphics.Bitmap;
-import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
@@ -16,7 +15,9 @@ import java.util.Date;
 import java.util.Locale;
 
 import static com.urrecliner.andriod.savehere.Vars.currActivity;
+import static com.urrecliner.andriod.savehere.Vars.galaxyS9;
 import static com.urrecliner.andriod.savehere.Vars.isRUNNING;
+import static com.urrecliner.andriod.savehere.Vars.phoneModel;
 import static com.urrecliner.andriod.savehere.Vars.strPlace;
 import static com.urrecliner.andriod.savehere.Vars.utils;
 
@@ -97,33 +98,28 @@ public class Utils {
 
         view.setDrawingCacheEnabled(true);
         view.buildDrawingCache();
-        Log.e("capture1","shot");
         Bitmap screenBitmap = view.getDrawingCache();
-//        Bitmap screenBitmap = bitMapScreen;
-//        Bitmap src = view.getDrawingCache();
-//
-//        Bitmap screenBitmap = Bitmap.createBitmap(src, 0, 0, src.getWidth(), src.getHeight());
-//        Bitmap screenRotated = rotateImage(screenBitmap, 90);
         if (screenBitmap == null) {
             Log.e("screen"," bitmap null");
         }
+        int width = screenBitmap.getWidth();
+        if (phoneModel.equals(galaxyS9)) {
+            width -= 220;
+            screenBitmap = Bitmap.createBitmap(screenBitmap, 10, 0, width, screenBitmap.getHeight());
+        }
+        appendText("width : " + width);
+//        Bitmap screenRotated = rotateImage(screenBitmap, 90);
         File file = bitMap2File (screenBitmap, tag);
-        Log.e("capture2","file: " + file.getName());
+        appendText("Screen Captured.. " + file.getName());
         return file;
     }
 
     public File bitMap2File (Bitmap bitmap, String tag) {
         String filename;
-        String buildId = Build.ID;
-        switch (buildId) {
-            case "R16NW":  // galaxy s9+
-                filename = getIMGTimeText() + "_" + strPlace + tag + ".PNG";
-                break;
-            case "NMF26F":
-                filename = "IMG_" + getIMGTimeText() + "_" + "lenovo" + strPlace+ tag  + ".PNG";
-                break;
-            default:
-                filename = "IMG_" + getIMGTimeText() + "_" + buildId + "_" + strPlace + tag + ".PNG";
+        if (phoneModel.equals(galaxyS9)) {
+            filename = getIMGTimeText() + "_" + strPlace + tag + ".PNG";
+        } else {
+            filename = "IMG_" + getIMGTimeText() + "_"  + strPlace + tag + ".PNG";
         }
         File directory = utils.getPublicAlbumStorageDir("/Camera");
         try {
@@ -134,7 +130,6 @@ public class Utils {
             Log.w("creating file error", e.toString());
         }
         File file = new File(directory, filename);
-        Log.e("bitmap","to file");
         FileOutputStream os;
         try {
             os = new FileOutputStream(file);

@@ -15,11 +15,11 @@ import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,7 +37,6 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -47,11 +46,12 @@ import java.util.Locale;
 import static com.urrecliner.andriod.savehere.Vars.CameraMapBoth;
 import static com.urrecliner.andriod.savehere.Vars.bitMapScreen;
 import static com.urrecliner.andriod.savehere.Vars.currActivity;
-import static com.urrecliner.andriod.savehere.Vars.delayValue;
 import static com.urrecliner.andriod.savehere.Vars.latitude;
 import static com.urrecliner.andriod.savehere.Vars.longitude;
 import static com.urrecliner.andriod.savehere.Vars.mActivity;
 import static com.urrecliner.andriod.savehere.Vars.mCamera;
+import static com.urrecliner.andriod.savehere.Vars.nexus6P;
+import static com.urrecliner.andriod.savehere.Vars.phoneModel;
 import static com.urrecliner.andriod.savehere.Vars.strAddress;
 import static com.urrecliner.andriod.savehere.Vars.strDateTime;
 import static com.urrecliner.andriod.savehere.Vars.strMapAddress;
@@ -102,13 +102,17 @@ public class MainActivity extends AppCompatActivity {
                     .build();
         }
 
+        phoneModel = Build.MODEL;                   // SM-G965N             Nexus 6P
+        String manufacturer = Build.MANUFACTURER;   // samsung              Huawei
+        String hardware = Build.HARDWARE;           // samsungexynos9810    angler
+        utils.appendText("this phone model is " + phoneModel + " manu " + manufacturer + " hardware " + hardware);
         backKeyPressedTime = System.currentTimeMillis();
 
         final Button btnCameraOnly = findViewById(R.id.btnCamera);
         btnCameraOnly.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                reactClick(false, btnCameraOnly);
+                reactClick(btnCameraOnly);
                 mCamera.takePicture(null, null, rawCallback, jpegCallback); // null is for silent shot
             }
         });
@@ -116,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
         btnMapOnly.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                reactClick(false, btnMapOnly);
+                reactClick(btnMapOnly);
                 Intent intent = new Intent(getApplicationContext(), LandActivity.class);
                 startActivity(intent);
             }
@@ -125,8 +129,9 @@ public class MainActivity extends AppCompatActivity {
         btnCameraMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mCamera.enableShutterSound(false);
-                reactClick(true, btnCameraMap);
+                CameraMapBoth = true;
+//                mCamera.enableShutterSound(false);
+                reactClick(btnCameraMap);
                 mCamera.takePicture(null, null, rawCallback, jpegCallback); // null is for silent shot
             }
         });
@@ -147,31 +152,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        final SeekBar seekDelay = findViewById(R.id.seek_bar_delay);
-        seekDelay.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                delayValue = seekDelay.getProgress() / 100;
-                delayValue *= 100;
-                TextView tV = findViewById(R.id.delayText);
-                tV.setText(""+ delayValue);
-                seekDelay.setProgress(delayValue);
-            }
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
-
         utils.appendText("##step 0");
         startCamera();
 //        getScreenSize(getApplicationContext());
 //        if (screenOrientation == Configuration.ORIENTATION_PORTRAIT) {
             if (isNetworkAvailable()) {
                 PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-                utils.appendText("##step 1");
+//                utils.appendText("##step 1");
                 Intent intent = null;
                 try {
                     intent = builder.build(MainActivity.this);
@@ -180,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
                     utils.appendText("#PP" + e.toString());
                     e.printStackTrace();
                 }
-                utils.appendText("##step 3");
+//                utils.appendText("##step 3");
                 startActivityForResult(intent, PLACE_PICKER_REQUEST);
             }
             else {
@@ -190,8 +177,7 @@ public class MainActivity extends AppCompatActivity {
 //        }
         utils.appendText("#ready ---");
     }
-    private void reactClick(Boolean trueFalse, Button button) {
-        CameraMapBoth = trueFalse;
+    private void reactClick(Button button) {
         button.setBackgroundColor(Color.parseColor("#205eaa"));
         TextView mAddressTextView = findViewById(R.id.addressText);
         strAddress = mAddressTextView.getText().toString();
@@ -205,12 +191,17 @@ public class MainActivity extends AppCompatActivity {
             strPlace = strAddress;
             strAddress = " ";
         }
-        int backColor = 0x106410;
-        for (int i = 0; i < 2; i++) {
-            String hexColor = String.format("#%06X", (0xFFFFFF & backColor));
-            mAddressTextView.setBackgroundColor(Color.parseColor(hexColor));
-            backColor += 0x070707;
-        }
+
+        final SeekBar seekZoom = findViewById(R.id.seek_bar_zoom);
+        zoomValue = seekZoom.getProgress();
+
+        mAddressTextView.setBackgroundColor(Color.MAGENTA);
+//        int backColor = 0x106410;
+//        for (int i = 0; i < 2; i++) {
+//            String hexColor = String.format("#%06X", (0xFFFFFF & backColor));
+//            mAddressTextView.setBackgroundColor(Color.parseColor(hexColor));
+//            backColor += 0x070707;
+//        }
 //        if (screenOrientation == Configuration.ORIENTATION_PORTRAIT)
 //            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
@@ -230,32 +221,26 @@ public class MainActivity extends AppCompatActivity {
         Camera.PictureCallback jpegCallback = new Camera.PictureCallback() {
             public void onPictureTaken(byte[] data, Camera camera) {
 
-            //이미지의 너비와 높이 결정
-            int w = camera.getParameters().getPictureSize().width;
-            int h = camera.getParameters().getPictureSize().height;
-
-//            int orientation = setCameraDisplayOrientation(MainActivity.this, CAMERA_FACING, camera);
-
-            //byte array를 bitmap으로 변환
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
-            //int w = bitmap.getWidth();
-            //int h = bitmap.getHeight();
-
-            //이미지를 디바이스 방향으로 회전
+        //byte array를 bitmap으로 변환
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
+        if (phoneModel.equals(nexus6P)) {
+            int bw = bitmap.getWidth();
+            int bh = bitmap.getHeight();
             Matrix matrix = new Matrix();
-            matrix.postRotate(0);
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, w, h, matrix, true);
+            matrix.postRotate(270);
+            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bw, bh, matrix, true);
+        }
+//
+//        //bitmap을 byte array로 변환
+//        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+//        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        bitMapScreen = bitmap;
 
-            //bitmap을 byte array로 변환
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-            bitMapScreen = bitmap;
-
-            byte[] currentData = stream.toByteArray();
-            //파일로 저장
-            new SaveImageTask().execute("");
+//        byte[] currentData = stream.toByteArray();
+        //파일로 저장
+        new SaveImageTask().execute("");
             }
     };
 
@@ -268,7 +253,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(String none) {
-            Log.w("post", "Executed");
+//            Log.w("post", "Executed");
             mCamera.stopPreview();
             mCamera.release();
             Intent intent = new Intent(getApplicationContext(), CameraActivity.class);
@@ -337,14 +322,15 @@ public class MainActivity extends AppCompatActivity {
                     Toast.LENGTH_LONG).show();
             utils.appendText("CAMERA not found " + ex.getMessage());
         }
-        // get Camera parameters
-            Camera.Parameters params = mCamera.getParameters();
-        // picture image orientation
-            params.setRotation(90);
+        Camera.Parameters params = mCamera.getParameters();
+        params.setRotation(90);
+        params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+        mCamera.setParameters(params);
         mCamera.startPreview();
 
         mCameraPreview.setRotation(0);
         mCameraPreview.setCamera(mCamera);
+
     }
 
     @Override
@@ -397,7 +383,7 @@ public class MainActivity extends AppCompatActivity {
 
     public Location getGPSCord() {
 
-        Log.w("gpscord called", "here");
+//        Log.w("gpscord called", "here");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "ACCESS FINE LOCATION not allowed", Toast.LENGTH_LONG).show();
             return null;
