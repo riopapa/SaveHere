@@ -8,6 +8,7 @@
 
     <EditText
         android:id="@+id/addressText"
+        android:autofillHints="phone"
         android:layout_width="match_parent"
         android:layout_height="240sp"
         android:inputType="text|textMultiLine"
@@ -24,9 +25,11 @@
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_below="@id/addressText"
         android:layout_width="200sp"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:layout_marginTop="20sp"
-        android:thumb="@drawable/thumb_drawable"
+        android:paddingLeft="0dp"
+        android:paddingRight="0dp"
+        android:thumb="@mipmap/icon_world"
         android:max="18"
         android:min="9"
         android:progress="17"
@@ -42,35 +45,11 @@
         android:layout_below="@id/seek_bar_zoom"
         android:layout_alignLeft="@id/seek_bar_zoom" />
 
-
-    <SeekBar
-        android:id="@+id/seek_bar_delay"
-        style="@android:style/Widget.ProgressBar.Horizontal"
-        android:layout_below="@id/zoomText"
-        android:layout_width="200sp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8sp"
-        android:thumb="@drawable/thumb_drawable"
-        android:max="3000"
-        android:min="500"
-        android:progress="800"
-        android:scrollbarStyle="outsideOverlay" />
-
-    <TextView
-        android:id="@+id/delayText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="12sp"
-        android:text="800"
-        android:textSize="20sp"
-        android:layout_below="@id/seek_bar_delay"
-        android:layout_alignLeft="@id/seek_bar_zoom" />
-
     <FrameLayout
         android:id="@+id/frame"
         android:layout_below="@id/addressText"
         android:layout_alignEnd="@id/addressText"
-        android:layout_width="160sp"
+        android:layout_width="150sp"
         android:layout_height="240sp"
         android:layout_margin="2sp">
         <SurfaceView

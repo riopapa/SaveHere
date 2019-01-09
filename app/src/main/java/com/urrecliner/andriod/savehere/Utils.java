@@ -104,10 +104,10 @@ public class Utils {
         }
         int width = screenBitmap.getWidth();
         if (phoneModel.equals(galaxyS9)) {
-            width -= 220;
-            screenBitmap = Bitmap.createBitmap(screenBitmap, 10, 0, width, screenBitmap.getHeight());
+            width -= 240;
+            screenBitmap = Bitmap.createBitmap(screenBitmap, 0, 0, width, screenBitmap.getHeight());
         }
-        appendText("width : " + width);
+//        appendText("width : " + width);
 //        Bitmap screenRotated = rotateImage(screenBitmap, 90);
         File file = bitMap2File (screenBitmap, tag);
         appendText("Screen Captured.. " + file.getName());

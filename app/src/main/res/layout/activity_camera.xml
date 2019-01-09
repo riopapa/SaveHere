@@ -5,7 +5,7 @@
 
     <ImageView
         android:id="@+id/photoImage"
-        android:layout_margin="8sp"
+        android:layout_margin="0sp"
         android:layout_width="@dimen/camera_image_width"
         android:layout_height="match_parent"
         android:contentDescription="@string/photo" />
@@ -67,8 +67,9 @@
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="@android:color/background_dark"
-        android:textSize="28sp"
+        android:textSize="24sp"
         android:textStyle="bold" />
+    <!--android:layout_marginTop="100sp"-->
 
     <TextView
         android:id="@+id/placeAddress"
@@ -98,7 +99,7 @@
         android:text="@string/txtPosition"
         android:textAlignment="center"
         android:textColor="@android:color/background_dark"
-        android:textSize="14sp"
+        android:textSize="12sp"
         android:textStyle="bold" />
 
 </RelativeLayout>

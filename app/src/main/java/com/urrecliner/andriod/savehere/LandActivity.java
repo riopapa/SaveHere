@@ -2,6 +2,7 @@ package com.urrecliner.andriod.savehere;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -10,6 +11,7 @@ import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v13.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
@@ -51,7 +53,7 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
 //            utils.appendText("land act PORTRAIT");
             return;
         }
-        utils.appendText("land #3333");
+//        utils.appendText("land #3333");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -69,9 +71,16 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
 
         mMap = googleMap;
+        if (ActivityCompat.checkSelfPermission(this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION) !=
+                PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this,
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                        PackageManager.PERMISSION_GRANTED) {
 
+            return;
+        }
         LatLng here = new LatLng(latitude, longitude);
-//        mMap.moveCamera(CameraUpdateFactory.newLatLng(here));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(here,zoomValue));
         mMap.addMarker(new MarkerOptions().position(here)
                 .icon(BitmapDescriptorFactory.fromResource(R.mipmap.icon_here)));
@@ -85,9 +94,10 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    final GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback() {
+    GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback() {
         @Override
         public void onSnapshotReady(Bitmap snapshot) {
+//            utils.appendText("callback started");
             Bitmap scaleMap = drawScale(zoomValue);
             Bitmap mergedMap = mergeTwoBitmaps(snapshot, scaleMap);
 //                utils.bitMap2File(mergedMap,"merged");
@@ -136,8 +146,7 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
         paint.setStrokeWidth(5f);
         int xPixel = (int) ((float) (xPixels[20 - zoom]) * 1.2f);
         String xUnit = xUnits[20 - zoom];
-        yPixel = 10;
-        baseX = 15; baseY = 60;
+        yPixel = 10; baseX = 15; baseY = 60;
         startX = baseX; startY = baseY; stopX = baseX + xPixel; stopY = baseY;
         canvas.drawLine(startX, startY, stopX, stopY, paint);       // ____
         startX = baseX; startY = baseY + 5; stopX = startX ; stopY = baseY - yPixel;
@@ -149,9 +158,6 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
         paint.setColor(Color.BLACK);
         startX = baseX + xPixel / 4; startY = baseY - 20;
         canvas.drawText(xUnit, startX, startY, paint);
-//        ImageView sIV = findViewById(R.id.scaleImage);
-//        sIV.setImageBitmap(bitmap);
-//        sIV.invalidate();
         return bitmap;
     }
 

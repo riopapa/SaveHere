@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,7 +74,6 @@ public class MainActivity extends AppCompatActivity {
     private CameraPreview mCameraPreview;
 
     //    private FusedLocationProviderClient mFusedLocationClient;
-    long backKeyPressedTime;
     int screenOrientation;
 
     @Override
@@ -82,7 +82,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         currActivity =  this.getClass().getSimpleName();
         screenOrientation = getResources().getConfiguration().orientation;
-
         Permission_Write = AccessPermission.externalWrite(getApplicationContext(), this);
         Permission_Internet = AccessPermission.accessInternet(getApplicationContext(), this);
         Permission_Location = AccessPermission.accessLocation(getApplicationContext(), this);
@@ -106,7 +105,6 @@ public class MainActivity extends AppCompatActivity {
         String manufacturer = Build.MANUFACTURER;   // samsung              Huawei
         String hardware = Build.HARDWARE;           // samsungexynos9810    angler
         utils.appendText("this phone model is " + phoneModel + " manu " + manufacturer + " hardware " + hardware);
-        backKeyPressedTime = System.currentTimeMillis();
 
         final Button btnCameraOnly = findViewById(R.id.btnCamera);
         btnCameraOnly.setOnClickListener(new View.OnClickListener() {
@@ -178,18 +176,19 @@ public class MainActivity extends AppCompatActivity {
         utils.appendText("#ready ---");
     }
     private void reactClick(Button button) {
+
         button.setBackgroundColor(Color.parseColor("#205eaa"));
         TextView mAddressTextView = findViewById(R.id.addressText);
         strAddress = mAddressTextView.getText().toString();
         try {
             strPlace = strAddress.substring(0, strAddress.indexOf("\n"));
             if (strPlace.equals("")) {
-                strPlace = "no place name";
+                strPlace = "_";
             }
             strAddress = strAddress.substring(strAddress.indexOf("\n") + 1, strAddress.length());
         } catch (Exception e) {
             strPlace = strAddress;
-            strAddress = " ";
+            strAddress = "?";
         }
 
         final SeekBar seekZoom = findViewById(R.id.seek_bar_zoom);
@@ -325,10 +324,12 @@ public class MainActivity extends AppCompatActivity {
         Camera.Parameters params = mCamera.getParameters();
         params.setRotation(90);
         params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
+        params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+
         mCamera.setParameters(params);
         mCamera.startPreview();
 
-        mCameraPreview.setRotation(0);
+//        mCameraPreview.setRotation(0);
         mCameraPreview.setCamera(mCamera);
 
     }
@@ -390,7 +391,6 @@ public class MainActivity extends AppCompatActivity {
         }
         mGoogleApiClient.connect();
         Location lastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-//        utils.appendText("#mLo");
         return lastLocation;
     }
 
@@ -484,6 +484,19 @@ public class MainActivity extends AppCompatActivity {
 //        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 //        utils.appendText("#g2 before showCurrentLocation");
         showCurrentLocation();
+    }
+
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        final Button btnCameraMap = findViewById(R.id.btnCameraMap);
+        switch (keyCode) {
+            case KeyEvent.KEYCODE_VOLUME_DOWN:      // assume camera and map
+            case KeyEvent.KEYCODE_VOLUME_UP:
+                CameraMapBoth = true;
+                reactClick(btnCameraMap);
+                mCamera.takePicture(null, null, rawCallback, jpegCallback); // null is for silent shot
+                return true;
+        }
+        return super.onKeyDown(keyCode, event);
     }
 
     private boolean isNetworkAvailable() {
