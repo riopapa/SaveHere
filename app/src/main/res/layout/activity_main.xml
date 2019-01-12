@@ -10,7 +10,7 @@
         android:id="@+id/addressText"
         android:autofillHints="phone"
         android:layout_width="match_parent"
-        android:layout_height="240sp"
+        android:layout_height="200sp"
         android:inputType="text|textMultiLine"
         android:labelFor="@id/addressText"
         android:lineSpacingExtra="4sp"
@@ -24,15 +24,14 @@
         android:id="@+id/seek_bar_zoom"
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_below="@id/addressText"
-        android:layout_width="200sp"
+        android:layout_width="160sp"
         android:layout_height="60dp"
         android:layout_marginTop="20sp"
         android:paddingLeft="0dp"
         android:paddingRight="0dp"
-        android:thumb="@mipmap/icon_world"
-        android:max="18"
+        android:thumb="@drawable/thumb_drawable"
+        android:max="20"
         android:min="9"
-        android:progress="17"
         android:scrollbarStyle="outsideOverlay" />
 
     <TextView
@@ -49,8 +48,8 @@
         android:id="@+id/frame"
         android:layout_below="@id/addressText"
         android:layout_alignEnd="@id/addressText"
-        android:layout_width="150sp"
-        android:layout_height="240sp"
+        android:layout_width="200sp"
+        android:layout_height="300sp"
         android:layout_margin="2sp">
         <SurfaceView
             android:id="@+id/camera_surface"

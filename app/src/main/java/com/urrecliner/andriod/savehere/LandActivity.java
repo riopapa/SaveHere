@@ -90,20 +90,22 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapLoaded() {     // if map is displayed then try snapshot
         if (mMap != null) {
-            mMap.snapshot(callback);
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    mMap.snapshot(callback);
+                }
+            }, 300);        // delay till all views are displayed
         }
     }
 
     GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback() {
         @Override
         public void onSnapshotReady(Bitmap snapshot) {
-//            utils.appendText("callback started");
             Bitmap scaleMap = drawScale(zoomValue);
             Bitmap mergedMap = mergeTwoBitmaps(snapshot, scaleMap);
-//                utils.bitMap2File(mergedMap,"merged");
             ImageView mapImageView = findViewById(R.id.mapImage);
             mapImageView.setImageBitmap(mergedMap);
-//                Log.e("#", "google mapped");
             View rootView = getWindow().getDecorView();
             takeScreenShot(rootView);
         }
@@ -117,22 +119,6 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
         canvas.drawBitmap(secondImage, firstImage.getWidth() - 360, firstImage.getHeight() - 100, null);
         return result;
     }
-
-//    private Bitmap createBitmapFromView(View v) {
-//        v.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
-//                RelativeLayout.LayoutParams.WRAP_CONTENT));
-//        v.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-//                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-//        v.layout(0, 0, v.getMeasuredWidth(), v.getMeasuredHeight());
-//        Bitmap bitmap = Bitmap.createBitmap(v.getMeasuredWidth(),
-//                v.getMeasuredHeight(),
-//                Bitmap.Config.ARGB_8888);
-//
-//        Canvas c = new Canvas(bitmap);
-//        v.layout(v.getLeft(), v.getTop(), v.getRight(), v.getBottom());
-//        v.draw(c);
-//        return bitmap;
-//    }
 
     private Bitmap drawScale (int zoom) {
         Paint paint = new Paint();

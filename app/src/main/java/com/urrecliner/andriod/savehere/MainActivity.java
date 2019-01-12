@@ -3,6 +3,7 @@ package com.urrecliner.andriod.savehere;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -17,6 +18,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -79,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         currActivity =  this.getClass().getSimpleName();
         screenOrientation = getResources().getConfiguration().orientation;
@@ -134,13 +137,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        SharedPreferences mSettings = PreferenceManager.getDefaultSharedPreferences(this);
+        final SharedPreferences.Editor editor = mSettings.edit();
+        zoomValue = mSettings.getInt("Zoom", 16);
+        TextView tV = findViewById(R.id.zoomText);
+        tV.setText(""+ zoomValue);
         final SeekBar seekZoom = findViewById(R.id.seek_bar_zoom);
+        seekZoom.setProgress(zoomValue);
         seekZoom.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 zoomValue = seekZoom.getProgress();
                 TextView tV = findViewById(R.id.zoomText);
                 tV.setText(""+ zoomValue);
+                editor.putInt("Zoom", zoomValue).apply();
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {

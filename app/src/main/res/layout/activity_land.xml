@@ -1,13 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/landLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:baselineAligned="false"
-    android:gravity="center"
-    tools:context=".LandActivity"
-    android:orientation="horizontal">
+    android:layout_height="match_parent">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -17,7 +11,6 @@
         android:layout_height="match_parent"
         tools:context="com.urrecliner.andriod.savehere.LandActivity"
         tools:layout="@layout/activity_land">
-
     </fragment>
     <ImageView
         android:id="@+id/mapImage"
@@ -25,15 +18,6 @@
         android:layout_height="match_parent"
         android:layout_margin="0sp"
         android:contentDescription="@string/app_name" />
-
-    <ImageView
-        android:id="@+id/scaleImage"
-        android:layout_width="160sp"
-        android:layout_height="100sp"
-        android:layout_alignEnd="@id/mapImage"
-        android:layout_alignBottom="@id/mapImage"
-        android:contentDescription="@string/app_name" />
-
     <TextView
         android:id="@+id/addressText"
         android:layout_width="wrap_content"
@@ -72,4 +56,3 @@
         android:textStyle="bold" />
 
 </RelativeLayout>
-    <!--android:layout_gravity="top|center"-->
