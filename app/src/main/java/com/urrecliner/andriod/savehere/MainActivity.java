@@ -31,6 +31,7 @@ import android.widget.FrameLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -45,10 +46,13 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static com.urrecliner.andriod.savehere.Vars.CameraMapBoth;
 import static com.urrecliner.andriod.savehere.Vars.bitMapScreen;
 import static com.urrecliner.andriod.savehere.Vars.currActivity;
+import static com.urrecliner.andriod.savehere.Vars.isTimerOn;
 import static com.urrecliner.andriod.savehere.Vars.latitude;
 import static com.urrecliner.andriod.savehere.Vars.longitude;
 import static com.urrecliner.andriod.savehere.Vars.mActivity;
@@ -75,36 +79,16 @@ public class MainActivity extends AppCompatActivity {
     public int Permission_Location = 0;
     private CameraPreview mCameraPreview;
 
-    //    private FusedLocationProviderClient mFusedLocationClient;
-    int screenOrientation;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
         currActivity =  this.getClass().getSimpleName();
-        screenOrientation = getResources().getConfiguration().orientation;
-        Permission_Write = AccessPermission.externalWrite(getApplicationContext(), this);
-        Permission_Internet = AccessPermission.accessInternet(getApplicationContext(), this);
-        Permission_Location = AccessPermission.accessLocation(getApplicationContext(), this);
-        if (Permission_Write == 0 || Permission_Internet == 0 || Permission_Location == 0) {
-            Toast.makeText(getApplicationContext(),"안드로이드 허가 관계를 확인해 주세요",
-                    Toast.LENGTH_LONG).show();
-            finish();
-            System.exit(0);
-            android.os.Process.killProcess(android.os.Process.myPid());
-        }
+        if (!AccessPermission.isPermissionOK(getApplicationContext(), this))
+            return;
         mActivity = this;
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(new MyConnectionCallBack())
-                    .addOnConnectionFailedListener(new MyOnConnectionFailedListener())
-                    .addApi(LocationServices.API)
-                    .build();
-        }
-
-        phoneModel = Build.MODEL;                   // SM-G965N             Nexus 6P
+       phoneModel = Build.MODEL;                   // SM-G965N             Nexus 6P
         String manufacturer = Build.MANUFACTURER;   // samsung              Huawei
         String hardware = Build.HARDWARE;           // samsungexynos9810    angler
         utils.appendText("this phone model is " + phoneModel + " manu " + manufacturer + " hardware " + hardware);
@@ -114,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 reactClick(btnCameraOnly);
-                mCamera.takePicture(null, null, rawCallback, jpegCallback); // null is for silent shot
+                take_Picture();
             }
         });
         final Button btnMapOnly = findViewById(R.id.btnMap);
@@ -133,24 +117,71 @@ public class MainActivity extends AppCompatActivity {
                 CameraMapBoth = true;
 //                mCamera.enableShutterSound(false);
                 reactClick(btnCameraMap);
-                mCamera.takePicture(null, null, rawCallback, jpegCallback); // null is for silent shot
+                take_Picture();
             }
         });
 
+        buildZoomSeekBar();
+
+        buildTimerToggle();
+
+        startCamera();
+
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(new MyConnectionCallBack())
+                    .addOnConnectionFailedListener(new MyOnConnectionFailedListener())
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+        if (isNetworkAvailable()) {
+            PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+            Intent intent = null;
+            try {
+                intent = builder.build(MainActivity.this);
+            } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+                utils.appendText("#PP" + e.toString());
+                e.printStackTrace();
+            }
+            startActivityForResult(intent, PLACE_PICKER_REQUEST);
+        }
+        else {
+            utils.appendText("##step NO NETWORK");
+            showCurrentLocation();
+        }
+
+        utils.appendText("#ready ---");
+    }
+    private void take_Picture() {
+        if (isTimerOn) {
+            delayCount = 100;
+            delayTime = 1000;
+            try {
+                wait10Seconds();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        else {
+            mCamera.takePicture(null, null, rawCallback, jpegCallback); // null is for silent shot
+        }
+
+    }
+    private void buildZoomSeekBar() {
         SharedPreferences mSettings = PreferenceManager.getDefaultSharedPreferences(this);
         final SharedPreferences.Editor editor = mSettings.edit();
-        zoomValue = mSettings.getInt("Zoom", 16);
-        TextView tV = findViewById(R.id.zoomText);
-        tV.setText(""+ zoomValue);
+        final TextView tV = findViewById(R.id.zoomText);
         final SeekBar seekZoom = findViewById(R.id.seek_bar_zoom);
+        zoomValue = mSettings.getInt("Zoom", 16);
         seekZoom.setProgress(zoomValue);
-        seekZoom.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        showSeekBarValue(tV, seekZoom);
 
+        showSeekBarValue(tV, seekZoom);
+        seekZoom.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 zoomValue = seekZoom.getProgress();
-                TextView tV = findViewById(R.id.zoomText);
-                tV.setText(""+ zoomValue);
+                showSeekBarValue(tV, seekZoom);
                 editor.putInt("Zoom", zoomValue).apply();
             }
             @Override
@@ -161,30 +192,28 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        utils.appendText("##step 0");
-        startCamera();
-//        getScreenSize(getApplicationContext());
-//        if (screenOrientation == Configuration.ORIENTATION_PORTRAIT) {
-            if (isNetworkAvailable()) {
-                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
-//                utils.appendText("##step 1");
-                Intent intent = null;
-                try {
-                    intent = builder.build(MainActivity.this);
-//                utils.appendText("##step 2");
-                } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
-                    utils.appendText("#PP" + e.toString());
-                    e.printStackTrace();
-                }
-//                utils.appendText("##step 3");
-                startActivityForResult(intent, PLACE_PICKER_REQUEST);
+    }
+
+    private void buildTimerToggle () {
+        final ToggleButton vTimerToggle = findViewById(R.id.toggleButton);
+        vTimerToggle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Boolean timerToggle = vTimerToggle.isChecked();
+                if (timerToggle)
+                    vTimerToggle.setBackgroundColor(Color.RED);
+                else
+                    vTimerToggle.setBackgroundColor((Color.GRAY));
+                isTimerOn = timerToggle;
             }
-            else {
-                utils.appendText("##step NO NETWORK");
-                showCurrentLocation();
-            }
-//        }
-        utils.appendText("#ready ---");
+        });
+    }
+
+    private void showSeekBarValue (TextView tV, SeekBar seekZoom) {
+//        int val = ((zoomValue - seekZoom.getMin()) * (seekZoom.getWidth() - 2 * seekZoom.getThumbOffset())) / (seekZoom.getMax() - seekZoom.getMin());
+//        tV.setX(seekZoom.getX() + val + seekZoom.getThumbOffset() / 2);
+        String ZoomValue = "" + zoomValue;
+        tV.setText(ZoomValue);
     }
     private void reactClick(Button button) {
 
@@ -206,14 +235,6 @@ public class MainActivity extends AppCompatActivity {
         zoomValue = seekZoom.getProgress();
 
         mAddressTextView.setBackgroundColor(Color.MAGENTA);
-//        int backColor = 0x106410;
-//        for (int i = 0; i < 2; i++) {
-//            String hexColor = String.format("#%06X", (0xFFFFFF & backColor));
-//            mAddressTextView.setBackgroundColor(Color.parseColor(hexColor));
-//            backColor += 0x070707;
-//        }
-//        if (screenOrientation == Configuration.ORIENTATION_PORTRAIT)
-//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
 
         Camera.ShutterCallback shutterCallback = new Camera.ShutterCallback() {
@@ -230,29 +251,28 @@ public class MainActivity extends AppCompatActivity {
 
         Camera.PictureCallback jpegCallback = new Camera.PictureCallback() {
             public void onPictureTaken(byte[] data, Camera camera) {
-
         //byte array를 bitmap으로 변환
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
-        if (phoneModel.equals(nexus6P)) {
-            int bw = bitmap.getWidth();
-            int bh = bitmap.getHeight();
-            Matrix matrix = new Matrix();
-            matrix.postRotate(270);
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bw, bh, matrix, true);
-        }
-//
-//        //bitmap을 byte array로 변환
-//        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        bitMapScreen = bitmap;
-
-//        byte[] currentData = stream.toByteArray();
-        //파일로 저장
-        new SaveImageTask().execute("");
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
+            if (phoneModel.equals(nexus6P)) {
+                int bw = bitmap.getWidth();
+                int bh = bitmap.getHeight();
+                Matrix matrix = new Matrix();
+                matrix.postRotate(270);
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bw, bh, matrix, true);
             }
-    };
+    //
+    //        //bitmap을 byte array로 변환
+    //        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+    //        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            bitMapScreen = bitmap;
+
+    //        byte[] currentData = stream.toByteArray();
+            //파일로 저장
+            new SaveImageTask().execute("");
+            }
+        };
 
     private class SaveImageTask extends AsyncTask<String, String , String> {
 
@@ -497,6 +517,47 @@ public class MainActivity extends AppCompatActivity {
         showCurrentLocation();
     }
 
+    int delayTime = 1000;
+    int delayCount = 100;
+    private void wait10Seconds() throws InterruptedException {
+//        Log.w("delayTime", delayTime+" delayCount "+delayCount);
+        if (delayCount < 60) {
+            int sleepTime = 10;
+            if (delayCount < 10)
+                sleepTime = 5;
+            Camera.Parameters p = mCamera.getParameters();
+            p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+            mCamera.setParameters(p);
+            Thread.sleep(sleepTime);
+            p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+            mCamera.setParameters(p);
+        }
+        if (delayCount > 10) {
+            delayCount -= 10;
+        }
+        else if (delayCount == 10) {
+            delayTime = 200;
+            delayCount--;
+        }
+        else if (delayCount > 0) {
+            delayCount--;
+        }
+        if (delayCount > 0) {
+            new Timer().schedule(new TimerTask() {
+                public void run() {
+                    try {
+                        wait10Seconds();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }, delayTime);
+        }
+        else {
+            mCamera.takePicture(null, null, rawCallback, jpegCallback);
+        }
+    }
+
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         final Button btnCameraMap = findViewById(R.id.btnCameraMap);
         switch (keyCode) {
@@ -504,7 +565,7 @@ public class MainActivity extends AppCompatActivity {
             case KeyEvent.KEYCODE_VOLUME_UP:
                 CameraMapBoth = true;
                 reactClick(btnCameraMap);
-                mCamera.takePicture(null, null, rawCallback, jpegCallback); // null is for silent shot
+                take_Picture();
                 return true;
         }
         return super.onKeyDown(keyCode, event);

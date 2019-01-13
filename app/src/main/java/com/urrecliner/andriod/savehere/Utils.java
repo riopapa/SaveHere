@@ -23,9 +23,9 @@ import static com.urrecliner.andriod.savehere.Vars.utils;
 
 public class Utils {
 
-    final SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd", Locale.ENGLISH);
-    final SimpleDateFormat timeLogFormat = new SimpleDateFormat("yy/MM/dd HH:mm:ss", Locale.ENGLISH);
-    int appendCount = 0;
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd", Locale.ENGLISH);
+    private final SimpleDateFormat timeLogFormat = new SimpleDateFormat("yy/MM/dd HH:mm:ss", Locale.ENGLISH);
+    private int appendCount = 0;
 
     public void appendText(String textLine) {
         if (isRUNNING)
@@ -89,8 +89,13 @@ public class Utils {
                 Environment.DIRECTORY_DCIM), albumName);
     }
 
-    static SimpleDateFormat imgDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.KOREA);
-    public String getIMGTimeText() {
+    static SimpleDateFormat imgDateFormat;
+
+    static {
+        imgDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.KOREA);
+    }
+
+    private String getIMGTimeText() {
         return imgDateFormat.format(new Date());
     }
 
@@ -107,10 +112,8 @@ public class Utils {
             width -= 240;
             screenBitmap = Bitmap.createBitmap(screenBitmap, 0, 0, width, screenBitmap.getHeight());
         }
-//        appendText("width : " + width);
-//        Bitmap screenRotated = rotateImage(screenBitmap, 90);
         File file = bitMap2File (screenBitmap, tag);
-        appendText("Screen Captured.. " + file.getName());
+//        appendText("Screen Captured.. " + file.getName());
         return file;
     }
 

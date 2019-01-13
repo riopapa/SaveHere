@@ -20,29 +20,44 @@
         android:textSize="24sp"
         android:textStyle="bold"/>
 
+    <TextView
+        android:id="@+id/zoomText"
+        android:layout_below="@id/addressText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="70sp"
+        android:layout_marginEnd="0sp"
+        android:textColor="@color/colorAccent"
+        android:textStyle="bold"
+        android:text="16"
+        android:textSize="20sp"/>
+
     <SeekBar
         android:id="@+id/seek_bar_zoom"
         style="@android:style/Widget.ProgressBar.Horizontal"
-        android:layout_below="@id/addressText"
+        android:layout_below="@id/zoomText"
         android:layout_width="160sp"
         android:layout_height="60dp"
-        android:layout_marginTop="20sp"
+        android:layout_marginTop="4sp"
         android:paddingLeft="0dp"
         android:paddingRight="0dp"
-        android:thumb="@drawable/thumb_drawable"
+        android:splitTrack="false"
+        android:thumb="@drawable/seekbar_drawable_thumb"
         android:max="20"
         android:min="9"
         android:scrollbarStyle="outsideOverlay" />
 
-    <TextView
-        android:id="@+id/zoomText"
+    <ToggleButton
+        android:id="@+id/toggleButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12sp"
-        android:text="17"
-        android:textSize="20sp"
-        android:layout_below="@id/seek_bar_zoom"
-        android:layout_alignLeft="@id/seek_bar_zoom" />
+        android:layout_below="@+id/seek_bar_zoom"
+        android:layout_marginTop="20sp"
+        android:layout_marginEnd="-0sp"
+        android:layout_toStartOf="@+id/btnCamera"
+        android:checked="false"
+        android:textOff="Timer Off"
+        android:textOn="Timer ON" />
 
     <FrameLayout
         android:id="@+id/frame"

@@ -23,6 +23,7 @@ public class Vars {
     static GoogleMap mMap = null;
     static int zoomValue = 17;
     static boolean CameraMapBoth = false;
+    static boolean isTimerOn = false;
 
     static boolean isRUNNING = false;
     static Utils utils = new Utils();
