@@ -6,13 +6,6 @@
     <dimen name="camera_image2_width">542dp</dimen>
     <dimen name="camera_image4_width">544dp</dimen>
 
-    <dimen name="camera_image_marginTop">300dp</dimen>
-    <dimen name="camera_image2_marginTop">302dp</dimen>
-    <dimen name="camera_image4_marginTop">304dp</dimen>
-
     <dimen name="button_width">100sp</dimen>
-
-    <dimen name="zoomMax">20</dimen>
-    <dimen name="zoomMin">10</dimen>
 
 </resources>
