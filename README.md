@@ -41,11 +41,11 @@ Application source can be downloaded from [my github][1].
 
    mainActivity.xml
    
-<img src="screenShotPhoto.png" height="100" alt="Photo Shot"/>
+<img src="screenShotPhoto.PNG" height="100" alt="Photo Shot"/>
 
   Photo shot with location information
   
-<img src="screenShotGoogleMap.png" height="100" alt="google map"/>
+<img src="screenShotGoogleMap.PNG" height="100" alt="google map"/>
 
   Google Map with location information
 
