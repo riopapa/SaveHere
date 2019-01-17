@@ -37,15 +37,11 @@ Application source can be downloaded from [my github][1].
 
 ## Screenshots
 
-<img src="mainActivity.jpg" height="180" alt="mainActivity"/>
-
-   mainActivity.xml
+<img src="mainActivity.jpg" height="400" alt="mainActivity"/> mainActivity.xml
    
-<img src="screenShotPhoto.png" height="100" alt="screenShotPhoto"/>
-
-  Photo shot with location information
+<img src="screenShotPhoto.png" height="200" alt="screenShotPhoto"/> Photo shot with location information
   
-<img src="screenShotGoogleMap.jpg" height="100" alt="screenShotGoogleMap"/>
+<img src="screenShotGoogleMap.jpg" height="200" alt="screenShotGoogleMap"/>
 
   Google Map with location information
 
