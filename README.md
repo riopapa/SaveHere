@@ -41,9 +41,7 @@ Application source can be downloaded from [my github][1].
    
 <img src="screenShotPhoto.png" height="200" alt="screenShotPhoto"/> Photo shot with location information
   
-<img src="screenShotGoogleMap.jpg" height="200" alt="screenShotGoogleMap"/>
-
-  Google Map with location information
+<img src="screenShotGoogleMap.jpg" height="200" alt="screenShotGoogleMap"/> Google Map shot with location information
 
 ## How to use
 
