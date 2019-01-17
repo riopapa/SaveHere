@@ -6,8 +6,7 @@ With this application, you can memorize where you were.
 It saves current position into Camera folder as screen shot, so that you may refer the place later.
 
 Information in screen shots are
-- google API address in Korean and/or English
-- your text input, e.g. place name, shop name,.. to remember
+- google map place and address or your text input, e.g. place name, shop name,.. to remember
 - GPS coordinates ()
 - screen shot date and time (local time)
 
@@ -15,17 +14,15 @@ This application is for those who travels around the world and wants to record w
 
 ## Permission Required
 
-For simplicity, I did not fully implement the following permission process
 - WRITE_EXTERNAL_STORAGE (save captured image)
 - ACCESS_FINE_LOCATION (get GPS information)
+For simplicity, I did not fully implement the following permission process
 
-These permission should be applied by manual application setting for now.
-Later I'll add permission process.
-
+These permission should be applied by yourself.
 
 ## Source in github
 
-Application source can be downlowed from [my github][1].
+Application source can be downloaded from [my github][1].
 
 [1]: https://github.com/riopapa/SaveHere
 
@@ -40,22 +37,38 @@ Application source can be downlowed from [my github][1].
 
 ## Screenshots
 
-<img src="screenshots1.png" height="100" alt="Screenshot main"/>
-<img src="screenshots2.png" height="100" alt="Screenshot landscaped"/>
+<img src="mainActivity.jpg" height="180" alt="mainActivity"/>
 
-## Functionality
+   mainActivity.xml
+   
+<img src="screenShotPhoto.png" height="100" alt="Photo Shot"/>
 
-When you run this program, it shows google map and nearby place list.
+  Photo shot with location information
+  
+<img src="screenShotGoogleMap.png" height="100" alt="google map"/>
 
-You may select one from the list or press cancel button.
+  Google Map with location information
+
+## How to use
+
+1. Run this program, and it shows google map and nearby place list.
+
+2. You may select one from the list or press cancel button to input place name by yourself.
 
 If you selected the place name, it will be shown in screen with address of it google maps API has given.
 
 Or if you have pressed cancel button, address given by google GPS info will be shown in screen with blank first line. And then you may enter place name as you want to.
 
-GPS information and Date/time information also will be displayed on thop.
+You have three options
 
-By pressing [Scrn Shot], information will be saved into DCIM folder in landscape mode.
+- 1. Camera and Map shot : Create photo png and map png
+- 2. Camera shot : Create photo png
+- 3. Map shot : Create map png
+
+### Optional functions
+
+- slide bar : to adjust google map scale (higher value is more zoomed-in), and it is saved for next use
+- Timer off : for 10 secs timer
 
 ## Comments
 
