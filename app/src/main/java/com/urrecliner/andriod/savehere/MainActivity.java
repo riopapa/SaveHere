@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Point;
 import android.hardware.Camera;
 import android.location.Address;
 import android.location.Geocoder;
@@ -22,16 +23,18 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
@@ -74,9 +77,6 @@ public class MainActivity extends AppCompatActivity {
 
 //    private final static int FINE_LOCATION = 100;
     private final static int PLACE_PICKER_REQUEST = 1;
-    public int Permission_Write = 0;
-    public int Permission_Internet = 0;
-    public int Permission_Location = 0;
     private CameraPreview mCameraPreview;
 
     @Override
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         if (!AccessPermission.isPermissionOK(getApplicationContext(), this))
             return;
         mActivity = this;
-       phoneModel = Build.MODEL;                   // SM-G965N             Nexus 6P
+        phoneModel = Build.MODEL;                   // SM-G965N             Nexus 6P
         String manufacturer = Build.MANUFACTURER;   // samsung              Huawei
         String hardware = Build.HARDWARE;           // samsungexynos9810    angler
         utils.appendText("this phone model is " + phoneModel + " manu " + manufacturer + " hardware " + hardware);
@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
             delayCount = 100;
             delayTime = 1000;
             try {
-                wait10Seconds();
+                flashSeveralTimes();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -175,8 +175,6 @@ public class MainActivity extends AppCompatActivity {
         zoomValue = mSettings.getInt("Zoom", 16);
         seekZoom.setProgress(zoomValue);
         showSeekBarValue(tV, seekZoom);
-
-        showSeekBarValue(tV, seekZoom);
         seekZoom.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -191,20 +189,30 @@ public class MainActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
-
+        seekZoom.post(new Runnable() {
+            @Override
+            public void run() {
+                Display display = getWindowManager().getDefaultDisplay();
+                Point size = new Point();
+                display.getSize(size);
+                int height = seekZoom.getHeight();
+                int seekZoomTop = seekZoom.getTop();
+                FrameLayout camera_surface = findViewById(R.id.frame);
+                int width = size.x - camera_surface.getWidth();
+                RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(width, height);
+                layoutParams.setMargins(0,seekZoomTop,0,0);
+                seekZoom.setLayoutParams(layoutParams);
+            }
+        });
     }
 
     private void buildTimerToggle () {
-        final ToggleButton vTimerToggle = findViewById(R.id.toggleButton);
+        final ImageButton vTimerToggle = findViewById(R.id.timer);
         vTimerToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Boolean timerToggle = vTimerToggle.isChecked();
-                if (timerToggle)
-                    vTimerToggle.setBackgroundColor(Color.RED);
-                else
-                    vTimerToggle.setBackgroundColor((Color.GRAY));
-                isTimerOn = timerToggle;
+                isTimerOn ^= true;
+                vTimerToggle.setImageResource((isTimerOn)? R.mipmap.icon_timer_active: R.mipmap.icon_timer);
             }
         });
     }
@@ -519,7 +527,7 @@ public class MainActivity extends AppCompatActivity {
 
     int delayTime = 1000;
     int delayCount = 100;
-    private void wait10Seconds() throws InterruptedException {
+    private void flashSeveralTimes() throws InterruptedException {
 //        Log.w("delayTime", delayTime+" delayCount "+delayCount);
         if (delayCount < 60) {
             int sleepTime = 10;
@@ -546,7 +554,7 @@ public class MainActivity extends AppCompatActivity {
             new Timer().schedule(new TimerTask() {
                 public void run() {
                     try {
-                        wait10Seconds();
+                        flashSeveralTimes();
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

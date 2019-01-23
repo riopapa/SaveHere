@@ -83,10 +83,10 @@ public class Utils {
         }
     }
 
-    public File getPublicAlbumStorageDir(String albumName) {
+    private File getPublicCameraDirectory() {
         // Get the directory for the user's public pictures directory.
         return new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DCIM), albumName);
+                Environment.DIRECTORY_DCIM),"/Camera");
     }
 
     static SimpleDateFormat imgDateFormat;
@@ -124,7 +124,7 @@ public class Utils {
         } else {
             filename = "IMG_" + getIMGTimeText() + "_"  + strPlace + tag + ".PNG";
         }
-        File directory = utils.getPublicAlbumStorageDir("/Camera");
+        File directory = getPublicCameraDirectory();
         try {
             if (!directory.exists()) {
                 directory.mkdirs();

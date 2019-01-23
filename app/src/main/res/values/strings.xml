@@ -11,6 +11,9 @@
     <string name="txtAddress">address info</string>
     <string name="maps_api_key">AIzaSyCEun8V0vX_idWcvan5WMxiQvYCemxIkD4</string>
     <string name="photo">photo</string>
+    <string name="timer_off">Timer Off</string>
+    <string name="timer_on">Timer ON</string>
+    <string name="zoom_value">16</string>
 
 
 </resources>
