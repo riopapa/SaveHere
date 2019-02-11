@@ -169,5 +169,4 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }, 300);
     }
-
 }

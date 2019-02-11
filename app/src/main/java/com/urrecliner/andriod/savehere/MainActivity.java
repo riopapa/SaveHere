@@ -55,12 +55,12 @@ import java.util.TimerTask;
 import static com.urrecliner.andriod.savehere.Vars.CameraMapBoth;
 import static com.urrecliner.andriod.savehere.Vars.bitMapScreen;
 import static com.urrecliner.andriod.savehere.Vars.currActivity;
+import static com.urrecliner.andriod.savehere.Vars.galaxyS9;
 import static com.urrecliner.andriod.savehere.Vars.isTimerOn;
 import static com.urrecliner.andriod.savehere.Vars.latitude;
 import static com.urrecliner.andriod.savehere.Vars.longitude;
 import static com.urrecliner.andriod.savehere.Vars.mActivity;
 import static com.urrecliner.andriod.savehere.Vars.mCamera;
-import static com.urrecliner.andriod.savehere.Vars.nexus6P;
 import static com.urrecliner.andriod.savehere.Vars.phoneModel;
 import static com.urrecliner.andriod.savehere.Vars.strAddress;
 import static com.urrecliner.andriod.savehere.Vars.strDateTime;
@@ -195,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
                 Display display = getWindowManager().getDefaultDisplay();
                 Point size = new Point();
                 display.getSize(size);
+//                Log.w("seekZoom","org x : "+display.getWidth()+" y : "+display.getHeight()+" ratio "+(display.getWidth()/display.getDisplayId()) );
                 int height = seekZoom.getHeight();
                 int seekZoomTop = seekZoom.getTop();
                 FrameLayout camera_surface = findViewById(R.id.frame);
@@ -243,37 +244,36 @@ public class MainActivity extends AppCompatActivity {
         zoomValue = seekZoom.getProgress();
 
         mAddressTextView.setBackgroundColor(Color.MAGENTA);
+    }
+
+    Camera.ShutterCallback shutterCallback = new Camera.ShutterCallback() {
+        public void onShutter() {
+            //			 Log.d(TAG, "onShutter'd");
         }
+    };
 
-        Camera.ShutterCallback shutterCallback = new Camera.ShutterCallback() {
-            public void onShutter() {
-                //			 Log.d(TAG, "onShutter'd");
-            }
-        };
+    Camera.PictureCallback rawCallback = new Camera.PictureCallback() {
+        public void onPictureTaken(byte[] data, Camera camera) {
+            //			 Log.d(TAG, "onPictureTaken - raw");
+        }
+    };
 
-        Camera.PictureCallback rawCallback = new Camera.PictureCallback() {
-            public void onPictureTaken(byte[] data, Camera camera) {
-                //			 Log.d(TAG, "onPictureTaken - raw");
-            }
-        };
+    Camera.PictureCallback jpegCallback = new Camera.PictureCallback() {
+        public void onPictureTaken(byte[] data, Camera camera) {
+    //byte array를 bitmap으로 변환
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
 
-        Camera.PictureCallback jpegCallback = new Camera.PictureCallback() {
-            public void onPictureTaken(byte[] data, Camera camera) {
-        //byte array를 bitmap으로 변환
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
-            if (phoneModel.equals(nexus6P)) {
+//        Log.w("bitmap ","size x: "+bitmap.getWidth()+" y: "+bitmap.getHeight());
+            //  size x: 4032 y: 3024
+            if (phoneModel.equals(galaxyS9)) {
                 int bw = bitmap.getWidth();
-                int bh = bitmap.getHeight();
+                int bh = bitmap.getHeight()-120;
                 Matrix matrix = new Matrix();
-                matrix.postRotate(270);
-                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bw, bh, matrix, true);
+//                matrix.postRotate(270);
+                bitmap = Bitmap.createBitmap(bitmap, 240, 0, bw-300, bh, matrix, true);
             }
-    //
-    //        //bitmap을 byte array로 변환
-    //        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-    //        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
             bitMapScreen = bitmap;
 
     //        byte[] currentData = stream.toByteArray();
@@ -364,6 +364,16 @@ public class MainActivity extends AppCompatActivity {
         params.setRotation(90);
         params.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
         params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
+        for (Camera.Size size : params.getSupportedPictureSizes()) {
+            float ratio= (float) size.width / (float) size.height;
+            if (ratio > 1.7) {
+//                params.setPreviewSize(size.width, size.height);
+                params.setPictureSize(size.width, size.height);
+                break;
+            }
+//            Log.w("camera","size x= "+size.width+" y= "+size.height+" ratio "+((float) size.width/ (float) size.height));
+
+        }
 
         mCamera.setParameters(params);
         mCamera.startPreview();
@@ -595,6 +605,11 @@ public class MainActivity extends AppCompatActivity {
 //        windowManager.getDefaultDisplay().getMetrics(dm);
 //        mWidthInDP = Math.round(dm.widthPixels / dm.density);
 //        mHeightInDP = Math.round(dm.heightPixels / dm.density);
+//    }
+
+//    void invokeCamera() {
+//        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//        startActivity(intent);
 //    }
 
 }

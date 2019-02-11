@@ -5,20 +5,47 @@
 
     <ImageView
         android:id="@+id/photoImage"
-        android:layout_margin="0sp"
-        android:layout_width="@dimen/camera_image_width"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_margin="0dp"
         android:contentDescription="@string/photo" />
 
     <TextView
+        android:id="@+id/datetimeCText1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="60dp"
+        android:layout_marginTop="10dp"
+        android:layout_alignParentStart="true"
+        android:text="Date Time"
+        android:textAlignment="center"
+        android:textColor="#eeeeee"
+        android:textAllCaps="false"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/datetimeCText2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="61dp"
+        android:layout_marginTop="11dp"
+        android:layout_alignParentStart="true"
+        android:text="Date Time"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="@android:color/background_dark"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
         android:id="@+id/placeCText1"
-        android:layout_width="@dimen/camera_image_width"
-        android:layout_height="52sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="0sp"
+        android:layout_marginBottom="40dp"
         android:background="#00000000"
-        android:gravity="center_vertical"
-        android:lineSpacingExtra="0sp"
-        android:layout_alignBottom="@id/photoImage"
-        android:layout_margin="10sp"
         android:text="@string/txtPlace"
         android:textAlignment="center"
         android:textColor="#262a3a"
@@ -27,13 +54,12 @@
 
     <TextView
         android:id="@+id/placeCText2"
-        android:layout_width="@dimen/camera_image4_width"
-        android:layout_height="52sp"
-        android:layout_alignBottom="@id/photoImage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="6sp"
+        android:layout_marginBottom="46dp"
         android:background="#00000000"
-        android:gravity="center_vertical"
-        android:lineSpacingExtra="0sp"
-        android:layout_margin="14sp"
         android:text="@string/txtPlace"
         android:textAlignment="center"
         android:textColor="#262a3a"
@@ -42,13 +68,12 @@
 
     <TextView
         android:id="@+id/placeCText3"
-        android:layout_width="@dimen/camera_image2_width"
-        android:layout_height="52sp"
-        android:layout_alignBottom="@id/photoImage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="3sp"
+        android:layout_marginBottom="43dp"
         android:background="#00000000"
-        android:gravity="center_vertical"
-        android:lineSpacingExtra="0sp"
-        android:layout_margin="12sp"
         android:text="@string/txtPlace"
         android:textAlignment="center"
         android:textColor="#eeeeee"
@@ -56,50 +81,31 @@
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/datetimeCText"
-        android:layout_width="@dimen/camera_datetime_width"
-        android:layout_height="100sp"
-        android:layout_toEndOf="@id/photoImage"
-        android:layout_margin="0sp"
-        android:gravity="center"
-        android:inputType=""
-        android:text="@string/txtDateTime"
+        android:id="@+id/address1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="0sp"
+        android:layout_marginBottom="10sp"
+        android:layout_alignParentBottom="true"
+        android:background="#00000000"
+        android:text="@string/txtAddress"
         android:textAlignment="center"
-        android:textAllCaps="false"
-        android:textColor="@android:color/background_dark"
-        android:textSize="24sp"
-        android:textStyle="bold" />
-    <!--android:layout_marginTop="100sp"-->
-
-    <TextView
-        android:id="@+id/placeAddress"
-        android:layout_width="@dimen/camera_datetime_width"
-        android:layout_height="200sp"
-        android:layout_toEndOf="@id/photoImage"
-        android:layout_below="@id/datetimeCText"
-        android:gravity="center_vertical"
-        android:lineSpacingExtra="0sp"
-        android:padding="0dp"
-        android:selectAllOnFocus="true"
-        android:text="@string/txtPlace"
-        android:textAlignment="center"
-        android:textColor="@android:color/background_dark"
+        android:textColor="#262a3a"
         android:textSize="20sp"
         android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/positionCText"
-        android:layout_width="@dimen/camera_datetime_width"
-        android:layout_height="100sp"
-        android:layout_toEndOf="@id/photoImage"
-        android:layout_below="@id/placeAddress"
-        android:layout_alignBottom="@id/photoImage"
-        android:gravity="center"
-        android:inputType=""
-        android:text="@string/txtPosition"
+        android:id="@+id/address2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1sp"
+        android:layout_marginBottom="11sp"
+        android:layout_alignParentBottom="true"
+        android:background="#00000000"
+        android:text="@string/txtAddress"
         android:textAlignment="center"
-        android:textColor="@android:color/background_dark"
-        android:textSize="12sp"
+        android:textColor="#eeeeee"
+        android:textSize="20sp"
         android:textStyle="bold" />
 
 </RelativeLayout>

@@ -41,19 +41,13 @@ public class CameraActivity extends AppCompatActivity {
             // s9    : h: 1080, w: 2094
             // nxs6p : h: 1440, w: 2392
 
-            TextView pV = findViewById(R.id.placeCText1);
-            pV.setText(Vars.strPlace);
-            pV = findViewById(R.id.placeCText2);
-            pV.setText(Vars.strPlace);
-            pV = findViewById(R.id.placeCText3);
-            pV.setText(Vars.strPlace);
-            TextView pA = findViewById(R.id.placeAddress);
-            String text = Vars.strPlace + "\n\n" + Vars.strAddress;
-            pA.setText(text);
-            TextView mPV = findViewById(R.id.positionCText);
-            mPV.setText(Vars.strPosition);
-            TextView mDV = findViewById(R.id.datetimeCText);
-            mDV.setText(Vars.strDateTime);
+            TextView tV = findViewById(R.id.placeCText1); tV.setText(Vars.strPlace);
+            tV = findViewById(R.id.placeCText2); tV.setText(Vars.strPlace);
+            tV = findViewById(R.id.placeCText3); tV.setText(Vars.strPlace);
+            tV = findViewById(R.id.address1); tV.setText(Vars.strAddress);
+            tV = findViewById(R.id.address2); tV.setText(Vars.strAddress);
+            tV = findViewById(R.id.datetimeCText1); tV.setText(Vars.strDateTime);
+            tV = findViewById(R.id.datetimeCText2); tV.setText(Vars.strDateTime);
 
             ImageView iV = findViewById(R.id.photoImage);
 //            if (phoneModel.equals(galaxyS9)) {
