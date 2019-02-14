@@ -195,7 +195,6 @@ public class MainActivity extends AppCompatActivity {
                 Display display = getWindowManager().getDefaultDisplay();
                 Point size = new Point();
                 display.getSize(size);
-//                Log.w("seekZoom","org x : "+display.getWidth()+" y : "+display.getHeight()+" ratio "+(display.getWidth()/display.getDisplayId()) );
                 int height = seekZoom.getHeight();
                 int seekZoomTop = seekZoom.getTop();
                 FrameLayout camera_surface = findViewById(R.id.frame);
@@ -315,8 +314,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
-
-        //        getSupportActionBar().setDisplayShowHomeEnabled(true);  // icon set
     }
 
     protected void onStop() {
@@ -333,15 +330,6 @@ public class MainActivity extends AppCompatActivity {
                     ViewGroup.LayoutParams.MATCH_PARENT));
             ((FrameLayout) findViewById(R.id.frame)).addView(mCameraPreview);
             mCameraPreview.setKeepScreenOn(true);
-
-            /* 프리뷰 화면 눌렀을 때  사진을 찍음
-            preview.setOnClickListener(new OnClickListener() {
-
-                @Override
-                public void onClick(View arg0) {
-                    camera.takePicture(shutterCallback, rawCallback, jpegCallback);
-                }
-            });*/
         }
 
         mCameraPreview.setCamera(null);
@@ -350,7 +338,6 @@ public class MainActivity extends AppCompatActivity {
             mCamera = null;
         }
         mCamera = Camera.open(0);
-//        utils.appendText("Camera found");
         try {
             // camera orientation
             mCamera.setDisplayOrientation(90);
@@ -366,7 +353,7 @@ public class MainActivity extends AppCompatActivity {
         params.setFlashMode(Camera.Parameters.FLASH_MODE_AUTO);
         for (Camera.Size size : params.getSupportedPictureSizes()) {
             float ratio= (float) size.width / (float) size.height;
-            if (ratio > 1.7) {
+            if (ratio > 1.7) {  // force ratio to wider screen
 //                params.setPreviewSize(size.width, size.height);
                 params.setPictureSize(size.width, size.height);
                 break;
@@ -463,7 +450,6 @@ public class MainActivity extends AppCompatActivity {
                 String SState = address.getSubAdminArea();
                 String State = address.getAdminArea();
 //                String zip = address.getPostalCode();
-//                utils.appendText("F: " + Feature + ", T: " + Thorough +  ", L: " + Locality + ", sL: " + SubLocality + ", C: " + CountryCode);
                 Feature = (Feature == null) ? noInfo : Feature;
                 Thorough = (Thorough == null) ? noInfo : Thorough;  // Kakakaua Avernue
                 SubLocality = (SubLocality == null) ? noInfo : SubLocality; // 분당구
@@ -493,8 +479,6 @@ public class MainActivity extends AppCompatActivity {
         if (SState.equals(Locality)) Locality = noInfo;
         if (State.equals(SState)) SState = noInfo;
 
-//        utils.appendText("F: " + Feature + ", T: " + Thorough +  ", L: " + Locality + ", sL: " + SubLocality);
-
         String addressMerged = "";
         if (CountryCode.equals("KR")) {
             if (!State.equals(noInfo)) addressMerged += " " + State;
@@ -519,7 +503,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-//        utils.appendText("#g1");
 
         if (resultCode == RESULT_OK) {  // user picked up place within the google map list
             Place place = PlacePicker.getPlace(this, data);
@@ -530,8 +513,6 @@ public class MainActivity extends AppCompatActivity {
             strMapAddress = null;
         }
         mCamera.enableShutterSound(true);
-//        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-//        utils.appendText("#g2 before showCurrentLocation");
         showCurrentLocation();
     }
 
@@ -598,18 +579,5 @@ public class MainActivity extends AppCompatActivity {
 
     final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yy/MM/dd\nHH:mm:ss", Locale.ENGLISH);
     private String getViewTimeText() { return dateTimeFormat.format(new Date()); }
-
-//    public void getScreenSize(Context context){
-//        DisplayMetrics dm = new DisplayMetrics();
-//        WindowManager windowManager = (WindowManager) context.getSystemService(WINDOW_SERVICE);
-//        windowManager.getDefaultDisplay().getMetrics(dm);
-//        mWidthInDP = Math.round(dm.widthPixels / dm.density);
-//        mHeightInDP = Math.round(dm.heightPixels / dm.density);
-//    }
-
-//    void invokeCamera() {
-//        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//        startActivity(intent);
-//    }
 
 }

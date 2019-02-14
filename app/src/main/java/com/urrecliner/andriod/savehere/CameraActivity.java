@@ -38,16 +38,18 @@ public class CameraActivity extends AppCompatActivity {
 //            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
 //            int height = displayMetrics.heightPixels;
 //            int width = displayMetrics.widthPixels;
-            // s9    : h: 1080, w: 2094
-            // nxs6p : h: 1440, w: 2392
+//            s9    : h: 1080, w: 2094
+//            nxs6p : h: 1440, w: 2392
 
-            TextView tV = findViewById(R.id.placeCText1); tV.setText(Vars.strPlace);
+            TextView tV;
+            tV = findViewById(R.id.placeCText1); tV.setText(Vars.strPlace);
             tV = findViewById(R.id.placeCText2); tV.setText(Vars.strPlace);
             tV = findViewById(R.id.placeCText3); tV.setText(Vars.strPlace);
             tV = findViewById(R.id.address1); tV.setText(Vars.strAddress);
             tV = findViewById(R.id.address2); tV.setText(Vars.strAddress);
             tV = findViewById(R.id.datetimeCText1); tV.setText(Vars.strDateTime);
             tV = findViewById(R.id.datetimeCText2); tV.setText(Vars.strDateTime);
+            tV = findViewById(R.id.datetimeCText3); tV.setText(Vars.strDateTime);
 
             ImageView iV = findViewById(R.id.photoImage);
 //            if (phoneModel.equals(galaxyS9)) {
@@ -61,8 +63,6 @@ public class CameraActivity extends AppCompatActivity {
             //        ViewGroup vg = findViewById (R.id.cameraLayout);
             //        vg.invalidate();
             View rootView = getWindow().getDecorView();
-            //        rootView.setVisibility(View.GONE);
-            //        rootView.setVisibility(View.VISIBLE);
 
             takeScreenShot(rootView);
         }

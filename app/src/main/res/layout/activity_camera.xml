@@ -19,7 +19,7 @@
         android:layout_alignParentStart="true"
         android:text="Date Time"
         android:textAlignment="center"
-        android:textColor="#eeeeee"
+        android:textColor="@android:color/background_dark"
         android:textAllCaps="false"
         android:textSize="24sp"
         android:textStyle="bold" />
@@ -28,13 +28,27 @@
         android:id="@+id/datetimeCText2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginStart="62dp"
+        android:layout_marginTop="12dp"
+        android:layout_alignParentStart="true"
+        android:text="Date Time"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="@android:color/background_dark"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/datetimeCText3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_marginStart="61dp"
         android:layout_marginTop="11dp"
         android:layout_alignParentStart="true"
         android:text="Date Time"
         android:textAlignment="center"
         android:textAllCaps="false"
-        android:textColor="@android:color/background_dark"
+        android:textColor="#eeeeee"
         android:textSize="24sp"
         android:textStyle="bold" />
 
