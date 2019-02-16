@@ -212,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 isTimerOn ^= true;
-                vTimerToggle.setImageResource((isTimerOn)? R.mipmap.icon_timer_active: R.mipmap.icon_timer);
+                vTimerToggle.setImageResource((isTimerOn)? R.mipmap.icon_timer_active: R.mipmap.icon_timer_off);
             }
         });
     }
