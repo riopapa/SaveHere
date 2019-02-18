@@ -265,13 +265,15 @@ public class MainActivity extends AppCompatActivity {
         Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
 
 //        Log.w("bitmap ","size x: "+bitmap.getWidth()+" y: "+bitmap.getHeight());
-            //  size x: 4032 y: 3024
+            //  size x: 4032 y: 2268    : 1.333
             if (phoneModel.equals(galaxyS9)) {
-                int bw = bitmap.getWidth();
-                int bh = bitmap.getHeight()-120;
+                float bw = (float) bitmap.getWidth();
+                float bh = (float) bitmap.getHeight();
+                int width = (int) (bh * 1920 / 1080);
+
                 Matrix matrix = new Matrix();
 //                matrix.postRotate(270);
-                bitmap = Bitmap.createBitmap(bitmap, 240, 0, bw-300, bh, matrix, true);
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, (int) bh, matrix, true);
             }
             bitMapScreen = bitmap;
 
@@ -577,7 +579,7 @@ public class MainActivity extends AppCompatActivity {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yy/MM/dd\nHH:mm:ss", Locale.ENGLISH);
+    final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy/MM/dd\nHH:mm:ss", Locale.ENGLISH);
     private String getViewTimeText() { return dateTimeFormat.format(new Date()); }
 
 }

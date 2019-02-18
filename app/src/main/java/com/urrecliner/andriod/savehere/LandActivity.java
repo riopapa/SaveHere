@@ -116,7 +116,7 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
         Bitmap result = Bitmap.createBitmap(firstImage.getWidth(), firstImage.getHeight(), firstImage.getConfig());
         Canvas canvas = new Canvas(result);
         canvas.drawBitmap(firstImage, 0f, 0f, null);
-        canvas.drawBitmap(secondImage, firstImage.getWidth() - 360, firstImage.getHeight() - 100, null);
+        canvas.drawBitmap(secondImage, firstImage.getWidth() - 440, firstImage.getHeight() - 120, null);
         return result;
     }
 
@@ -125,7 +125,7 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 //      20,      19,     18,    17,     16,     15,     14,     13,     12,     11,     10,     9
         final int xPixels[] =   {  0,   113,	 113,    90,    90,		90,	    113,	113,	113,	90,	    90,	    90,     113, };
         final String xUnits[] = {  "",  "10 m",	"20 m", "50 m", "100 m","200 m","500 m","1 Km",	"2 Km",	"5 Km", "10 Km","20 Km","50 Km"};
-        Bitmap bitmap = Bitmap.createBitmap(200, 80, Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(2400, 80, Bitmap.Config.ARGB_8888);
         int baseX, baseY, startX, startY, stopX, stopY, yPixel;
         Canvas canvas = new Canvas(bitmap);
         paint.setColor(Color.BLUE);
@@ -139,10 +139,10 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
         canvas.drawLine(startX, startY, stopX, stopY, paint);       // |_
         startX = baseX + xPixel; startY = baseY + 5; stopX = startX; stopY = baseY - yPixel;
         canvas.drawLine(startX, startY, stopX, stopY, paint);       //    _|
-        paint.setTextSize(32);
-        paint.setStrokeWidth(10f);
+        paint.setTextSize(36);
+        paint.setStrokeWidth(16f);
         paint.setColor(Color.BLACK);
-        startX = baseX + xPixel / 4; startY = baseY - 20;
+        startX = baseX + xPixel / 4 - 10; startY = baseY - 20;
         canvas.drawText(xUnit, startX, startY, paint);
         return bitmap;
     }
