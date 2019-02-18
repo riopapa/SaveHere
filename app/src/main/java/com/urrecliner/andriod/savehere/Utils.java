@@ -108,9 +108,9 @@ public class Utils {
             Log.e("screen"," bitmap null");
         }
         int width = screenBitmap.getWidth();
+        int height = screenBitmap.getHeight();
         if (phoneModel.equals(galaxyS9)) {
-            width -= 300;
-            screenBitmap = Bitmap.createBitmap(screenBitmap, 80, 0, width, screenBitmap.getHeight());
+            screenBitmap = Bitmap.createBitmap(screenBitmap, 200, 0, width-400, height);
         }
         File file = bitMap2File (screenBitmap, tag);
 //        appendText("Screen Captured.. " + file.getName());

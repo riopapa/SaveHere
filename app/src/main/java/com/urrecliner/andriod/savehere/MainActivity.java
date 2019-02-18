@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Point;
 import android.hardware.Camera;
 import android.location.Address;
@@ -55,7 +54,6 @@ import java.util.TimerTask;
 import static com.urrecliner.andriod.savehere.Vars.CameraMapBoth;
 import static com.urrecliner.andriod.savehere.Vars.bitMapScreen;
 import static com.urrecliner.andriod.savehere.Vars.currActivity;
-import static com.urrecliner.andriod.savehere.Vars.galaxyS9;
 import static com.urrecliner.andriod.savehere.Vars.isTimerOn;
 import static com.urrecliner.andriod.savehere.Vars.latitude;
 import static com.urrecliner.andriod.savehere.Vars.longitude;
@@ -266,15 +264,14 @@ public class MainActivity extends AppCompatActivity {
 
 //        Log.w("bitmap ","size x: "+bitmap.getWidth()+" y: "+bitmap.getHeight());
             //  size x: 4032 y: 2268    : 1.333
-            if (phoneModel.equals(galaxyS9)) {
-                float bw = (float) bitmap.getWidth();
-                float bh = (float) bitmap.getHeight();
-                int width = (int) (bh * 1920 / 1080);
-
-                Matrix matrix = new Matrix();
-//                matrix.postRotate(270);
-                bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, (int) bh, matrix, true);
-            }
+//            if (phoneModel.equals(galaxyS9)) {
+//                int bw = bitmap.getWidth();
+//                int bh = bitmap.getHeight();
+//                int height = bw / 2220 * 1080;
+//                Matrix matrix = new Matrix();
+////                matrix.postRotate(270);
+//                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bw, height, matrix, true);
+//            }
             bitMapScreen = bitmap;
 
     //        byte[] currentData = stream.toByteArray();

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -13,9 +12,9 @@
 
     <TextView
         android:id="@+id/datetimeCText1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="80dp"
+        android:layout_width="200sp"
+        android:layout_height="64sp"
+        android:layout_marginStart="50dp"
         android:layout_marginTop="10dp"
         android:layout_alignParentStart="true"
         android:text="@string/date_time"
@@ -27,9 +26,9 @@
 
     <TextView
         android:id="@+id/datetimeCText2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="82dp"
+        android:layout_width="200sp"
+        android:layout_height="64sp"
+        android:layout_marginStart="52dp"
         android:layout_marginTop="12dp"
         android:layout_alignParentStart="true"
         android:text="@string/date_time"
@@ -41,9 +40,9 @@
 
     <TextView
         android:id="@+id/datetimeCText3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="81dp"
+        android:layout_width="200sp"
+        android:layout_height="64sp"
+        android:layout_marginStart="51dp"
         android:layout_marginTop="11dp"
         android:layout_alignParentStart="true"
         android:text="@string/date_time"
@@ -97,7 +96,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="0sp"
-        android:layout_marginBottom="10sp"
+        android:layout_marginBottom="5dp"
         android:layout_alignParentBottom="true"
         android:text="@string/txtAddress"
         android:textAlignment="center"
@@ -105,12 +104,25 @@
         android:textSize="20sp"
         android:textStyle="bold" />
 
+
     <TextView
         android:id="@+id/address2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="1sp"
-        android:layout_marginBottom="11sp"
+        android:layout_marginStart="2sp"
+        android:layout_marginBottom="7dp"
+        android:layout_alignParentBottom="true"
+        android:text="@string/txtAddress"
+        android:textAlignment="center"
+        android:textColor="#0016b5"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+    <TextView
+        android:id="@+id/address3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="1dp"
+        android:layout_marginBottom="6dp"
         android:layout_alignParentBottom="true"
         android:text="@string/txtAddress"
         android:textAlignment="center"
@@ -123,10 +135,10 @@
         android:layout_height="70dp"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="10dp"
-        android:layout_marginEnd="80dp"
+        android:layout_marginEnd="70dp"
         android:contentDescription="@string/todo"
         android:padding="0dp"
-        android:src="@mipmap/icon_riopapa_sign" />
+        android:src="@mipmap/icon_riopapa_yellow_blue" />
 
 </RelativeLayout>
 

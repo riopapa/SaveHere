@@ -167,6 +167,6 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
                     utils.appendText("Screenshot is NULL");
                 }
             }
-        }, 300);
+        }, 200);
     }
 }

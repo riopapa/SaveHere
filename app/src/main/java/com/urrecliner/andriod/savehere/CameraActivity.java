@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -17,7 +18,9 @@ import java.io.File;
 import static com.urrecliner.andriod.savehere.Vars.CameraMapBoth;
 import static com.urrecliner.andriod.savehere.Vars.bitMapScreen;
 import static com.urrecliner.andriod.savehere.Vars.currActivity;
+import static com.urrecliner.andriod.savehere.Vars.galaxyS9;
 import static com.urrecliner.andriod.savehere.Vars.mActivity;
+import static com.urrecliner.andriod.savehere.Vars.phoneModel;
 import static com.urrecliner.andriod.savehere.Vars.utils;
 
 public class CameraActivity extends AppCompatActivity {
@@ -47,21 +50,23 @@ public class CameraActivity extends AppCompatActivity {
             tV = findViewById(R.id.placeCText3); tV.setText(Vars.strPlace);
             tV = findViewById(R.id.address1); tV.setText(Vars.strAddress);
             tV = findViewById(R.id.address2); tV.setText(Vars.strAddress);
+            tV = findViewById(R.id.address3); tV.setText(Vars.strAddress);
             tV = findViewById(R.id.datetimeCText1); tV.setText(Vars.strDateTime);
             tV = findViewById(R.id.datetimeCText2); tV.setText(Vars.strDateTime);
             tV = findViewById(R.id.datetimeCText3); tV.setText(Vars.strDateTime);
 
             ImageView iV = findViewById(R.id.photoImage);
-//            if (phoneModel.equals(galaxyS9)) {
-//                ViewGroup.LayoutParams params = iV.getLayoutParams();        // resize height/width
-//                params.width = params.width * 12 / 10;
-//                iV.setLayoutParams(params);
-//                utils.appendText("width adjusted to " + params.width);
-//            }
 
             iV.setImageBitmap(bitMapScreen);
             //        ViewGroup vg = findViewById (R.id.cameraLayout);
             //        vg.invalidate();
+            if (phoneModel.equals(galaxyS9)) {
+                ViewGroup.LayoutParams params = iV.getLayoutParams();        // resize height/width
+                params.width = params.height * 2220 / 1080;
+                iV.setLayoutParams(params);
+                utils.appendText("width adjusted to " + params.width);
+            }
+
             View rootView = getWindow().getDecorView();
 
             takeScreenShot(rootView);
