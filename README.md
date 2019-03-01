@@ -28,11 +28,17 @@ Application source can be downloaded from [my github][1].
 
 ## Screenshots
 
-<img src="mainActivity.jpg" height="400" alt="mainActivity"/> <br>mainActivity.xml
-   
-<img src="screenShotPhoto.png" height="200" alt="screenShotPhoto"/> <br>Photo shot with location information<br>File name in DCIM has place name also
-  
-<img src="screenShotGoogleMap.jpg" height="200" alt="screenShotGoogleMap"/> <br>Google Map shot with location information<br>File name in DCIM has place name also
+- main activity (activity_main.xml)<br>
+
+<img src="mainActivity.jpg" height="400" alt="mainActivity"/>
+
+- camera activity (activity_camera.xml)<br>
+Photo shot with location information<br>File name in DCIM has place name also<br>
+<img src="cameraActivity.jpg" height="200" alt="screenShotPhoto"/> 
+
+- google map activity (activity_land.xml)<br>
+Google Map shot with location information<br>File name in DCIM has place name also<br>
+<img src="googleMap.jpg" height="200" alt="screenShotGoogleMap"/> 
 
 ## How to use
 
