@@ -1,6 +1,7 @@
 package com.urrecliner.andriod.savehere;
 
 import android.graphics.Bitmap;
+import android.media.ExifInterface;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
@@ -17,6 +18,8 @@ import java.util.Locale;
 import static com.urrecliner.andriod.savehere.Vars.currActivity;
 import static com.urrecliner.andriod.savehere.Vars.galaxyS9;
 import static com.urrecliner.andriod.savehere.Vars.isRUNNING;
+import static com.urrecliner.andriod.savehere.Vars.latitude;
+import static com.urrecliner.andriod.savehere.Vars.longitude;
 import static com.urrecliner.andriod.savehere.Vars.phoneModel;
 import static com.urrecliner.andriod.savehere.Vars.strPlace;
 import static com.urrecliner.andriod.savehere.Vars.utils;
@@ -120,9 +123,9 @@ public class Utils {
     public File bitMap2File (Bitmap bitmap, String tag) {
         String filename;
         if (phoneModel.equals(galaxyS9)) {
-            filename = getIMGTimeText() + "_" + strPlace + tag + ".PNG";
+            filename = getIMGTimeText() + "_" + strPlace + tag + ".jpg";
         } else {
-            filename = "IMG_" + getIMGTimeText() + "_"  + strPlace + tag + ".PNG";
+            filename = "IMG_" + getIMGTimeText() + "_"  + strPlace + tag + ".jpg";
         }
         File directory = getPublicCameraDirectory();
         try {
@@ -136,12 +139,48 @@ public class Utils {
         FileOutputStream os;
         try {
             os = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);   //비트맵을 PNG파일로 변환
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
             os.close();
         } catch (IOException e) {
-            utils.appendText("Screenshot ioException");
+            utils.appendText("Create ioException\n"+e);
             return null;
         }
+        Log.w("photo","file created");
         return file;
+    }
+
+    void setPhotoTag(File file) {
+        try {
+            ExifInterface exif = new ExifInterface(file.getAbsolutePath());
+            exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE,convertGpsToDMS(latitude));
+            exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF,(latitude > 0) ? "N":"S");
+            exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, convertGpsToDMS(longitude));
+            exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF,(longitude > 0) ? "W":"E");
+            exif.setAttribute(ExifInterface.TAG_USER_COMMENT, "riopapa");
+            exif.saveAttributes();
+        } catch (IOException e) {
+            utils.appendText("EXIF ioException\n"+e);
+        }
+    }
+
+    synchronized private static String convertGpsToDMS(double latitude) {
+        StringBuilder sb = new StringBuilder(20);
+        latitude=Math.abs(latitude);
+        int degree = (int) latitude;
+        latitude *= 60;
+        latitude -= (degree * 60.0d);
+        int minute = (int) latitude;
+        latitude *= 60;
+        latitude -= (minute * 60.0d);
+        int second = (int) (latitude*1000.0d);
+
+        sb.setLength(0);
+        sb.append(degree);
+        sb.append("/1,");
+        sb.append(minute);
+        sb.append("/1,");
+        sb.append(second);
+        sb.append("/1000");
+        return sb.toString();
     }
 }

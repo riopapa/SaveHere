@@ -26,22 +26,13 @@ Application source can be downloaded from [my github][1].
 
 [1]: https://github.com/riopapa/SaveHere
 
-## Android Version
-
-- Android SDK API 25 (Nuguar 7.1.1) or above 
-=======
-## Pre Requirement
-
-- Android SDK API 25 or above
->>>>>>> origin/master
-
 ## Screenshots
 
-<img src="mainActivity.jpg" height="400" alt="mainActivity"/> mainActivity.xml
+<img src="mainActivity.jpg" height="400" alt="mainActivity"/> <br>mainActivity.xml
    
-<img src="screenShotPhoto.png" height="200" alt="screenShotPhoto"/> Photo shot with location information
+<img src="screenShotPhoto.png" height="200" alt="screenShotPhoto"/> <br>Photo shot with location information<br>File name in DCIM has place name also
   
-<img src="screenShotGoogleMap.jpg" height="200" alt="screenShotGoogleMap"/> Google Map shot with location information
+<img src="screenShotGoogleMap.jpg" height="200" alt="screenShotGoogleMap"/> <br>Google Map shot with location information<br>File name in DCIM has place name also
 
 ## How to use
 
@@ -55,18 +46,18 @@ Or if you have pressed cancel button, address given by google GPS info will be s
 
 You have three options
 
-- 1. Camera and Map shot : Create photo png and map png
-- 2. Camera shot : Create photo png
-- 3. Map shot : Create map png
+- Camera and Map shot : Create photo and map
+- Camera shot : Create photo
+- Map shot : Create map
 
 ### Optional functions
 
-- slide bar : to adjust google map scale (higher value is more zoomed-in), and it is saved for next use
-- Timer off : for 10 secs timer
+- slide bar : to adjust google map scale (higher value is more zoomed-in), scale will be saved for next use
+- Timer : if clicked, screen show will be activated after 10 secs when you click Camera button
 
 ## Comments
 
-- This is my first application in android studio.
+- Android SDK API 25 (Nuguar 7.1.1) or above 
 - Thanks to [google sample in github][2] for screen shot
 
 

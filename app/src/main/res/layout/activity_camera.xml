@@ -42,6 +42,20 @@
         android:id="@+id/datetimeCText3"
         android:layout_width="200sp"
         android:layout_height="64sp"
+        android:layout_marginStart="52dp"
+        android:layout_marginTop="11dp"
+        android:layout_alignParentStart="true"
+        android:text="@string/date_time"
+        android:textAlignment="center"
+        android:textAllCaps="false"
+        android:textColor="#0016b5"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/datetimeCText4"
+        android:layout_width="200sp"
+        android:layout_height="64sp"
         android:layout_marginStart="51dp"
         android:layout_marginTop="11dp"
         android:layout_alignParentStart="true"
@@ -70,8 +84,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="6sp"
-        android:layout_marginBottom="46dp"
+        android:layout_marginStart="4sp"
+        android:layout_marginBottom="44dp"
         android:text="@string/txtPlace"
         android:textAlignment="center"
         android:textColor="#0016b5"
@@ -85,6 +99,19 @@
         android:layout_alignParentBottom="true"
         android:layout_marginStart="3sp"
         android:layout_marginBottom="43dp"
+        android:text="@string/txtPlace"
+        android:textAlignment="center"
+        android:textColor="#0016b5"
+        android:textSize="40sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/placeCText4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_marginStart="2sp"
+        android:layout_marginBottom="42dp"
         android:text="@string/txtPlace"
         android:textAlignment="center"
         android:textColor="#fffb00"
@@ -103,7 +130,6 @@
         android:textColor="#0016b5"
         android:textSize="20sp"
         android:textStyle="bold" />
-
 
     <TextView
         android:id="@+id/address2"

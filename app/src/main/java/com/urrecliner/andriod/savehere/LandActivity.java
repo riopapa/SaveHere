@@ -156,10 +156,10 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
             public void run() {
 //                utils.appendText("rootView made");
                 strPlace += " ";
-                File screenShot = utils.captureScreen(rootView, "");
+                final File screenShot = utils.captureScreen(rootView, "");
                 if (screenShot != null) {
+                    utils.setPhotoTag(screenShot);
                     mActivity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(screenShot)));
-//                    utils.appendText(("All Task completed"));
                     mActivity.finishAffinity();
                     System.exit(0);
                     android.os.Process.killProcess(android.os.Process.myPid());

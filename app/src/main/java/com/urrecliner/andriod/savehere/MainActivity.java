@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
             if (strPlace.equals("")) {
                 strPlace = "_";
             }
-            strAddress = strAddress.substring(strAddress.indexOf("\n") + 1, strAddress.length());
+            strAddress = strAddress.substring(strAddress.indexOf("\n") + 1);
         } catch (Exception e) {
             strPlace = strAddress;
             strAddress = "?";
@@ -393,7 +393,7 @@ public class MainActivity extends AppCompatActivity {
             latitude = location.getLatitude();
             longitude = location.getLongitude();
             altitude = location.getAltitude();
-            strPosition = String.format("%s\n%s\n%s", latitude, longitude, altitude);
+            strPosition = String.format("%s %s %s", latitude, longitude, altitude);
         }
 //        utils.appendText(strPosition);
         strDateTime = getViewTimeText();

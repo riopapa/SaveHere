@@ -45,15 +45,17 @@ public class CameraActivity extends AppCompatActivity {
 //            nxs6p : h: 1440, w: 2392
 
             TextView tV;
-            tV = findViewById(R.id.placeCText1); tV.setText(Vars.strPlace);
-            tV = findViewById(R.id.placeCText2); tV.setText(Vars.strPlace);
-            tV = findViewById(R.id.placeCText3); tV.setText(Vars.strPlace);
-            tV = findViewById(R.id.address1); tV.setText(Vars.strAddress);
-            tV = findViewById(R.id.address2); tV.setText(Vars.strAddress);
-            tV = findViewById(R.id.address3); tV.setText(Vars.strAddress);
             tV = findViewById(R.id.datetimeCText1); tV.setText(Vars.strDateTime);
             tV = findViewById(R.id.datetimeCText2); tV.setText(Vars.strDateTime);
             tV = findViewById(R.id.datetimeCText3); tV.setText(Vars.strDateTime);
+            tV = findViewById(R.id.datetimeCText4); tV.setText(Vars.strDateTime);
+            tV = findViewById(R.id.placeCText1); tV.setText(Vars.strPlace);
+            tV = findViewById(R.id.placeCText2); tV.setText(Vars.strPlace);
+            tV = findViewById(R.id.placeCText3); tV.setText(Vars.strPlace);
+            tV = findViewById(R.id.placeCText4); tV.setText(Vars.strPlace);
+            tV = findViewById(R.id.address1); tV.setText(Vars.strAddress);
+            tV = findViewById(R.id.address2); tV.setText(Vars.strAddress);
+            tV = findViewById(R.id.address3); tV.setText(Vars.strAddress);
 
             ImageView iV = findViewById(R.id.photoImage);
 
