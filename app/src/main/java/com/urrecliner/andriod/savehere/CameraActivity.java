@@ -88,6 +88,7 @@ public class CameraActivity extends AppCompatActivity {
                 File screenShot = utils.captureScreen(rootView, "");
                 if (screenShot != null) {
                     mActivity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(screenShot)));
+                    utils.setPhotoTag(screenShot);
                     if (CameraMapBoth) {
                         Intent intent = new Intent(getApplicationContext(), LandActivity.class);
                         startActivity(intent);

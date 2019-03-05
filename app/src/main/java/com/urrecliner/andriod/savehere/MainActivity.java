@@ -59,6 +59,7 @@ import static com.urrecliner.andriod.savehere.Vars.latitude;
 import static com.urrecliner.andriod.savehere.Vars.longitude;
 import static com.urrecliner.andriod.savehere.Vars.mActivity;
 import static com.urrecliner.andriod.savehere.Vars.mCamera;
+import static com.urrecliner.andriod.savehere.Vars.phoneMake;
 import static com.urrecliner.andriod.savehere.Vars.phoneModel;
 import static com.urrecliner.andriod.savehere.Vars.strAddress;
 import static com.urrecliner.andriod.savehere.Vars.strDateTime;
@@ -86,10 +87,10 @@ public class MainActivity extends AppCompatActivity {
         if (!AccessPermission.isPermissionOK(getApplicationContext(), this))
             return;
         mActivity = this;
-        phoneModel = Build.MODEL;                   // SM-G965N             Nexus 6P
-        String manufacturer = Build.MANUFACTURER;   // samsung              Huawei
-        String hardware = Build.HARDWARE;           // samsungexynos9810    angler
-        utils.appendText("this phone model is " + phoneModel + " manu " + manufacturer + " hardware " + hardware);
+        phoneModel = Build.MODEL;           // SM-G965N             Nexus 6P
+        phoneMake = Build.MANUFACTURER;     // samsung              Huawei
+//        String hardware = Build.HARDWARE;   // samsungexynos9810    angler
+//        utils.appendText("this phone model is " + phoneModel + " manu " + manufacturer + " hardware " + hardware);
 
         final Button btnCameraOnly = findViewById(R.id.btnCamera);
         btnCameraOnly.setOnClickListener(new View.OnClickListener() {

@@ -59,11 +59,11 @@ You have three options
 ### Optional functions
 
 - slide bar : to adjust google map scale (higher value is more zoomed-in), scale will be saved for next use
-- Timer : if clicked, screen show will be activated after 10 secs when you click Camera button
+- Timer : if clicked, screen shot will be after 10 seconds of camera and/or map button
 
 ## Comments
 
-- Android SDK API 25 (Nuguar 7.1.1) or above 
+- Android SDK API 26 or above 
 - Thanks to [google sample in github][2] for screen shot
 
 

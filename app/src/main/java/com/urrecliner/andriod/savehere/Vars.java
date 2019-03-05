@@ -29,6 +29,7 @@ public class Vars {
     static Utils utils = new Utils();
     static Activity mActivity;
     static String phoneModel = null;
+    static String phoneMake = null;
     static String galaxyS9 = "SM-G965N";
     static String nexus6P = "Nexus 6P";
 }

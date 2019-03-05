@@ -11,6 +11,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -20,6 +23,7 @@ import static com.urrecliner.andriod.savehere.Vars.galaxyS9;
 import static com.urrecliner.andriod.savehere.Vars.isRUNNING;
 import static com.urrecliner.andriod.savehere.Vars.latitude;
 import static com.urrecliner.andriod.savehere.Vars.longitude;
+import static com.urrecliner.andriod.savehere.Vars.phoneMake;
 import static com.urrecliner.andriod.savehere.Vars.phoneModel;
 import static com.urrecliner.andriod.savehere.Vars.strPlace;
 import static com.urrecliner.andriod.savehere.Vars.utils;
@@ -28,6 +32,7 @@ public class Utils {
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd", Locale.ENGLISH);
     private final SimpleDateFormat timeLogFormat = new SimpleDateFormat("yy/MM/dd HH:mm:ss", Locale.ENGLISH);
+    private final SimpleDateFormat jpegTimeFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.ENGLISH);
     private int appendCount = 0;
 
     public void appendText(String textLine) {
@@ -155,16 +160,33 @@ public class Utils {
             exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE,convertGpsToDMS(latitude));
             exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF,(latitude > 0) ? "N":"S");
             exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, convertGpsToDMS(longitude));
-            exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF,(longitude > 0) ? "W":"E");
-            exif.setAttribute(ExifInterface.TAG_USER_COMMENT, "riopapa");
+            exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF,(longitude > 0) ? "E":"W");
+//            exif.setAttribute(ExifInterface.TAG_USER_COMMENT, strPlace);
+            exif.setAttribute(ExifInterface.TAG_USER_COMMENT, "Created by riopapa");
+            exif.setAttribute(ExifInterface.TAG_MAKE, phoneMake);
+            exif.setAttribute(ExifInterface.TAG_MODEL, phoneModel);
+            exif.setAttribute(ExifInterface.TAG_DATETIME, jpegTimeFormat.format(new Date()));
             exif.saveAttributes();
         } catch (IOException e) {
-            utils.appendText("EXIF ioException\n"+e);
+            utils.appendText("EXIF ioException\n"+e.toString());
         }
     }
 
+    String utf2euc(String str) {
+        Charset utf8charset = Charset.forName("UTF-8");
+        Charset eucKr = Charset.forName("euc-kr");
+        ByteBuffer inputBuffer = ByteBuffer.wrap(str.getBytes());
+        CharBuffer data = utf8charset.decode(inputBuffer);
+        ByteBuffer outputBuffer = eucKr.encode(data);
+        CharBuffer data2 = eucKr.decode(inputBuffer);
+        ByteBuffer outputBuffer2 = utf8charset.encode(data);
+        String x = str + ", "+data.toString()+" , "+data2.toString();
+        Log.w("code",x);
+        return x;
+    }
+
     synchronized private static String convertGpsToDMS(double latitude) {
-        StringBuilder sb = new StringBuilder(20);
+        StringBuilder sb = new StringBuilder(30);
         latitude=Math.abs(latitude);
         int degree = (int) latitude;
         latitude *= 60;
@@ -172,7 +194,7 @@ public class Utils {
         int minute = (int) latitude;
         latitude *= 60;
         latitude -= (minute * 60.0d);
-        int second = (int) (latitude*1000.0d);
+        float second = (float) latitude;
 
         sb.setLength(0);
         sb.append(degree);
@@ -180,7 +202,7 @@ public class Utils {
         sb.append(minute);
         sb.append("/1,");
         sb.append(second);
-        sb.append("/1000");
+        sb.append("/1");
         return sb.toString();
     }
 }
