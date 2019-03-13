@@ -64,7 +64,6 @@ public class Utils {
 
         try {
             File file = new File(fullName);
-            // if file doesnt exists, then create it
             if (!file.exists()) {
                 if (!file.createNewFile()) {
                     Log.e("createFile", " Error");
@@ -161,7 +160,6 @@ public class Utils {
             exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF,(latitude > 0) ? "N":"S");
             exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, convertGpsToDMS(longitude));
             exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF,(longitude > 0) ? "E":"W");
-//            exif.setAttribute(ExifInterface.TAG_USER_COMMENT, strPlace);
             exif.setAttribute(ExifInterface.TAG_USER_COMMENT, "Created by riopapa");
             exif.setAttribute(ExifInterface.TAG_MAKE, phoneMake);
             exif.setAttribute(ExifInterface.TAG_MODEL, phoneModel);

@@ -60,17 +60,13 @@ public class CameraActivity extends AppCompatActivity {
             ImageView iV = findViewById(R.id.photoImage);
 
             iV.setImageBitmap(bitMapScreen);
-            //        ViewGroup vg = findViewById (R.id.cameraLayout);
-            //        vg.invalidate();
             if (phoneModel.equals(galaxyS9)) {
                 ViewGroup.LayoutParams params = iV.getLayoutParams();        // resize height/width
                 params.width = params.height * 2220 / 1080;
                 iV.setLayoutParams(params);
                 utils.appendText("width adjusted to " + params.width);
             }
-
             View rootView = getWindow().getDecorView();
-
             takeScreenShot(rootView);
         }
     }
@@ -83,8 +79,6 @@ public class CameraActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             public void run() {
                 rootView.setDrawingCacheEnabled(true);
-//                utils.appendText("rootView made");
-
                 File screenShot = utils.captureScreen(rootView, "");
                 if (screenShot != null) {
                     mActivity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(screenShot)));

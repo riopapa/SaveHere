@@ -21,7 +21,7 @@
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="#0016b5"
-        android:textSize="24sp"
+        android:textSize="16sp"
         android:textStyle="bold" />
 
     <TextView
@@ -35,7 +35,7 @@
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="#0016b5"
-        android:textSize="24sp"
+        android:textSize="16sp"
         android:textStyle="bold" />
 
     <TextView
@@ -49,7 +49,7 @@
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="#0016b5"
-        android:textSize="24sp"
+        android:textSize="16sp"
         android:textStyle="bold" />
 
     <TextView
@@ -63,7 +63,7 @@
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="#fffb00"
-        android:textSize="24sp"
+        android:textSize="16sp"
         android:textStyle="bold" />
 
     <TextView
@@ -72,11 +72,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="0sp"
-        android:layout_marginBottom="40dp"
+        android:layout_marginBottom="30dp"
         android:text="@string/txtPlace"
         android:textAlignment="center"
         android:textColor="#0016b5"
-        android:textSize="40sp"
+        android:textSize="24sp"
         android:textStyle="bold" />
 
     <TextView
@@ -85,11 +85,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="4sp"
-        android:layout_marginBottom="44dp"
+        android:layout_marginBottom="34dp"
         android:text="@string/txtPlace"
         android:textAlignment="center"
         android:textColor="#0016b5"
-        android:textSize="40sp"
+        android:textSize="24sp"
         android:textStyle="bold" />
 
     <TextView
@@ -98,11 +98,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="3sp"
-        android:layout_marginBottom="43dp"
+        android:layout_marginBottom="33dp"
         android:text="@string/txtPlace"
         android:textAlignment="center"
         android:textColor="#0016b5"
-        android:textSize="40sp"
+        android:textSize="24sp"
         android:textStyle="bold" />
 
     <TextView
@@ -111,11 +111,11 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_marginStart="2sp"
-        android:layout_marginBottom="42dp"
+        android:layout_marginBottom="32dp"
         android:text="@string/txtPlace"
         android:textAlignment="center"
         android:textColor="#fffb00"
-        android:textSize="40sp"
+        android:textSize="24sp"
         android:textStyle="bold" />
 
     <TextView
@@ -123,12 +123,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="0sp"
-        android:layout_marginBottom="5dp"
+        android:layout_marginBottom="10dp"
         android:layout_alignParentBottom="true"
         android:text="@string/txtAddress"
         android:textAlignment="center"
         android:textColor="#0016b5"
-        android:textSize="20sp"
+        android:textSize="14sp"
         android:textStyle="bold" />
 
     <TextView
@@ -136,35 +136,36 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="2sp"
-        android:layout_marginBottom="7dp"
+        android:layout_marginBottom="12dp"
         android:layout_alignParentBottom="true"
         android:text="@string/txtAddress"
         android:textAlignment="center"
         android:textColor="#0016b5"
-        android:textSize="20sp"
+        android:textSize="14sp"
         android:textStyle="bold" />
     <TextView
         android:id="@+id/address3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="1dp"
-        android:layout_marginBottom="6dp"
+        android:layout_marginBottom="11dp"
         android:layout_alignParentBottom="true"
         android:text="@string/txtAddress"
         android:textAlignment="center"
         android:textColor="#fffb00"
-        android:textSize="20sp"
+        android:textSize="14sp"
         android:textStyle="bold" />
 
     <ImageView
-        android:layout_width="100dp"
-        android:layout_height="70dp"
+        android:layout_width="150dp"
+        android:layout_height="100dp"
         android:layout_alignParentEnd="true"
         android:layout_marginTop="10dp"
         android:layout_marginEnd="70dp"
         android:contentDescription="@string/todo"
         android:padding="0dp"
-        android:src="@mipmap/icon_riopapa_yellow_blue" />
+        android:alpha="0.2"
+        android:src="@raw/signature_yellow" />
 
 </RelativeLayout>
 

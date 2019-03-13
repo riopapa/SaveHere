@@ -577,7 +577,7 @@ public class MainActivity extends AppCompatActivity {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy/MM/dd\nHH:mm:ss", Locale.ENGLISH);
+    final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy/MM/dd\nHH:mm", Locale.ENGLISH);
     private String getViewTimeText() { return dateTimeFormat.format(new Date()); }
 
 }
