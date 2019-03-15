@@ -35,6 +35,8 @@ import static com.urrecliner.andriod.savehere.Vars.utils;
 
 public class Utils {
 
+    final String PREFIX = "log_";
+
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd", Locale.ENGLISH);
     private final SimpleDateFormat timeLogFormat = new SimpleDateFormat("yy/MM/dd HH:mm:ss", Locale.ENGLISH);
     private final SimpleDateFormat jpegTimeFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.ENGLISH);
@@ -43,7 +45,7 @@ public class Utils {
     public void appendText(String textLine) {
         if (isRUNNING)
             return;
-        File directory = new File(Environment.getExternalStorageDirectory(), "SaveHere");
+        File directory = getPackageDirectory();
         try {
             if (!directory.exists()) {
                 boolean result = directory.mkdirs();
@@ -53,22 +55,11 @@ public class Utils {
             Log.e("Directory", "Create error " + directory.toString() + "_" + e.toString());
         }
 
-        File directoryDate = new File(directory, dateFormat.format(new Date()));
-        try {
-            if (!directoryDate.exists()) {
-                if (directoryDate.mkdirs())
-                    Log.e("Directory", directoryDate.toString() + " created ");
-            }
-        } catch (Exception e) {
-            Log.e("creating Folder error", directoryDate + "_" + e.toString());
-        }
 
         BufferedWriter bw = null;
         FileWriter fw = null;
-        String fullName = directoryDate.toString() + "/" + "save_here.txt";
-
         try {
-            File file = new File(fullName);
+            File file = new File(directory, PREFIX + dateFormat.format(new Date())+".txt");
             if (!file.exists()) {
                 if (!file.createNewFile()) {
                     Log.e("createFile", " Error");
@@ -209,15 +200,17 @@ public class Utils {
         return sb.toString();
     }
 
-    public void deleteOldFiles() {
+    void deleteOldFiles() {
 
-        String olddate = dateFormat.format(System.currentTimeMillis() - 3*24*60*60*1000L);
-        File[] files = getDirectoryList(getPackageDirectory());
+        String oldDate = PREFIX + dateFormat.format(System.currentTimeMillis() - 3*24*60*60*1000L);
+        File packageDirectory = getPackageDirectory();
+        File[] files = getFilesList(packageDirectory);
         Collator myCollator = Collator.getInstance();
         for (File file : files) {
             String shortFileName = file.getName();
-            if (myCollator.compare(shortFileName, olddate) < 0) {
-                deleteRecursive(file);
+            if (myCollator.compare(shortFileName, oldDate) < 0) {
+                if (file.delete())
+                    Log.e("file","Delete Error "+file);
             }
         }
     }
@@ -228,6 +221,7 @@ public class Utils {
         try {
             applicationInfo = packageManager.getApplicationInfo(context.getApplicationInfo().packageName, 0);
         } catch (final PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
         }
         return (String) (applicationInfo != null ? packageManager.getApplicationLabel(applicationInfo) : "Unknown");
     }
@@ -246,21 +240,9 @@ public class Utils {
         return directory;
     }
 
-    private File[] getDirectoryList(File fullPath) {
+    private File[] getFilesList(File fullPath) {
         File[] files = fullPath.listFiles();
-//        log("# of files", "in dir : " + files.length);
         return files;
     }
-
-    /* delete directory and files under that directory */
-    private void deleteRecursive(File fileOrDirectory) {
-//        Log.w("deleteRecursive",fileOrDirectory.toString());
-        if (fileOrDirectory.isDirectory())
-            for (File child : fileOrDirectory.listFiles()) {
-                deleteRecursive(child);
-            }
-        fileOrDirectory.delete();
-    }
-
 
 }
