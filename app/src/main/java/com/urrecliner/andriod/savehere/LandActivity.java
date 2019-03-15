@@ -57,14 +57,15 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-//        utils.appendText("land act LANDSCAPE");
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        TextView mPlaceTextView = findViewById(R.id.placeText);
-        mPlaceTextView.setText(Vars.strPlace);
-        TextView mAddressTextView = findViewById(R.id.addressText);
-        mAddressTextView.setText(Vars.strAddress);
-        TextView mDTV = findViewById(R.id.datetimeText);
-        mDTV.setText(Vars.strDateTime);
+        TextView tV = findViewById(R.id.placeText1); tV.setText(Vars.strPlace);
+        tV = findViewById(R.id.placeText2); tV.setText(Vars.strPlace);
+        tV = findViewById(R.id.addressText1); tV.setText(Vars.strAddress);
+        tV = findViewById(R.id.addressText2); tV.setText(Vars.strAddress);
+        tV = findViewById(R.id.datetimeText1); tV.setText(Vars.strDateTime);
+        tV = findViewById(R.id.datetimeText2); tV.setText(Vars.strDateTime);
+        tV = findViewById(R.id.GPSText1); tV.setText(Vars.strPosition);
+        tV = findViewById(R.id.GPSText2); tV.setText(Vars.strPosition);
     }
 
     @Override

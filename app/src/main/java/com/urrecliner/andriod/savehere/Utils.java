@@ -1,5 +1,8 @@
 package com.urrecliner.andriod.savehere;
 
+import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.media.ExifInterface;
 import android.os.Environment;
@@ -14,6 +17,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.CharBuffer;
 import java.nio.charset.Charset;
+import java.text.Collator;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -23,6 +27,7 @@ import static com.urrecliner.andriod.savehere.Vars.galaxyS9;
 import static com.urrecliner.andriod.savehere.Vars.isRUNNING;
 import static com.urrecliner.andriod.savehere.Vars.latitude;
 import static com.urrecliner.andriod.savehere.Vars.longitude;
+import static com.urrecliner.andriod.savehere.Vars.mainContext;
 import static com.urrecliner.andriod.savehere.Vars.phoneMake;
 import static com.urrecliner.andriod.savehere.Vars.phoneModel;
 import static com.urrecliner.andriod.savehere.Vars.strPlace;
@@ -203,4 +208,59 @@ public class Utils {
         sb.append("/1");
         return sb.toString();
     }
+
+    public void deleteOldFiles() {
+
+        String olddate = dateFormat.format(System.currentTimeMillis() - 3*24*60*60*1000L);
+        File[] files = getDirectoryList(getPackageDirectory());
+        Collator myCollator = Collator.getInstance();
+        for (File file : files) {
+            String shortFileName = file.getName();
+            if (myCollator.compare(shortFileName, olddate) < 0) {
+                deleteRecursive(file);
+            }
+        }
+    }
+
+    private  String getAppLabel(Context context) {
+        PackageManager packageManager = context.getPackageManager();
+        ApplicationInfo applicationInfo = null;
+        try {
+            applicationInfo = packageManager.getApplicationInfo(context.getApplicationInfo().packageName, 0);
+        } catch (final PackageManager.NameNotFoundException e) {
+        }
+        return (String) (applicationInfo != null ? packageManager.getApplicationLabel(applicationInfo) : "Unknown");
+    }
+
+    private File getPackageDirectory() {
+        File directory = new File(Environment.getExternalStorageDirectory(), getAppLabel(mainContext));
+        try {
+            if (!directory.exists()) {
+                if(directory.mkdirs()) {
+                    Log.e("mkdirs","Failed "+directory);
+                }
+            }
+        } catch (Exception e) {
+            Log.e("creating Directory error", directory.toString() + "_" + e.toString());
+        }
+        return directory;
+    }
+
+    private File[] getDirectoryList(File fullPath) {
+        File[] files = fullPath.listFiles();
+//        log("# of files", "in dir : " + files.length);
+        return files;
+    }
+
+    /* delete directory and files under that directory */
+    private void deleteRecursive(File fileOrDirectory) {
+//        Log.w("deleteRecursive",fileOrDirectory.toString());
+        if (fileOrDirectory.isDirectory())
+            for (File child : fileOrDirectory.listFiles()) {
+                deleteRecursive(child);
+            }
+        fileOrDirectory.delete();
+    }
+
+
 }

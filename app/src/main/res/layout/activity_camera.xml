@@ -76,7 +76,7 @@
         android:text="@string/txtPlace"
         android:textAlignment="center"
         android:textColor="#0016b5"
-        android:textSize="24sp"
+        android:textSize="28sp"
         android:textStyle="bold" />
 
     <TextView
@@ -89,7 +89,7 @@
         android:text="@string/txtPlace"
         android:textAlignment="center"
         android:textColor="#0016b5"
-        android:textSize="24sp"
+        android:textSize="28sp"
         android:textStyle="bold" />
 
     <TextView
@@ -102,7 +102,7 @@
         android:text="@string/txtPlace"
         android:textAlignment="center"
         android:textColor="#0016b5"
-        android:textSize="24sp"
+        android:textSize="28sp"
         android:textStyle="bold" />
 
     <TextView
@@ -115,7 +115,7 @@
         android:text="@string/txtPlace"
         android:textAlignment="center"
         android:textColor="#fffb00"
-        android:textSize="24sp"
+        android:textSize="28sp"
         android:textStyle="bold" />
 
     <TextView

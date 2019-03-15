@@ -1,6 +1,7 @@
 package com.urrecliner.andriod.savehere;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
 
@@ -9,6 +10,7 @@ import com.google.android.gms.maps.GoogleMap;
 public class Vars {
 
     static String currActivity = null;
+    static Context mainContext = null;
     static String strPlace = null;
     static String strAddress = null;
     static String strMapPlace = null;

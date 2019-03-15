@@ -59,6 +59,7 @@ import static com.urrecliner.andriod.savehere.Vars.latitude;
 import static com.urrecliner.andriod.savehere.Vars.longitude;
 import static com.urrecliner.andriod.savehere.Vars.mActivity;
 import static com.urrecliner.andriod.savehere.Vars.mCamera;
+import static com.urrecliner.andriod.savehere.Vars.mainContext;
 import static com.urrecliner.andriod.savehere.Vars.phoneMake;
 import static com.urrecliner.andriod.savehere.Vars.phoneModel;
 import static com.urrecliner.andriod.savehere.Vars.strAddress;
@@ -74,7 +75,6 @@ public class MainActivity extends AppCompatActivity {
 
     private GoogleApiClient mGoogleApiClient;
 
-//    private final static int FINE_LOCATION = 100;
     private final static int PLACE_PICKER_REQUEST = 1;
     private CameraPreview mCameraPreview;
 
@@ -84,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
         currActivity =  this.getClass().getSimpleName();
+        mainContext = getApplicationContext();
         if (!AccessPermission.isPermissionOK(getApplicationContext(), this))
             return;
         mActivity = this;
@@ -121,9 +122,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         buildZoomSeekBar();
-
         buildTimerToggle();
-
         startCamera();
 
         if (mGoogleApiClient == null) {
@@ -145,11 +144,10 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(intent, PLACE_PICKER_REQUEST);
         }
         else {
-            utils.appendText("##step NO NETWORK");
+            Toast.makeText(mainContext,"No Network", Toast.LENGTH_LONG).show();;
             showCurrentLocation();
         }
-
-        utils.appendText("#ready ---");
+        utils.deleteOldFiles();
     }
     private void take_Picture() {
         if (isTimerOn) {
@@ -173,12 +171,12 @@ public class MainActivity extends AppCompatActivity {
         final SeekBar seekZoom = findViewById(R.id.seek_bar_zoom);
         zoomValue = mSettings.getInt("Zoom", 16);
         seekZoom.setProgress(zoomValue);
-        showSeekBarValue(tV, seekZoom);
+        showSeekBarValue(tV);
         seekZoom.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 zoomValue = seekZoom.getProgress();
-                showSeekBarValue(tV, seekZoom);
+                showSeekBarValue(tV);
                 editor.putInt("Zoom", zoomValue).apply();
             }
             @Override
@@ -216,9 +214,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void showSeekBarValue (TextView tV, SeekBar seekZoom) {
-//        int val = ((zoomValue - seekZoom.getMin()) * (seekZoom.getWidth() - 2 * seekZoom.getThumbOffset())) / (seekZoom.getMax() - seekZoom.getMin());
-//        tV.setX(seekZoom.getX() + val + seekZoom.getThumbOffset() / 2);
+    private void showSeekBarValue (TextView tV) {
         String ZoomValue = "" + zoomValue;
         tV.setText(ZoomValue);
     }
@@ -383,18 +379,18 @@ public class MainActivity extends AppCompatActivity {
 
     public void showCurrentLocation() {
 
-        double altitude = 0;
+        double altitude;
 //        utils.appendText("#a geocoder");
         Location location = getGPSCord();
         if (location == null) {
 //            utils.appendText("Location is null");
-            strPosition = "No Position";
+            strPosition = " ";
         }
         else {
             latitude = location.getLatitude();
             longitude = location.getLongitude();
             altitude = location.getAltitude();
-            strPosition = String.format("%s %s %s", latitude, longitude, altitude);
+            strPosition = String.format("%.5f %.5f %.2f", latitude, longitude, altitude);
         }
 //        utils.appendText(strPosition);
         strDateTime = getViewTimeText();
@@ -456,7 +452,8 @@ public class MainActivity extends AppCompatActivity {
                 Locality = (Locality == null) ? noInfo : Locality;  // Honolulu, 성남시
                 SState = (SState == null) ? noInfo : SState;
                 State = (State == null) ? noInfo : State;   // Hawaii, 경기도
-                Country = (Country == null) ? noInfo : Country; // United States, 대한민국
+                if (Country == null && CountryCode == "KR")
+                    Country = noInfo; // United States, 대한민국
 
                 return MergedAddress(Feature, Thorough, SubLocality, Locality, State, SState, Country, CountryCode);
             } else {
