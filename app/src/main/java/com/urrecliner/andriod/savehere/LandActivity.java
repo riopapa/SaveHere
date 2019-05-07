@@ -8,6 +8,8 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -104,7 +106,7 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
         @Override
         public void onSnapshotReady(Bitmap snapshot) {
             Bitmap scaleMap = drawScale(zoomValue);
-            Bitmap mergedMap = mergeTwoBitmaps(snapshot, scaleMap);
+            Bitmap mergedMap = mergeScaleBitmap(snapshot, scaleMap);
             ImageView mapImageView = findViewById(R.id.mapImage);
             mapImageView.setImageBitmap(mergedMap);
             View rootView = getWindow().getDecorView();
@@ -112,20 +114,23 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     };
 
-    private Bitmap mergeTwoBitmaps(Bitmap firstImage, Bitmap secondImage){
+    private Bitmap mergeScaleBitmap(Bitmap firstImage, Bitmap secondImage){
 
         Bitmap result = Bitmap.createBitmap(firstImage.getWidth(), firstImage.getHeight(), firstImage.getConfig());
         Canvas canvas = new Canvas(result);
-        canvas.drawBitmap(firstImage, 0f, 0f, null);
-        canvas.drawBitmap(secondImage, firstImage.getWidth() - 440, firstImage.getHeight() - 120, null);
+
+        Paint paint = new Paint();
+        canvas.drawBitmap(firstImage, 0, 0, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.XOR));
+        canvas.drawBitmap(secondImage, firstImage.getWidth() - 440, firstImage.getHeight() - 120, paint);
         return result;
     }
 
     private Bitmap drawScale (int zoom) {
         Paint paint = new Paint();
                                 //      20,      19,     18,    17,     16,     15,     14,     13,     12,     11,     10,     9
-        final int xPixels[] =   {  0,   113,	 113,    90,    90,		90,	    113,	113,	113,	90,	    90,	    90,     113, };
-        final String xUnits[] = {  "",  "10 m",	"20 m", "50 m", "100 m","200 m","500 m","1 Km",	"2 Km",	"5 Km", "10 Km","20 Km","50 Km"};
+        final int [] xPixels =   {  0,   113,	 113,    90,    90,		90,	    113,	113,	113,	90,	    90,	    90,     113, };
+        final String [] xUnits = {  "",  "10 m",	"20 m", "50 m", "100 m","200 m","500 m","1 Km",	"2 Km",	"5 Km", "10 Km","20 Km","50 Km"};
         Bitmap bitmap = Bitmap.createBitmap(2400, 80, Bitmap.Config.ARGB_8888);
         int baseX, baseY, startX, startY, stopX, stopY, yPixel;
         Canvas canvas = new Canvas(bitmap);
@@ -156,7 +161,7 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
         handler.postDelayed(new Runnable() {
             public void run() {
 //                utils.appendText("rootView made");
-                strPlace += " ";
+                strPlace += "_";
                 final File screenShot = utils.captureScreen(rootView, "");
                 if (screenShot != null) {
                     utils.setPhotoTag(screenShot);

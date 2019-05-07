@@ -24,7 +24,6 @@ import java.util.Locale;
 
 import static com.urrecliner.andriod.savehere.Vars.currActivity;
 import static com.urrecliner.andriod.savehere.Vars.galaxyS9;
-import static com.urrecliner.andriod.savehere.Vars.isRUNNING;
 import static com.urrecliner.andriod.savehere.Vars.latitude;
 import static com.urrecliner.andriod.savehere.Vars.longitude;
 import static com.urrecliner.andriod.savehere.Vars.mainContext;
@@ -38,13 +37,11 @@ public class Utils {
     final String PREFIX = "log_";
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd", Locale.ENGLISH);
-    private final SimpleDateFormat timeLogFormat = new SimpleDateFormat("yy/MM/dd HH:mm:ss", Locale.ENGLISH);
+    private final SimpleDateFormat timeLogFormat = new SimpleDateFormat("MM/dd HH:mm:ss", Locale.ENGLISH);
     private final SimpleDateFormat jpegTimeFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.ENGLISH);
     private int appendCount = 0;
 
     public void appendText(String textLine) {
-        if (isRUNNING)
-            return;
         File directory = getPackageDirectory();
         try {
             if (!directory.exists()) {
@@ -200,7 +197,7 @@ public class Utils {
         return sb.toString();
     }
 
-    void deleteOldFiles() {
+    void deleteOldLogFiles() {
 
         String oldDate = PREFIX + dateFormat.format(System.currentTimeMillis() - 3*24*60*60*1000L);
         File packageDirectory = getPackageDirectory();

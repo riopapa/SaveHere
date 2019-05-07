@@ -147,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(mainContext,"No Network", Toast.LENGTH_LONG).show();;
             showCurrentLocation();
         }
-        utils.deleteOldFiles();
+        utils.deleteOldLogFiles();
     }
     private void take_Picture() {
         if (isTimerOn) {
@@ -574,7 +574,7 @@ public class MainActivity extends AppCompatActivity {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("yyyy/MM/dd\nHH:mm", Locale.ENGLISH);
+    final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("`yy/MM/dd HH:mm", Locale.ENGLISH);
     private String getViewTimeText() { return dateTimeFormat.format(new Date()); }
 
 }

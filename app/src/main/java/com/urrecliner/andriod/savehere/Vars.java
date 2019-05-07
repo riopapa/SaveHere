@@ -27,7 +27,6 @@ public class Vars {
     static boolean CameraMapBoth = false;
     static boolean isTimerOn = false;
 
-    static boolean isRUNNING = false;
     static Utils utils = new Utils();
     static Activity mActivity;
     static String phoneModel = null;

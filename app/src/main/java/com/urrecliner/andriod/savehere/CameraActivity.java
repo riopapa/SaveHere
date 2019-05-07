@@ -56,6 +56,8 @@ public class CameraActivity extends AppCompatActivity {
             tV = findViewById(R.id.address1); tV.setText(Vars.strAddress);
             tV = findViewById(R.id.address2); tV.setText(Vars.strAddress);
             tV = findViewById(R.id.address3); tV.setText(Vars.strAddress);
+            tV = findViewById(R.id.GPSText1); tV.setText(Vars.strPosition);
+            tV = findViewById(R.id.GPSText2); tV.setText(Vars.strPosition);
 
             ImageView iV = findViewById(R.id.photoImage);
 
