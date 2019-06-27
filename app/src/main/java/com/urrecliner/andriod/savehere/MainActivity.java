@@ -28,6 +28,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.RelativeLayout;
@@ -394,23 +395,17 @@ public class MainActivity extends AppCompatActivity {
         }
 //        utils.appendText(strPosition);
         strDateTime = getViewTimeText();
-        String text;
-        if (strMapPlace == null ) {
-            if (isNetworkAvailable()) {
-                Geocoder geocoder = new Geocoder(this, Locale.KOREA);
-                strAddress = getAddressByGPSValue(geocoder, latitude, longitude);
-            }
-            else {
-                strAddress = " ";
-            }
-//            utils.appendText("#strAddress " + strAddress);
-            text = "\n" + strAddress;
+        if (isNetworkAvailable()) {
+            Geocoder geocoder = new Geocoder(this, Locale.KOREA);
+            strAddress = getAddressByGPSValue(geocoder, latitude, longitude);
         }
         else {
-            text = strMapPlace + "\n" + strMapAddress;
+            strAddress = " ";
         }
-        TextView mAdV = findViewById(R.id.addressText);
-        mAdV.setText(text);
+        String text = ((strMapPlace == null) ? " ":strMapPlace) + "\n" + ((strMapAddress == null) ? strAddress:strMapAddress);
+        EditText et = findViewById(R.id.addressText);
+        et.setText(text);
+        et.setSelection(text.indexOf("\n"));
 //        utils.appendText("#shown");
     }
 
@@ -500,11 +495,11 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-
         if (resultCode == RESULT_OK) {  // user picked up place within the google map list
             Place place = PlacePicker.getPlace(this, data);
             strMapPlace = place.getName().toString();
-            strMapAddress = place.getAddress().toString();
+            String text = place.getAddress().toString();
+            strMapAddress = (text.length() > 10) ? text : null;
         } else if (resultCode == RESULT_CANCELED) {
             strMapPlace = null;
             strMapAddress = null;
