@@ -4,44 +4,43 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.media.ExifInterface;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
+
+import androidx.exifinterface.media.ExifInterface;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
-import java.nio.charset.Charset;
 import java.text.Collator;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
 import static com.urrecliner.andriod.savehere.Vars.currActivity;
-import static com.urrecliner.andriod.savehere.Vars.galaxyS9;
 import static com.urrecliner.andriod.savehere.Vars.latitude;
 import static com.urrecliner.andriod.savehere.Vars.longitude;
 import static com.urrecliner.andriod.savehere.Vars.mainContext;
+import static com.urrecliner.andriod.savehere.Vars.nexus6P;
 import static com.urrecliner.andriod.savehere.Vars.phoneMake;
 import static com.urrecliner.andriod.savehere.Vars.phoneModel;
 import static com.urrecliner.andriod.savehere.Vars.strPlace;
 import static com.urrecliner.andriod.savehere.Vars.utils;
 
-public class Utils {
+class Utils {
 
-    final String PREFIX = "log_";
+    final private String PREFIX = "log_";
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd", Locale.ENGLISH);
     private final SimpleDateFormat timeLogFormat = new SimpleDateFormat("MM/dd HH:mm:ss", Locale.ENGLISH);
     private final SimpleDateFormat jpegTimeFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.ENGLISH);
+    private final SimpleDateFormat imgDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.KOREA);
     private int appendCount = 0;
 
-    public void appendText(String textLine) {
+    void appendText(String textLine) {
         File directory = getPackageDirectory();
         try {
             if (!directory.exists()) {
@@ -84,22 +83,11 @@ public class Utils {
     }
 
     private File getPublicCameraDirectory() {
-        // Get the directory for the user's public pictures directory.
         return new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DCIM),"/Camera");
     }
 
-    static SimpleDateFormat imgDateFormat;
-
-    static {
-        imgDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.KOREA);
-    }
-
-    private String getIMGTimeText() {
-        return imgDateFormat.format(new Date());
-    }
-
-    public File captureScreen(View view, String tag) {
+    File captureScreen(View view, String tag) {
 
         view.setDrawingCacheEnabled(true);
         view.buildDrawingCache();
@@ -107,27 +95,26 @@ public class Utils {
         if (screenBitmap == null) {
             Log.e("screen"," bitmap null");
         }
+        assert screenBitmap != null;
         int width = screenBitmap.getWidth();
         int height = screenBitmap.getHeight();
-        if (phoneModel.equals(galaxyS9)) {
-            screenBitmap = Bitmap.createBitmap(screenBitmap, 200, 0, width-400, height);
+        float ratio = (float) width / (float) height;
+        if (ratio > 1.34f) {
+            int width2 = (int) ((float) height * (1.34f+0.2f));
+            screenBitmap = Bitmap.createBitmap(screenBitmap, (width - width2) / 2, 0, width2, height);
         }
-        File file = bitMap2File (screenBitmap, tag);
-//        appendText("Screen Captured.. " + file.getName());
-        return file;
+        return bitMap2File (screenBitmap, tag);
     }
 
-    public File bitMap2File (Bitmap bitmap, String tag) {
-        String filename;
-        if (phoneModel.equals(galaxyS9)) {
-            filename = getIMGTimeText() + "_" + strPlace + tag + ".jpg";
-        } else {
-            filename = "IMG_" + getIMGTimeText() + "_"  + strPlace + tag + ".jpg";
-        }
+    private File bitMap2File (Bitmap bitmap, String tag) {
+        String filename = imgDateFormat.format(new Date()) + "_" + strPlace + tag + ".jpg";
+        if (phoneModel.equals(nexus6P))
+            filename = "IMG_" + filename;
         File directory = getPublicCameraDirectory();
         try {
             if (!directory.exists()) {
-                directory.mkdirs();
+                boolean mkdirs = directory.mkdirs();
+                Log.w("mkdirs", ""+mkdirs);
             }
         } catch (Exception e) {
             Log.w("creating file error", e.toString());
@@ -142,7 +129,6 @@ public class Utils {
             utils.appendText("Create ioException\n"+e);
             return null;
         }
-        Log.w("photo","file created");
         return file;
     }
 
@@ -161,19 +147,6 @@ public class Utils {
         } catch (IOException e) {
             utils.appendText("EXIF ioException\n"+e.toString());
         }
-    }
-
-    String utf2euc(String str) {
-        Charset utf8charset = Charset.forName("UTF-8");
-        Charset eucKr = Charset.forName("euc-kr");
-        ByteBuffer inputBuffer = ByteBuffer.wrap(str.getBytes());
-        CharBuffer data = utf8charset.decode(inputBuffer);
-        ByteBuffer outputBuffer = eucKr.encode(data);
-        CharBuffer data2 = eucKr.decode(inputBuffer);
-        ByteBuffer outputBuffer2 = utf8charset.encode(data);
-        String x = str + ", "+data.toString()+" , "+data2.toString();
-        Log.w("code",x);
-        return x;
     }
 
     synchronized private static String convertGpsToDMS(double latitude) {
@@ -238,8 +211,6 @@ public class Utils {
     }
 
     private File[] getFilesList(File fullPath) {
-        File[] files = fullPath.listFiles();
-        return files;
+        return fullPath.listFiles();
     }
-
 }

@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,9 +17,7 @@ import java.io.File;
 import static com.urrecliner.andriod.savehere.Vars.CameraMapBoth;
 import static com.urrecliner.andriod.savehere.Vars.bitMapScreen;
 import static com.urrecliner.andriod.savehere.Vars.currActivity;
-import static com.urrecliner.andriod.savehere.Vars.galaxyS9;
 import static com.urrecliner.andriod.savehere.Vars.mActivity;
-import static com.urrecliner.andriod.savehere.Vars.phoneModel;
 import static com.urrecliner.andriod.savehere.Vars.utils;
 
 public class CameraActivity extends AppCompatActivity {
@@ -62,12 +59,12 @@ public class CameraActivity extends AppCompatActivity {
             ImageView iV = findViewById(R.id.photoImage);
 
             iV.setImageBitmap(bitMapScreen);
-            if (phoneModel.equals(galaxyS9)) {
-                ViewGroup.LayoutParams params = iV.getLayoutParams();        // resize height/width
-                params.width = params.height * 2220 / 1080;
-                iV.setLayoutParams(params);
-                utils.appendText("width adjusted to " + params.width);
-            }
+//            if (phoneModel.equals(galaxyS9)) {
+//                ViewGroup.LayoutParams params = iV.getLayoutParams();        // resize height/width
+//                params.width = params.height * 2220 / 1080;
+//                iV.setLayoutParams(params);
+//                utils.appendText("width adjusted to " + params.width);
+//            }
             View rootView = getWindow().getDecorView();
             takeScreenShot(rootView);
         }
@@ -81,7 +78,7 @@ public class CameraActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             public void run() {
                 rootView.setDrawingCacheEnabled(true);
-                File screenShot = utils.captureScreen(rootView, "");
+                File screenShot = utils.captureScreen(rootView, " ");
                 if (screenShot != null) {
                     mActivity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(screenShot)));
                     utils.setPhotoTag(screenShot);

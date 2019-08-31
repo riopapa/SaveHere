@@ -3,7 +3,6 @@ package com.urrecliner.andriod.savehere;
 import android.content.Context;
 import android.hardware.Camera;
 import android.hardware.Camera.Size;
-import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
@@ -12,9 +11,10 @@ import android.view.ViewGroup;
 import java.io.IOException;
 import java.util.List;
 
+import static com.urrecliner.andriod.savehere.Vars.utils;
+
 
 class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
-    private final String TAG = "Preview";
 
     SurfaceView mSurfaceView;
     SurfaceHolder mHolder;
@@ -130,7 +130,7 @@ class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
                 mCamera.setPreviewDisplay(holder);
             }
         } catch (IOException exception) {
-            Log.e(TAG, "IOException caused by setPreviewDisplay()", exception);
+            utils.appendText("IOException caused by setPreviewDisplay() " + exception.toString());
         }
     }
 

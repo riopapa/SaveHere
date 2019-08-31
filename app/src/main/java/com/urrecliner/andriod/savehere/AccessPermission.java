@@ -8,7 +8,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.widget.Toast;
 
-public class AccessPermission {
+class AccessPermission {
     private final static int MY_PERMISSIONS_WRITE_FILE = 1001;
     private final static int MY_PERMISSIONS_INTERNET = 1002;
     private final static int MY_PERMISSIONS_LOCATION = 1003;

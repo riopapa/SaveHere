@@ -27,9 +27,9 @@
         android:gravity="center"
         android:text="@string/txtDateTime"
         android:layout_marginTop="8dp"
-        android:layout_marginStart="85dp"
+        android:layout_marginStart="145dp"
         android:textColor="#fffb00"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:textStyle="bold" />
 
     <TextView
@@ -40,9 +40,9 @@
         android:gravity="center"
         android:text="@string/txtDateTime"
         android:layout_marginTop="9dp"
-        android:layout_marginStart="86dp"
+        android:layout_marginStart="146dp"
         android:textColor="#151aa5"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:textStyle="bold" />
 
     <TextView
@@ -127,11 +127,11 @@
         android:layout_width="100dp"
         android:layout_height="70dp"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="40dp"
+        android:layout_marginEnd="80dp"
         android:layout_marginTop="10dp"
         android:contentDescription="@string/todo"
         android:padding="0dp"
-        android:alpha="0.2"
+        android:alpha="0.5"
         android:src="@raw/signature_blue" />
 
 </RelativeLayout>

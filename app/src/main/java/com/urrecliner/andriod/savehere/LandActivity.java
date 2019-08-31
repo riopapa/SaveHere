@@ -114,15 +114,15 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     };
 
-    private Bitmap mergeScaleBitmap(Bitmap firstImage, Bitmap secondImage){
+    private Bitmap mergeScaleBitmap(Bitmap mapImage, Bitmap scaleMap){
 
-        Bitmap result = Bitmap.createBitmap(firstImage.getWidth(), firstImage.getHeight(), firstImage.getConfig());
+        Bitmap result = Bitmap.createBitmap(mapImage.getWidth(), mapImage.getHeight(), mapImage.getConfig());
         Canvas canvas = new Canvas(result);
 
         Paint paint = new Paint();
-        canvas.drawBitmap(firstImage, 0, 0, paint);
+        canvas.drawBitmap(mapImage, 0, 0, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.XOR));
-        canvas.drawBitmap(secondImage, firstImage.getWidth() - 440, firstImage.getHeight() - 120, paint);
+        canvas.drawBitmap(scaleMap, mapImage.getWidth() - 400, mapImage.getHeight() - 80, paint);
         return result;
     }
 
