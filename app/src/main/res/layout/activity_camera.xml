@@ -14,56 +14,56 @@
         android:id="@+id/datetimeCText1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="145dp"
+        android:layout_marginStart="144dp"
         android:layout_marginTop="10dp"
         android:layout_alignParentStart="true"
         android:text="@string/date_time"
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="#0016b5"
-        android:textSize="18sp"
+        android:textSize="22sp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/datetimeCText2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="147dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginStart="143dp"
+        android:layout_marginTop="14dp"
         android:layout_alignParentStart="true"
         android:text="@string/date_time"
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="#0016b5"
-        android:textSize="18sp"
+        android:textSize="22sp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/datetimeCText3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="146dp"
-        android:layout_marginTop="11dp"
+        android:layout_marginStart="140dp"
+        android:layout_marginTop="10dp"
         android:layout_alignParentStart="true"
         android:text="@string/date_time"
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="#0016b5"
-        android:textSize="18sp"
+        android:textSize="22sp"
         android:textStyle="bold" />
 
     <TextView
         android:id="@+id/datetimeCText4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="146dp"
+        android:layout_marginStart="141dp"
         android:layout_marginTop="11dp"
         android:layout_alignParentStart="true"
         android:text="@string/date_time"
         android:textAlignment="center"
         android:textAllCaps="false"
         android:textColor="#fffb00"
-        android:textSize="18sp"
+        android:textSize="22sp"
         android:textStyle="bold" />
 
     <TextView
@@ -71,12 +71,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="0sp"
+        android:layout_marginStart="0dp"
         android:layout_marginBottom="45dp"
         android:text="@string/txtPlace"
         android:textAlignment="center"
         android:textColor="#0016b5"
-        android:textSize="28sp"
+        android:textSize="30sp"
         android:textStyle="bold" />
 
     <TextView
@@ -84,12 +84,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="4sp"
-        android:layout_marginBottom="49dp"
+        android:layout_marginStart="5dp"
+        android:layout_marginBottom="50dp"
         android:text="@string/txtPlace"
         android:textAlignment="center"
         android:textColor="#0016b5"
-        android:textSize="28sp"
+        android:textSize="30sp"
         android:textStyle="bold" />
 
     <TextView
@@ -97,12 +97,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="3sp"
-        android:layout_marginBottom="48dp"
+        android:layout_marginStart="0dp"
+        android:layout_marginBottom="50dp"
         android:text="@string/txtPlace"
         android:textAlignment="center"
         android:textColor="#0016b5"
-        android:textSize="28sp"
+        android:textSize="30sp"
         android:textStyle="bold" />
 
     <TextView
@@ -110,12 +110,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="2sp"
-        android:layout_marginBottom="47dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginBottom="48dp"
         android:text="@string/txtPlace"
         android:textAlignment="center"
         android:textColor="#fffb00"
-        android:textSize="28sp"
+        android:textSize="30sp"
         android:textStyle="bold" />
 
     <TextView
@@ -128,7 +128,7 @@
         android:text="@string/txtAddress"
         android:textAlignment="center"
         android:textColor="#0016b5"
-        android:textSize="14sp"
+        android:textSize="16sp"
         android:textStyle="bold" />
 
     <TextView
@@ -141,7 +141,7 @@
         android:text="@string/txtAddress"
         android:textAlignment="center"
         android:textColor="#0016b5"
-        android:textSize="14sp"
+        android:textSize="16sp"
         android:textStyle="bold" />
     <TextView
         android:id="@+id/address3"
@@ -153,7 +153,7 @@
         android:text="@string/txtAddress"
         android:textAlignment="center"
         android:textColor="#fffb00"
-        android:textSize="14sp"
+        android:textSize="16sp"
         android:textStyle="bold" />
 
     <TextView
