@@ -122,7 +122,7 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
         Paint paint = new Paint();
         canvas.drawBitmap(mapImage, 0, 0, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.XOR));
-        canvas.drawBitmap(scaleMap, mapImage.getWidth() - 400, mapImage.getHeight() - 80, paint);
+        canvas.drawBitmap(scaleMap, mapImage.getWidth() - 400, mapImage.getHeight() - 90, paint);
         return result;
     }
 

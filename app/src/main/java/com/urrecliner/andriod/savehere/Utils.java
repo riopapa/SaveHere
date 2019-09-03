@@ -4,11 +4,10 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.media.ExifInterface;
 import android.os.Environment;
 import android.util.Log;
 import android.view.View;
-
-import androidx.exifinterface.media.ExifInterface;
 
 import java.io.BufferedWriter;
 import java.io.File;
