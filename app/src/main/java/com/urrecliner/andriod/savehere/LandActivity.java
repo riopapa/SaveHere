@@ -122,7 +122,7 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
         Paint paint = new Paint();
         canvas.drawBitmap(mapImage, 0, 0, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.XOR));
-        canvas.drawBitmap(scaleMap, mapImage.getWidth() - 400, mapImage.getHeight() - 90, paint);
+        canvas.drawBitmap(scaleMap, mapImage.getWidth() - 200, mapImage.getHeight() - 90, paint);
         return result;
     }
 
@@ -131,7 +131,7 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
                                 //      20,      19,     18,    17,     16,     15,     14,     13,     12,     11,     10,     9
         final int [] xPixels =   {  0,   113,	 113,    90,    90,		90,	    113,	113,	113,	90,	    90,	    90,     113, };
         final String [] xUnits = {  "",  "10 m",	"20 m", "50 m", "100 m","200 m","500 m","1 Km",	"2 Km",	"5 Km", "10 Km","20 Km","50 Km"};
-        Bitmap bitmap = Bitmap.createBitmap(2400, 80, Bitmap.Config.ARGB_8888);
+        Bitmap bitmap = Bitmap.createBitmap(300, 80, Bitmap.Config.ARGB_8888);
         int baseX, baseY, startX, startY, stopX, stopY, yPixel;
         Canvas canvas = new Canvas(bitmap);
         paint.setColor(Color.BLUE);

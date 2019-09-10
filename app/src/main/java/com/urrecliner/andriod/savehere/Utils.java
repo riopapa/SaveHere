@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.os.Environment;
 import android.util.Log;
@@ -50,7 +51,6 @@ class Utils {
             Log.e("Directory", "Create error " + directory.toString() + "_" + e.toString());
         }
 
-
         BufferedWriter bw = null;
         FileWriter fw = null;
         try {
@@ -91,21 +91,26 @@ class Utils {
         view.setDrawingCacheEnabled(true);
         view.buildDrawingCache();
         Bitmap screenBitmap = view.getDrawingCache();
-        if (screenBitmap == null) {
-            Log.e("screen"," bitmap null");
-        }
         assert screenBitmap != null;
-        int width = screenBitmap.getWidth();
-        int height = screenBitmap.getHeight();
-        float ratio = (float) width / (float) height;
-        if (ratio > 1.34f) {
-            int width2 = (int) ((float) height * (1.34f+0.2f));
-            screenBitmap = Bitmap.createBitmap(screenBitmap, (width - width2) / 2, 0, width2, height);
-        }
-        return bitMap2File (screenBitmap, tag);
+//        bitMap2File (screenBitmap, tag+" a");
+//        int width = screenBitmap.getWidth();
+//        int height = screenBitmap.getHeight();
+//        float ratio = (float) width / (float) height;
+//        Log.w("size", screenBitmap.getWidth()+" x "+ screenBitmap.getHeight()+" before");
+//        if (ratio > 1.5f) {
+//            int width2 = (int) ((float) height * 1.5f);
+//            screenBitmap = Bitmap.createBitmap(screenBitmap, (width - width2) / 2, 0, width2, height);
+
+//            screenBitmap = getResizedBitmap(screenBitmap, (width * 80) / 100 , height);
+//        }
+//        Log.w("size", screenBitmap.getWidth()+" x "+ screenBitmap.getHeight()+" after");
+        return bitMap2File(screenBitmap, tag);
     }
 
     private File bitMap2File (Bitmap bitmap, String tag) {
+
+        Bitmap outMap = Bitmap.createBitmap(bitmap, 0, 0, 2094, 1080);  // remove right actiobar area
+        outMap = getResizedBitmap(outMap, outMap.getHeight()*150/100, outMap.getHeight());
         String filename = imgDateFormat.format(new Date()) + "_" + strPlace + tag + ".jpg";
         if (phoneModel.equals(nexus6P))
             filename = "IMG_" + filename;
@@ -122,7 +127,7 @@ class Utils {
         FileOutputStream os;
         try {
             os = new FileOutputStream(file);
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, os);
+            outMap.compress(Bitmap.CompressFormat.JPEG, 100, os);
             os.close();
         } catch (IOException e) {
             utils.appendText("Create ioException\n"+e);
@@ -211,5 +216,22 @@ class Utils {
 
     private File[] getFilesList(File fullPath) {
         return fullPath.listFiles();
+    }
+
+    public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // CREATE A MATRIX FOR THE MANIPULATION
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
+
+        // "RECREATE" THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(
+                bm, 0, 0, width, height, matrix, false);
+//        bm.recycle();
+        return resizedBitmap;
     }
 }

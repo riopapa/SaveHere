@@ -3,10 +3,13 @@ package com.urrecliner.andriod.savehere;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -33,6 +36,8 @@ public class CameraActivity extends AppCompatActivity {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
         else {
+//            mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+//            mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
             getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 //            DisplayMetrics displayMetrics = new DisplayMetrics();
 //            getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -56,21 +61,20 @@ public class CameraActivity extends AppCompatActivity {
             tV = findViewById(R.id.GPSText1); tV.setText(Vars.strPosition);
             tV = findViewById(R.id.GPSText2); tV.setText(Vars.strPosition);
 
+            int xp = Resources.getSystem().getDisplayMetrics().widthPixels;
+            int yp = Resources.getSystem().getDisplayMetrics().heightPixels;
+            Log.w("x y",xp + " x "+yp);
             ImageView iV = findViewById(R.id.photoImage);
-
-            iV.setImageBitmap(bitMapScreen);
-//            if (phoneModel.equals(galaxyS9)) {
-//                ViewGroup.LayoutParams params = iV.getLayoutParams();        // resize height/width
-//                params.width = params.height * 2220 / 1080;
-//                iV.setLayoutParams(params);
-//                utils.appendText("width adjusted to " + params.width);
-//            }
+            Bitmap bm = utils.getResizedBitmap(bitMapScreen, bitMapScreen.getHeight() * 2094/ 1080, bitMapScreen.getHeight() );
+            iV.setImageBitmap(bm);
             View rootView = getWindow().getDecorView();
-            takeScreenShot(rootView);
+
+
+            takeCameraShot(rootView);
         }
     }
 
-    public void takeScreenShot(View view) {
+    public void takeCameraShot(View view) {
 
         final View rootView = view;
 
@@ -78,6 +82,7 @@ public class CameraActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             public void run() {
                 rootView.setDrawingCacheEnabled(true);
+                Log.w("rootView", rootView.getDisplay().getWidth()+" x "+rootView.getDisplay().getHeight());
                 File screenShot = utils.captureScreen(rootView, " ");
                 if (screenShot != null) {
                     mActivity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(screenShot)));
@@ -96,6 +101,6 @@ public class CameraActivity extends AppCompatActivity {
                     utils.appendText("Screenshot is NULL");
                 }
             }
-        }, 200);
+        }, 800);
     }
 }

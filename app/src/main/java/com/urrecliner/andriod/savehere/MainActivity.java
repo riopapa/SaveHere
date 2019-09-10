@@ -22,6 +22,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.SurfaceView;
@@ -149,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
             showCurrentLocation();
         }
         utils.deleteOldLogFiles();
+
     }
     private void take_Picture() {
         if (isTimerOn) {
@@ -270,6 +272,7 @@ public class MainActivity extends AppCompatActivity {
 ////                matrix.postRotate(270);
 //                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bw, height, matrix, true);
 //            }
+            Log.w("jpec", bitmap.getWidth()+" x "+bitmap.getHeight());
             bitMapScreen = bitmap;
 
     //        byte[] currentData = stream.toByteArray();
