@@ -29,6 +29,8 @@ import static com.urrecliner.andriod.savehere.Vars.phoneMake;
 import static com.urrecliner.andriod.savehere.Vars.phoneModel;
 import static com.urrecliner.andriod.savehere.Vars.strPlace;
 import static com.urrecliner.andriod.savehere.Vars.utils;
+import static com.urrecliner.andriod.savehere.Vars.xPixel;
+import static com.urrecliner.andriod.savehere.Vars.yPixel;
 
 class Utils {
 
@@ -39,7 +41,6 @@ class Utils {
     private final SimpleDateFormat jpegTimeFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.ENGLISH);
     private final SimpleDateFormat imgDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.KOREA);
     private int appendCount = 0;
-
     void appendText(String textLine) {
         File directory = getPackageDirectory();
         try {
@@ -67,7 +68,6 @@ class Utils {
             fw = new FileWriter(file.getAbsoluteFile(), true);
             bw = new BufferedWriter(fw);
             bw.write(outText);
-            Log.w("append " + appendCount++, outText);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -92,6 +92,7 @@ class Utils {
         view.buildDrawingCache();
         Bitmap screenBitmap = view.getDrawingCache();
         assert screenBitmap != null;
+
 //        bitMap2File (screenBitmap, tag+" a");
 //        int width = screenBitmap.getWidth();
 //        int height = screenBitmap.getHeight();
@@ -109,8 +110,8 @@ class Utils {
 
     private File bitMap2File (Bitmap bitmap, String tag) {
 
-        Bitmap outMap = Bitmap.createBitmap(bitmap, 0, 0, 2094, 1080);  // remove right actiobar area
-        outMap = getResizedBitmap(outMap, outMap.getHeight()*150/100, outMap.getHeight());
+        Bitmap outMap = Bitmap.createBitmap(bitmap, 0, 0, xPixel, yPixel);  // remove right actiobar white area
+        outMap = getResizedBitmap(outMap, xPixel*85/100, yPixel);
         String filename = imgDateFormat.format(new Date()) + "_" + strPlace + tag + ".jpg";
         if (phoneModel.equals(nexus6P))
             filename = "IMG_" + filename;

@@ -22,7 +22,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Display;
 import android.view.KeyEvent;
 import android.view.SurfaceView;
@@ -165,8 +164,8 @@ public class MainActivity extends AppCompatActivity {
         else {
             mCamera.takePicture(null, null, rawCallback, jpegCallback); // null is for silent shot
         }
-
     }
+
     private void buildZoomSeekBar() {
         SharedPreferences mSettings = PreferenceManager.getDefaultSharedPreferences(this);
         final SharedPreferences.Editor editor = mSettings.edit();
@@ -260,23 +259,9 @@ public class MainActivity extends AppCompatActivity {
     //byte array를 bitmap으로 변환
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
-
+        bitMapScreen = BitmapFactory.decodeByteArray(data, 0, data.length, options);
 //        Log.w("bitmap ","size x: "+bitmap.getWidth()+" y: "+bitmap.getHeight());
-            //  size x: 4032 y: 2268    : 1.333
-//            if (phoneModel.equals(galaxyS9)) {
-//                int bw = bitmap.getWidth();
-//                int bh = bitmap.getHeight();
-//                int height = bw / 2220 * 1080;
-//                Matrix matrix = new Matrix();
-////                matrix.postRotate(270);
-//                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bw, height, matrix, true);
-//            }
-            Log.w("jpec", bitmap.getWidth()+" x "+bitmap.getHeight());
-            bitMapScreen = bitmap;
 
-    //        byte[] currentData = stream.toByteArray();
-            //파일로 저장
             new SaveImageTask().execute("");
             }
         };
@@ -394,7 +379,7 @@ public class MainActivity extends AppCompatActivity {
             latitude = location.getLatitude();
             longitude = location.getLongitude();
             altitude = location.getAltitude();
-            strPosition = String.format("%.5f %.5f %.2f", latitude, longitude, altitude);
+            strPosition = String.format(Locale.ENGLISH,"%.5f %.5f %.2f", latitude, longitude, altitude);
         }
 //        utils.appendText(strPosition);
         strDateTime = getViewTimeText();

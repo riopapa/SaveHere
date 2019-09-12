@@ -9,7 +9,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
@@ -22,6 +21,8 @@ import static com.urrecliner.andriod.savehere.Vars.bitMapScreen;
 import static com.urrecliner.andriod.savehere.Vars.currActivity;
 import static com.urrecliner.andriod.savehere.Vars.mActivity;
 import static com.urrecliner.andriod.savehere.Vars.utils;
+import static com.urrecliner.andriod.savehere.Vars.xPixel;
+import static com.urrecliner.andriod.savehere.Vars.yPixel;
 
 public class CameraActivity extends AppCompatActivity {
 
@@ -61,15 +62,12 @@ public class CameraActivity extends AppCompatActivity {
             tV = findViewById(R.id.GPSText1); tV.setText(Vars.strPosition);
             tV = findViewById(R.id.GPSText2); tV.setText(Vars.strPosition);
 
-            int xp = Resources.getSystem().getDisplayMetrics().widthPixels;
-            int yp = Resources.getSystem().getDisplayMetrics().heightPixels;
-            Log.w("x y",xp + " x "+yp);
+            xPixel = Resources.getSystem().getDisplayMetrics().widthPixels;     // 2094, 2960
+            yPixel = Resources.getSystem().getDisplayMetrics().heightPixels;    // 1080, 1440
             ImageView iV = findViewById(R.id.photoImage);
-            Bitmap bm = utils.getResizedBitmap(bitMapScreen, bitMapScreen.getHeight() * 2094/ 1080, bitMapScreen.getHeight() );
+            Bitmap bm = utils.getResizedBitmap(bitMapScreen, xPixel, yPixel);
             iV.setImageBitmap(bm);
             View rootView = getWindow().getDecorView();
-
-
             takeCameraShot(rootView);
         }
     }
@@ -82,7 +80,6 @@ public class CameraActivity extends AppCompatActivity {
         handler.postDelayed(new Runnable() {
             public void run() {
                 rootView.setDrawingCacheEnabled(true);
-                Log.w("rootView", rootView.getDisplay().getWidth()+" x "+rootView.getDisplay().getHeight());
                 File screenShot = utils.captureScreen(rootView, " ");
                 if (screenShot != null) {
                     mActivity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(screenShot)));
