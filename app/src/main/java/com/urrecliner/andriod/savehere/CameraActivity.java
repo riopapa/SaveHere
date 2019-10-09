@@ -52,15 +52,18 @@ public class CameraActivity extends AppCompatActivity {
             tV = findViewById(R.id.datetimeCText2); tV.setText(Vars.strDateTime);
             tV = findViewById(R.id.datetimeCText3); tV.setText(Vars.strDateTime);
             tV = findViewById(R.id.datetimeCText4); tV.setText(Vars.strDateTime);
+            tV = findViewById(R.id.datetimeCText0); tV.setText(Vars.strDateTime);
             tV = findViewById(R.id.placeCText1); tV.setText(Vars.strPlace);
             tV = findViewById(R.id.placeCText2); tV.setText(Vars.strPlace);
             tV = findViewById(R.id.placeCText3); tV.setText(Vars.strPlace);
             tV = findViewById(R.id.placeCText4); tV.setText(Vars.strPlace);
+            tV = findViewById(R.id.placeCText0); tV.setText(Vars.strPlace);
             tV = findViewById(R.id.address1); tV.setText(Vars.strAddress);
             tV = findViewById(R.id.address2); tV.setText(Vars.strAddress);
             tV = findViewById(R.id.address3); tV.setText(Vars.strAddress);
             tV = findViewById(R.id.GPSText1); tV.setText(Vars.strPosition);
             tV = findViewById(R.id.GPSText2); tV.setText(Vars.strPosition);
+            tV = findViewById(R.id.GPSText0); tV.setText(Vars.strPosition);
 
             xPixel = Resources.getSystem().getDisplayMetrics().widthPixels;     // 2094, 2960
             yPixel = Resources.getSystem().getDisplayMetrics().heightPixels;    // 1080, 1440
