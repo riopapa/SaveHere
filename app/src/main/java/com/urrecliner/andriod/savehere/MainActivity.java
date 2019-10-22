@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.hardware.Camera;
 import android.location.Address;
 import android.location.Geocoder;
@@ -22,7 +21,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.view.Display;
 import android.view.KeyEvent;
 import android.view.SurfaceView;
 import android.view.View;
@@ -31,7 +29,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -124,15 +121,10 @@ public class MainActivity extends AppCompatActivity {
 
         buildZoomSeekBar();
         buildTimerToggle();
+        buildCameraView();
         startCamera();
 
-        if (mGoogleApiClient == null) {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(new MyConnectionCallBack())
-                    .addOnConnectionFailedListener(new MyOnConnectionFailedListener())
-                    .addApi(LocationServices.API)
-                    .build();
-        }
+        ready_GoogleAPIClient();
         if (isNetworkAvailable()) {
             PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
             Intent intent = null;
@@ -151,6 +143,17 @@ public class MainActivity extends AppCompatActivity {
         utils.deleteOldLogFiles();
 
     }
+
+    private void ready_GoogleAPIClient() {
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(new MyConnectionCallBack())
+                    .addOnConnectionFailedListener(new MyOnConnectionFailedListener())
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+    }
+
     private void take_Picture() {
         if (isTimerOn) {
             delayCount = 100;
@@ -188,21 +191,35 @@ public class MainActivity extends AppCompatActivity {
             public void onStopTrackingTouch(SeekBar seekBar) {
             }
         });
-        seekZoom.post(new Runnable() {
-            @Override
-            public void run() {
-                Display display = getWindowManager().getDefaultDisplay();
-                Point size = new Point();
-                display.getSize(size);
-                int height = seekZoom.getHeight();
-                int seekZoomTop = seekZoom.getTop();
-                FrameLayout camera_surface = findViewById(R.id.frame);
-                int width = size.x - camera_surface.getWidth();
-                RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(width, height);
-                layoutParams.setMargins(0,seekZoomTop,0,0);
-                seekZoom.setLayoutParams(layoutParams);
-            }
-        });
+//        seekZoom.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                Display display = getWindowManager().getDefaultDisplay();
+//                Point size = new Point();
+//                display.getSize(size);
+//                int height = seekZoom.getHeight();
+//                int seekZoomTop = seekZoom.getTop();
+//                FrameLayout camera_surface = findViewById(R.id.frame);
+//                int width = size.x - camera_surface.getWidth();
+//                ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(width, height);
+//                layoutParams.setMargins(0,seekZoomTop,0,0);
+//                seekZoom.setLayoutParams(layoutParams);
+//            }
+//        });
+    }
+
+    private void buildCameraView() {
+//        final FrameLayout frame = findViewById(R.id.frame);
+//        frame.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                int width = frame.getWidth();
+//                int height = width * 160 / 100;
+//                Log.w("Size"," "+width+" x "+height);
+//                ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(width, height);
+////                frame.setLayoutParams(layoutParams);
+//            }
+//        });
     }
 
     private void buildTimerToggle () {
@@ -211,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 isTimerOn ^= true;
-                vTimerToggle.setImageResource((isTimerOn)? R.mipmap.icon_timer_active: R.mipmap.icon_timer_off);
+                vTimerToggle.setImageResource((isTimerOn)? R.mipmap.icon_timer_active_min: R.mipmap.icon_timer_off_min);
             }
         });
     }
@@ -256,12 +273,9 @@ public class MainActivity extends AppCompatActivity {
 
     Camera.PictureCallback jpegCallback = new Camera.PictureCallback() {
         public void onPictureTaken(byte[] data, Camera camera) {
-    //byte array를 bitmap으로 변환
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         bitMapScreen = BitmapFactory.decodeByteArray(data, 0, data.length, options);
-//        Log.w("bitmap ","size x: "+bitmap.getWidth()+" y: "+bitmap.getHeight());
-
             new SaveImageTask().execute("");
             }
         };
@@ -298,13 +312,13 @@ public class MainActivity extends AppCompatActivity {
 
     protected void onStart() {
         super.onStart();
+        ready_GoogleAPIClient();
         mGoogleApiClient.connect();
     }
 
     protected void onStop() {
         mGoogleApiClient.disconnect();
         super.onStop();
-//        utils.appendText("#oP");
     }
 
     public void startCamera() {
@@ -343,14 +357,10 @@ public class MainActivity extends AppCompatActivity {
                 params.setPictureSize(size.width, size.height);
                 break;
             }
-//            Log.w("camera","size x= "+size.width+" y= "+size.height+" ratio "+((float) size.width/ (float) size.height));
-
         }
 
         mCamera.setParameters(params);
         mCamera.startPreview();
-
-//        mCameraPreview.setRotation(0);
         mCameraPreview.setCamera(mCamera);
 
     }
@@ -412,14 +422,10 @@ public class MainActivity extends AppCompatActivity {
     final String noInfo = "No_Info";
     public String getAddressByGPSValue(Geocoder geocoder, double latitude, double longitude) {
 
-//        utils.appendText("#c");
         try {
             List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
             if (addresses.size() > 0) {
                 Address address = addresses.get(0);
-//                String Premises = address.getPremises();
-//                String AdminArea = address.getAdminArea();
-//                String SubAdminArea = address.getSubAdminArea();
                 String Feature = address.getFeatureName();
                 String Thorough = address.getThoroughfare();
                 String Locality = address.getLocality();
@@ -428,7 +434,6 @@ public class MainActivity extends AppCompatActivity {
                 String CountryCode = address.getCountryCode();
                 String SState = address.getSubAdminArea();
                 String State = address.getAdminArea();
-//                String zip = address.getPostalCode();
                 Feature = (Feature == null) ? noInfo : Feature;
                 Thorough = (Thorough == null) ? noInfo : Thorough;  // Kakakaua Avernue
                 SubLocality = (SubLocality == null) ? noInfo : SubLocality; // 분당구

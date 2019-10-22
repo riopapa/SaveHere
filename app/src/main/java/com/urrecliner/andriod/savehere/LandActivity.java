@@ -45,17 +45,13 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        utils.appendText("land #1");
         setContentView(R.layout.activity_land);
-//        utils.appendText("land #2");
         currActivity =  this.getClass().getSimpleName();
         int screenOrientation = getResources().getConfiguration().orientation;
         if (screenOrientation == Configuration.ORIENTATION_PORTRAIT) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-//            utils.appendText("land act PORTRAIT");
             return;
         }
-//        utils.appendText("land #3333");
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -86,7 +82,7 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
         LatLng here = new LatLng(latitude, longitude);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(here,zoomValue));
         mMap.addMarker(new MarkerOptions().position(here)
-                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.icon_here)));
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.icon_myfacemarker)));
         mMap.setOnMapLoadedCallback(this);  // wait till all map is displayed
    }
 
@@ -160,7 +156,6 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
-//                utils.appendText("rootView made");
                 strPlace += "_";
                 final File screenShot = utils.captureScreen(rootView, "");
                 if (screenShot != null) {
