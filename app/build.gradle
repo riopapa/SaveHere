@@ -1,9 +1,9 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
-        applicationId "com.urrecliner.andriod.savehere"
+        applicationId "com.urrecliner.riopapa.savehere"
         minSdkVersion 26
         targetSdkVersion 26
         multiDexEnabled true
@@ -24,8 +24,8 @@ dependencies {
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.google.android.gms:play-services-places:11.8.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
-    implementation 'com.android.support:support-annotations:25.+'
-    implementation 'com.android.support:support-v13:26+'
+    implementation 'com.android.support:support-annotations:25.4.0'
+    implementation 'com.android.support:support-v13:26.1.0'
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'com.google.android.gms:play-services-maps:12.0.1'
     implementation 'com.google.android.gms:play-services-auth:12.0.1'

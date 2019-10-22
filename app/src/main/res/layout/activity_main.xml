@@ -48,9 +48,9 @@
 
     <ImageButton
         android:id="@+id/timer"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
-        android:src="@mipmap/icon_timer_off"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@mipmap/icon_timer_off_min"
         android:contentDescription="@string/timer_on"
         android:layout_below="@+id/seek_bar_zoom"
         android:layout_marginTop="30sp"
