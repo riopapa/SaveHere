@@ -34,4 +34,5 @@ public class Vars {
     static String galaxyS9 = "SM-G965N";
     static String nexus6P = "Nexus 6P";
     static int xPixel, yPixel;
+    static String outFileName = null;
 }

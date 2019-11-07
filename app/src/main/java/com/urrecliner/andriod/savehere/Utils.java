@@ -39,7 +39,6 @@ class Utils {
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd", Locale.ENGLISH);
     private final SimpleDateFormat timeLogFormat = new SimpleDateFormat("MM/dd HH:mm:ss", Locale.ENGLISH);
     private final SimpleDateFormat jpegTimeFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.ENGLISH);
-    private final SimpleDateFormat imgDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.KOREA);
     private int appendCount = 0;
     void appendText(String textLine) {
         File directory = getPackageDirectory();
@@ -81,7 +80,7 @@ class Utils {
         }
     }
 
-    private File getPublicCameraDirectory() {
+    File getPublicCameraDirectory() {
         return new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DCIM),"/Camera");
     }
@@ -110,6 +109,7 @@ class Utils {
 
     private File bitMap2File (Bitmap bitmap, String tag) {
 
+        final SimpleDateFormat imgDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.KOREA);
         Bitmap outMap = Bitmap.createBitmap(bitmap, 0, 0, xPixel, yPixel);  // remove right actiobar white area
         outMap = getResizedBitmap(outMap, xPixel*85/100, yPixel);
         String filename = imgDateFormat.format(new Date()) + "_" + strPlace + tag + ".jpg";

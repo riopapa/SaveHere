@@ -112,39 +112,42 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private Bitmap mergeScaleBitmap(Bitmap mapImage, Bitmap scaleMap){
 
-        Bitmap result = Bitmap.createBitmap(mapImage.getWidth(), mapImage.getHeight(), mapImage.getConfig());
-        Canvas canvas = new Canvas(result);
-
+//        Bitmap result = Bitmap.createBitmap(mapImage.getWidth(), mapImage.getHeight(), mapImage.getConfig());
+//        Canvas canvas = new Canvas(result);
+        Canvas canvas = new Canvas(mapImage);
         Paint paint = new Paint();
         canvas.drawBitmap(mapImage, 0, 0, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.XOR));
-        canvas.drawBitmap(scaleMap, mapImage.getWidth() - 200, mapImage.getHeight() - 90, paint);
-        return result;
+        int xPos = mapImage.getWidth() - mapImage.getWidth()/20 - scaleMap.getWidth();
+        int yPos = mapImage.getHeight() - mapImage.getHeight()/20 - scaleMap.getHeight();
+        canvas.drawBitmap(scaleMap, xPos, yPos, paint);
+        return mapImage;
     }
 
     private Bitmap drawScale (int zoom) {
         Paint paint = new Paint();
                                 //      20,      19,     18,    17,     16,     15,     14,     13,     12,     11,     10,     9
-        final int [] xPixels =   {  0,   113,	 113,    90,    90,		90,	    113,	113,	113,	90,	    90,	    90,     113, };
+        final int [] xWidths =   {  0,   113,	 113,    90,    90,		90,	    113,	113,	113,	90,	    90,	    90,     113, };
         final String [] xUnits = {  "",  "10 m",	"20 m", "50 m", "100 m","200 m","500 m","1 Km",	"2 Km",	"5 Km", "10 Km","20 Km","50 Km"};
         Bitmap bitmap = Bitmap.createBitmap(300, 80, Bitmap.Config.ARGB_8888);
-        int baseX, baseY, startX, startY, stopX, stopY, yPixel;
+        int baseX, baseY, startX, startY, stopX, stopY, yWith;
         Canvas canvas = new Canvas(bitmap);
         paint.setColor(Color.BLUE);
         paint.setStrokeWidth(5f);
-        int xPixel = (int) ((float) (xPixels[20 - zoom]) * 1.2f);
+        int xWidth = (int) ((float) (xWidths[20 - zoom]) * 2.4f);
         String xUnit = xUnits[20 - zoom];
-        yPixel = 10; baseX = 15; baseY = 60;
-        startX = baseX; startY = baseY; stopX = baseX + xPixel; stopY = baseY;
+//        utils.appendText("xPixel "+xWidth+" zoom:"+zoom+" unit:"+xUnit);
+        yWith = 10; baseX = 15; baseY = 60;
+        startX = baseX; startY = baseY; stopX = baseX + xWidth; stopY = baseY;
         canvas.drawLine(startX, startY, stopX, stopY, paint);       // ____
-        startX = baseX; startY = baseY + 5; stopX = startX ; stopY = baseY - yPixel;
+        startX = baseX; startY = baseY + 5; stopX = startX ; stopY = baseY - yWith;
         canvas.drawLine(startX, startY, stopX, stopY, paint);       // |_
-        startX = baseX + xPixel; startY = baseY + 5; stopX = startX; stopY = baseY - yPixel;
+        startX = baseX + xWidth; startY = baseY + 5; stopX = startX; stopY = baseY - yWith;
         canvas.drawLine(startX, startY, stopX, stopY, paint);       //    _|
         paint.setTextSize(36);
-        paint.setStrokeWidth(16f);
+        paint.setStrokeWidth(20f);
         paint.setColor(Color.BLACK);
-        startX = baseX + xPixel / 4 - 10; startY = baseY - 20;
+        startX = baseX + xWidth / 4 - 10; startY = baseY - 20;
         canvas.drawText(xUnit, startX, startY, paint);
         return bitmap;
     }

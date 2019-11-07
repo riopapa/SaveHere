@@ -58,6 +58,7 @@ import static com.urrecliner.andriod.savehere.Vars.longitude;
 import static com.urrecliner.andriod.savehere.Vars.mActivity;
 import static com.urrecliner.andriod.savehere.Vars.mCamera;
 import static com.urrecliner.andriod.savehere.Vars.mainContext;
+import static com.urrecliner.andriod.savehere.Vars.outFileName;
 import static com.urrecliner.andriod.savehere.Vars.phoneMake;
 import static com.urrecliner.andriod.savehere.Vars.phoneModel;
 import static com.urrecliner.andriod.savehere.Vars.strAddress;
@@ -245,9 +246,11 @@ public class MainActivity extends AppCompatActivity {
         try {
             strPlace = strAddress.substring(0, strAddress.indexOf("\n"));
             if (strPlace.equals("")) {
-                strPlace = "_";
+                strPlace = " ";
             }
             strAddress = strAddress.substring(strAddress.indexOf("\n") + 1);
+            final SimpleDateFormat imgDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.KOREA);
+            outFileName  = imgDateFormat.format(new Date()) + "_" + strPlace;
         } catch (Exception e) {
             strPlace = strAddress;
             strAddress = "?";
