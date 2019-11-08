@@ -384,7 +384,7 @@ public class MainActivity extends AppCompatActivity {
             latitude = location.getLatitude();
             longitude = location.getLongitude();
             altitude = location.getAltitude();
-            strPosition = String.format(Locale.ENGLISH,"%.5f %.5f %.2f", latitude, longitude, altitude);
+            strPosition = String.format(Locale.ENGLISH,"%.5f ; %.5f ; %.2f", latitude, longitude, altitude);
         }
 //        utils.appendText(strPosition);
 

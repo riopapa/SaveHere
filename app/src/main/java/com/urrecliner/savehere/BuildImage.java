@@ -120,6 +120,7 @@ class BuildImage {
         drawTextOnCanvas(canvas, strPlace, fontSize, xPos, yPos, true, isBright);
         yPos += fontSize;
         fontSize = width/32;
+        yPos += fontSize / 2;
         drawTextOnCanvas(canvas, strAddress, fontSize, xPos, yPos,false, isBright);
         yPos += fontSize;
         fontSize = width/40;
