@@ -1,4 +1,4 @@
-package com.urrecliner.andriod.savehere;
+package com.urrecliner.savehere;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -17,19 +17,21 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 
-import static com.urrecliner.andriod.savehere.Vars.bitMapScreen;
-import static com.urrecliner.andriod.savehere.Vars.mActivity;
-import static com.urrecliner.andriod.savehere.Vars.mainContext;
-import static com.urrecliner.andriod.savehere.Vars.outFileName;
-import static com.urrecliner.andriod.savehere.Vars.phoneMake;
-import static com.urrecliner.andriod.savehere.Vars.phoneModel;
-import static com.urrecliner.andriod.savehere.Vars.strAddress;
-import static com.urrecliner.andriod.savehere.Vars.strPlace;
-import static com.urrecliner.andriod.savehere.Vars.strPosition;
-import static com.urrecliner.andriod.savehere.Vars.utils;
+import static com.urrecliner.savehere.Vars.bitMapScreen;
+import static com.urrecliner.savehere.Vars.latitude;
+import static com.urrecliner.savehere.Vars.longitude;
+import static com.urrecliner.savehere.Vars.mActivity;
+import static com.urrecliner.savehere.Vars.mainContext;
+import static com.urrecliner.savehere.Vars.nowTime;
+import static com.urrecliner.savehere.Vars.outFileName;
+import static com.urrecliner.savehere.Vars.phoneMake;
+import static com.urrecliner.savehere.Vars.phoneModel;
+import static com.urrecliner.savehere.Vars.strAddress;
+import static com.urrecliner.savehere.Vars.strPlace;
+import static com.urrecliner.savehere.Vars.strPosition;
+import static com.urrecliner.savehere.Vars.utils;
 
 
 public class BuildImage {
@@ -39,17 +41,17 @@ public class BuildImage {
     void makeOutMap() {
 
         SimpleDateFormat dateTimeFormat = new SimpleDateFormat("`yy/MM/dd HH:mm", Locale.ENGLISH);
-        timeStamp =  dateTimeFormat.format(new Date());
+        timeStamp =  dateTimeFormat.format(nowTime);
 
         Bitmap mergedMap = addSignature2Bitmaps(bitMapScreen, timeStamp);
 
-        File newFile = new File(utils.getPublicCameraDirectory(), outFileName + "_ha.jpg");
-        bitMap2File(mergedMap, newFile);
+        File newFile = new File(utils.getPublicCameraDirectory(), outFileName + " _ha.jpg");
+        writeCameraFile(mergedMap, newFile);
         setNewFileExif(newFile);
     }
 
     static final private SimpleDateFormat sdfHourMinSec = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.ENGLISH);
-    static final private SimpleDateFormat sdfHourMin = new SimpleDateFormat("yy/MM/dd HH:mm", Locale.ENGLISH);
+//    static final private SimpleDateFormat sdfHourMin = new SimpleDateFormat("yy/MM/dd HH:mm", Locale.ENGLISH);
 
     private void setNewFileExif(File fileHa) {
         ExifInterface exifHa;
@@ -57,19 +59,36 @@ public class BuildImage {
             exifHa = new ExifInterface(fileHa.getAbsolutePath());
             exifHa.setAttribute(ExifInterface.TAG_MAKE, phoneMake);
             exifHa.setAttribute(ExifInterface.TAG_MODEL, phoneModel);
-//            exifHa.setAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF, exifOrg.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF));
-//            exifHa.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, exifOrg.getAttribute(ExifInterface.TAG_GPS_LONGITUDE));
-//            exifHa.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF, exifOrg.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF));
-//            exifHa.setAttribute(ExifInterface.TAG_GPS_LATITUDE, exifOrg.getAttribute(ExifInterface.TAG_GPS_LATITUDE));
-
+            exifHa.setAttribute(ExifInterface.TAG_GPS_LATITUDE, convertGPS(latitude));
+            exifHa.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF, latitudeRefGPS(latitude));
+            exifHa.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, convertGPS(longitude));
+            exifHa.setAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF, longitudeRefGPS(longitude));
             exifHa.setAttribute(ExifInterface.TAG_ORIENTATION, "1");
-            exifHa.setAttribute(ExifInterface.TAG_DATETIME,sdfHourMinSec.format(new Date()));
+            exifHa.setAttribute(ExifInterface.TAG_DATETIME,sdfHourMinSec.format(nowTime));
             exifHa.setAttribute(ExifInterface.TAG_IMAGE_DESCRIPTION, "by riopapa");
             exifHa.saveAttributes();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+        private String latitudeRefGPS(double latitude) {
+            return latitude<0.0d?"S":"N";
+        }
+        private String longitudeRefGPS(double longitude) {
+            return longitude<0.0d?"W":"E";
+        }
+
+        static String convertGPS(double latitude) {
+            latitude = Math.abs(latitude);
+            int degree = (int) latitude;
+            latitude *= 60;
+            latitude -= (degree * 60.0d);
+            int minute = (int) latitude;
+            latitude *= 60;
+            latitude -= (minute * 60.0d);
+            int second = (int) (latitude*10000.d);
+            return degree+"/1,"+minute+"/1,"+second+"/10000";
+        }
 
     private Bitmap addSignature2Bitmaps(Bitmap photoMap, String dateTime) {
 
@@ -149,7 +168,7 @@ public class BuildImage {
         return brightness >= (xMax/2) * (yMax/2) / 2;
     }
 
-    private void bitMap2File(Bitmap bitmap, File file) {
+    private void writeCameraFile(Bitmap bitmap, File file) {
         FileOutputStream os;
         try {
             os = new FileOutputStream(file);

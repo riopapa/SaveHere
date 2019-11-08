@@ -1,10 +1,10 @@
 <resources>
     <string name="app_name">SaveHere</string>
-    <string name="show_name">내가 여기에 왔었다</string>
+    <string name="show_name">내가 여기에 있음</string>
 
     <string name="txtMapOnly">Map\nShot\n</string>
-    <string name="txtCameraOnly">Camera\nShot\n</string>
-    <string name="txtCameraMap">Camera\n&amp; Map\nShot</string>
+    <string name="txtCameraOnly">Camera Only\nShot\n</string>
+    <string name="txtCameraMap">Camera Map\nShot</string>
     <string name="txtPosition">Position</string>
     <string name="txtDateTime">Date\nTime</string>
 

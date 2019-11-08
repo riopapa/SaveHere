@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "com.urrecliner.riopapa.savehere"
+        applicationId "com.urrecliner.riopapa.com.urrecliner.com.urreliner.savehere"
         minSdkVersion 26
         targetSdkVersion 26
         multiDexEnabled true

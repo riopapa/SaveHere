@@ -9,7 +9,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.urrecliner.andriod.savehere.LandActivity"
+        tools:context="com.urrecliner.savehere.LandActivity"
         tools:layout="@layout/activity_land">
     </fragment>
     <ImageView

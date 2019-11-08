@@ -1,4 +1,4 @@
-package com.urrecliner.andriod.savehere;
+package com.urrecliner.savehere;
 
 import android.app.Activity;
 import android.content.Context;
@@ -27,7 +27,7 @@ public class Vars {
     static boolean CameraMapBoth = false;
     static boolean isTimerOn = false;
 
-    static Utils utils = new Utils();
+    static com.urrecliner.savehere.Utils utils = new com.urrecliner.savehere.Utils();
     static Activity mActivity;
     static String phoneModel = null;
     static String phoneMake = null;
@@ -35,4 +35,5 @@ public class Vars {
     static String nexus6P = "Nexus 6P";
     static int xPixel, yPixel;
     static String outFileName = null;
+    static long nowTime;
 }

@@ -1,4 +1,4 @@
-package com.urrecliner.andriod.savehere;
+package com.urrecliner.savehere;
 
 import android.Manifest;
 import android.content.Context;
@@ -43,39 +43,39 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static com.urrecliner.andriod.savehere.Vars.CameraMapBoth;
-import static com.urrecliner.andriod.savehere.Vars.bitMapScreen;
-import static com.urrecliner.andriod.savehere.Vars.currActivity;
-import static com.urrecliner.andriod.savehere.Vars.isTimerOn;
-import static com.urrecliner.andriod.savehere.Vars.latitude;
-import static com.urrecliner.andriod.savehere.Vars.longitude;
-import static com.urrecliner.andriod.savehere.Vars.mActivity;
-import static com.urrecliner.andriod.savehere.Vars.mCamera;
-import static com.urrecliner.andriod.savehere.Vars.mainContext;
-import static com.urrecliner.andriod.savehere.Vars.outFileName;
-import static com.urrecliner.andriod.savehere.Vars.phoneMake;
-import static com.urrecliner.andriod.savehere.Vars.phoneModel;
-import static com.urrecliner.andriod.savehere.Vars.strAddress;
-import static com.urrecliner.andriod.savehere.Vars.strDateTime;
-import static com.urrecliner.andriod.savehere.Vars.strMapAddress;
-import static com.urrecliner.andriod.savehere.Vars.strMapPlace;
-import static com.urrecliner.andriod.savehere.Vars.strPlace;
-import static com.urrecliner.andriod.savehere.Vars.strPosition;
-import static com.urrecliner.andriod.savehere.Vars.utils;
-import static com.urrecliner.andriod.savehere.Vars.zoomValue;
+import static com.urrecliner.savehere.Vars.CameraMapBoth;
+import static com.urrecliner.savehere.Vars.bitMapScreen;
+import static com.urrecliner.savehere.Vars.currActivity;
+import static com.urrecliner.savehere.Vars.isTimerOn;
+import static com.urrecliner.savehere.Vars.latitude;
+import static com.urrecliner.savehere.Vars.longitude;
+import static com.urrecliner.savehere.Vars.mActivity;
+import static com.urrecliner.savehere.Vars.mCamera;
+import static com.urrecliner.savehere.Vars.mainContext;
+import static com.urrecliner.savehere.Vars.nowTime;
+import static com.urrecliner.savehere.Vars.outFileName;
+import static com.urrecliner.savehere.Vars.phoneMake;
+import static com.urrecliner.savehere.Vars.phoneModel;
+import static com.urrecliner.savehere.Vars.strAddress;
+import static com.urrecliner.savehere.Vars.strDateTime;
+import static com.urrecliner.savehere.Vars.strMapAddress;
+import static com.urrecliner.savehere.Vars.strMapPlace;
+import static com.urrecliner.savehere.Vars.strPlace;
+import static com.urrecliner.savehere.Vars.strPosition;
+import static com.urrecliner.savehere.Vars.utils;
+import static com.urrecliner.savehere.Vars.zoomValue;
 
 public class MainActivity extends AppCompatActivity {
 
     private GoogleApiClient mGoogleApiClient;
 
     private final static int PLACE_PICKER_REQUEST = 1;
-    private CameraPreview mCameraPreview;
+    private com.urrecliner.savehere.CameraPreview mCameraPreview;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         currActivity =  this.getClass().getSimpleName();
         mainContext = getApplicationContext();
-        if (!AccessPermission.isPermissionOK(getApplicationContext(), this))
+        if (!com.urrecliner.savehere.AccessPermission.isPermissionOK(getApplicationContext(), this))
             return;
         mActivity = this;
         phoneModel = Build.MODEL;           // SM-G965N             Nexus 6P
@@ -100,15 +100,7 @@ public class MainActivity extends AppCompatActivity {
                 take_Picture();
             }
         });
-        final Button btnMapOnly = findViewById(R.id.btnMap);
-        btnMapOnly.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                reactClick(btnMapOnly);
-                Intent intent = new Intent(getApplicationContext(), LandActivity.class);
-                startActivity(intent);
-            }
-        });
+
         final Button btnCameraMap = findViewById(R.id.btnCameraMap);
         btnCameraMap.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -250,7 +242,7 @@ public class MainActivity extends AppCompatActivity {
             }
             strAddress = strAddress.substring(strAddress.indexOf("\n") + 1);
             final SimpleDateFormat imgDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.KOREA);
-            outFileName  = imgDateFormat.format(new Date()) + "_" + strPlace;
+            outFileName  = imgDateFormat.format(nowTime) + "_" + strPlace;
         } catch (Exception e) {
             strPlace = strAddress;
             strAddress = "?";
@@ -295,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
 //            Log.w("post", "Executed");
             mCamera.stopPreview();
             mCamera.release();
-            Intent intent = new Intent(getApplicationContext(), CameraActivity.class);
+            Intent intent = new Intent(getApplicationContext(), com.urrecliner.savehere.CameraActivity.class);
             startActivity(intent);
         }
     }
@@ -327,7 +319,7 @@ public class MainActivity extends AppCompatActivity {
     public void startCamera() {
 
         if (mCameraPreview == null) {
-            mCameraPreview = new CameraPreview(this, (SurfaceView) findViewById(R.id.camera_surface));
+            mCameraPreview = new com.urrecliner.savehere.CameraPreview(this, (SurfaceView) findViewById(R.id.camera_surface));
             mCameraPreview.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT));
             ((FrameLayout) findViewById(R.id.frame)).addView(mCameraPreview);
@@ -395,7 +387,7 @@ public class MainActivity extends AppCompatActivity {
             strPosition = String.format(Locale.ENGLISH,"%.5f %.5f %.2f", latitude, longitude, altitude);
         }
 //        utils.appendText(strPosition);
-        strDateTime = getViewTimeText();
+
         if (isNetworkAvailable()) {
             Geocoder geocoder = new Geocoder(this, Locale.KOREA);
             strAddress = getAddressByGPSValue(geocoder, latitude, longitude);
@@ -502,6 +494,9 @@ public class MainActivity extends AppCompatActivity {
         }
         mCamera.enableShutterSound(true);
         showCurrentLocation();
+        nowTime = System.currentTimeMillis();
+        final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("`yy/MM/dd HH:mm", Locale.ENGLISH);
+        strDateTime = dateTimeFormat.format(nowTime);
     }
 
     int delayTime = 1000;
@@ -564,8 +559,5 @@ public class MainActivity extends AppCompatActivity {
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
-
-    final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("`yy/MM/dd HH:mm", Locale.ENGLISH);
-    private String getViewTimeText() { return dateTimeFormat.format(new Date()); }
 
 }

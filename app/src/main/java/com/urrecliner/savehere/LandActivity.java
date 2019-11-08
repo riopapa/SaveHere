@@ -1,4 +1,4 @@
-package com.urrecliner.andriod.savehere;
+package com.urrecliner.savehere;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -30,14 +30,14 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.File;
 
-import static com.urrecliner.andriod.savehere.Vars.currActivity;
-import static com.urrecliner.andriod.savehere.Vars.latitude;
-import static com.urrecliner.andriod.savehere.Vars.longitude;
-import static com.urrecliner.andriod.savehere.Vars.mActivity;
-import static com.urrecliner.andriod.savehere.Vars.mMap;
-import static com.urrecliner.andriod.savehere.Vars.strPlace;
-import static com.urrecliner.andriod.savehere.Vars.utils;
-import static com.urrecliner.andriod.savehere.Vars.zoomValue;
+import static com.urrecliner.savehere.Vars.currActivity;
+import static com.urrecliner.savehere.Vars.latitude;
+import static com.urrecliner.savehere.Vars.longitude;
+import static com.urrecliner.savehere.Vars.mActivity;
+import static com.urrecliner.savehere.Vars.mMap;
+import static com.urrecliner.savehere.Vars.strPlace;
+import static com.urrecliner.savehere.Vars.utils;
+import static com.urrecliner.savehere.Vars.zoomValue;
 
 public class LandActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMapLoadedCallback {
 

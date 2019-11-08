@@ -1,4 +1,4 @@
-package com.urrecliner.andriod.savehere;
+package com.urrecliner.savehere;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -17,20 +17,21 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.Collator;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 
-import static com.urrecliner.andriod.savehere.Vars.currActivity;
-import static com.urrecliner.andriod.savehere.Vars.latitude;
-import static com.urrecliner.andriod.savehere.Vars.longitude;
-import static com.urrecliner.andriod.savehere.Vars.mainContext;
-import static com.urrecliner.andriod.savehere.Vars.nexus6P;
-import static com.urrecliner.andriod.savehere.Vars.phoneMake;
-import static com.urrecliner.andriod.savehere.Vars.phoneModel;
-import static com.urrecliner.andriod.savehere.Vars.strPlace;
-import static com.urrecliner.andriod.savehere.Vars.utils;
-import static com.urrecliner.andriod.savehere.Vars.xPixel;
-import static com.urrecliner.andriod.savehere.Vars.yPixel;
+import static com.urrecliner.savehere.Vars.currActivity;
+import static com.urrecliner.savehere.Vars.latitude;
+import static com.urrecliner.savehere.Vars.longitude;
+import static com.urrecliner.savehere.Vars.mainContext;
+import static com.urrecliner.savehere.Vars.nexus6P;
+import static com.urrecliner.savehere.Vars.nowTime;
+import static com.urrecliner.savehere.Vars.outFileName;
+import static com.urrecliner.savehere.Vars.phoneMake;
+import static com.urrecliner.savehere.Vars.phoneModel;
+import static com.urrecliner.savehere.Vars.strPlace;
+import static com.urrecliner.savehere.Vars.utils;
+import static com.urrecliner.savehere.Vars.xPixel;
+import static com.urrecliner.savehere.Vars.yPixel;
 
 class Utils {
 
@@ -54,7 +55,7 @@ class Utils {
         BufferedWriter bw = null;
         FileWriter fw = null;
         try {
-            File file = new File(directory, PREFIX + dateFormat.format(new Date())+".txt");
+            File file = new File(directory, PREFIX + dateFormat.format(nowTime)+".txt");
             if (!file.exists()) {
                 if (!file.createNewFile()) {
                     Log.e("createFile", " Error");
@@ -62,7 +63,7 @@ class Utils {
             }
             StackTraceElement[] traces;
             traces = Thread.currentThread().getStackTrace();
-            String outText = timeLogFormat.format(new Date()) + " " + currActivity + " " + traces[5].getMethodName() + " > " + traces[4].getMethodName() + " > " + traces[3].getMethodName() + " #" + traces[3].getLineNumber() + " [[" + textLine + "]]\n";
+            String outText = timeLogFormat.format(nowTime) + " " + currActivity + " " + traces[5].getMethodName() + " > " + traces[4].getMethodName() + " > " + traces[3].getMethodName() + " #" + traces[3].getLineNumber() + " [[" + textLine + "]]\n";
             // true = append file
             fw = new FileWriter(file.getAbsoluteFile(), true);
             bw = new BufferedWriter(fw);
@@ -109,10 +110,11 @@ class Utils {
 
     private File bitMap2File (Bitmap bitmap, String tag) {
 
-        final SimpleDateFormat imgDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.KOREA);
+//        final SimpleDateFormat imgDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.KOREA);
         Bitmap outMap = Bitmap.createBitmap(bitmap, 0, 0, xPixel, yPixel);  // remove right actiobar white area
         outMap = getResizedBitmap(outMap, xPixel*85/100, yPixel);
-        String filename = imgDateFormat.format(new Date()) + "_" + strPlace + tag + ".jpg";
+//        String filename = imgDateFormat.format(nowTime) + "_" + strPlace + tag + "_ha.jpg";
+        String filename = outFileName + "_" + tag + "_ha.jpg";
         if (phoneModel.equals(nexus6P))
             filename = "IMG_" + filename;
         File directory = getPublicCameraDirectory();
@@ -147,7 +149,7 @@ class Utils {
             exif.setAttribute(ExifInterface.TAG_USER_COMMENT, "Created by riopapa");
             exif.setAttribute(ExifInterface.TAG_MAKE, phoneMake);
             exif.setAttribute(ExifInterface.TAG_MODEL, phoneModel);
-            exif.setAttribute(ExifInterface.TAG_DATETIME, jpegTimeFormat.format(new Date()));
+            exif.setAttribute(ExifInterface.TAG_DATETIME, jpegTimeFormat.format(nowTime));
             exif.saveAttributes();
         } catch (IOException e) {
             utils.appendText("EXIF ioException\n"+e.toString());

@@ -1,4 +1,4 @@
-package com.urrecliner.andriod.savehere;
+package com.urrecliner.savehere;
 
 import android.content.Context;
 import android.hardware.Camera;
@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import java.io.IOException;
 import java.util.List;
 
-import static com.urrecliner.andriod.savehere.Vars.utils;
+import static com.urrecliner.savehere.Vars.utils;
 
 
 class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
