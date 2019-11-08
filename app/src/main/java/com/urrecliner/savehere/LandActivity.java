@@ -34,7 +34,7 @@ import static com.urrecliner.savehere.Vars.currActivity;
 import static com.urrecliner.savehere.Vars.latitude;
 import static com.urrecliner.savehere.Vars.longitude;
 import static com.urrecliner.savehere.Vars.mActivity;
-import static com.urrecliner.savehere.Vars.mMap;
+import static com.urrecliner.savehere.Vars.mGoogleMap;
 import static com.urrecliner.savehere.Vars.strPlace;
 import static com.urrecliner.savehere.Vars.utils;
 import static com.urrecliner.savehere.Vars.zoomValue;
@@ -45,12 +45,12 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        utils.appendText("Start to LandActivity =====");
         setContentView(R.layout.activity_land);
         currActivity =  this.getClass().getSimpleName();
         int screenOrientation = getResources().getConfiguration().orientation;
         if (screenOrientation == Configuration.ORIENTATION_PORTRAIT) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-            return;
         }
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -69,7 +69,7 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap googleMap) {
 
-        mMap = googleMap;
+        mGoogleMap = googleMap;
         if (ActivityCompat.checkSelfPermission(this,
                 android.Manifest.permission.ACCESS_FINE_LOCATION) !=
                 PackageManager.PERMISSION_GRANTED &&
@@ -80,19 +80,19 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
             return;
         }
         LatLng here = new LatLng(latitude, longitude);
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(here,zoomValue));
-        mMap.addMarker(new MarkerOptions().position(here)
-                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.icon_myfacemarker)));
-        mMap.setOnMapLoadedCallback(this);  // wait till all map is displayed
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(here,zoomValue));
+        mGoogleMap.addMarker(new MarkerOptions().position(here)
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.icon_face_marker_big)));
+        mGoogleMap.setOnMapLoadedCallback(this);  // wait till all map is displayed
    }
 
     @Override
     public void onMapLoaded() {     // if map is displayed then try snapshot
-        if (mMap != null) {
+        if (mGoogleMap != null) {
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 public void run() {
-                    mMap.snapshot(callback);
+                    mGoogleMap.snapshot(callback);
                 }
             }, 300);        // delay till all views are displayed
         }
@@ -103,8 +103,10 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
         public void onSnapshotReady(Bitmap snapshot) {
             Bitmap scaleMap = drawScale(zoomValue);
             Bitmap mergedMap = mergeScaleBitmap(snapshot, scaleMap);
+            utils.appendText("snapshot size x:"+snapshot.getWidth()+" y:"+snapshot.getHeight());
             ImageView mapImageView = findViewById(R.id.mapImage);
             mapImageView.setImageBitmap(mergedMap);
+            utils.appendText("screen size x:"+mapImageView.getWidth()+" y:"+mapImageView.getHeight());
             View rootView = getWindow().getDecorView();
             takeScreenShot(rootView);
         }

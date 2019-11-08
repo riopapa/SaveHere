@@ -22,7 +22,7 @@ public class Vars {
     static Bitmap bitMapScreen;
     static double latitude = 0;
     static double longitude = 0;
-    static GoogleMap mMap = null;
+    static GoogleMap mGoogleMap = null;
     static int zoomValue = 17;
     static boolean CameraMapBoth = false;
     static boolean isTimerOn = false;
