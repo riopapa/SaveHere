@@ -28,7 +28,6 @@ import static com.urrecliner.savehere.Vars.nowTime;
 import static com.urrecliner.savehere.Vars.outFileName;
 import static com.urrecliner.savehere.Vars.phoneMake;
 import static com.urrecliner.savehere.Vars.phoneModel;
-import static com.urrecliner.savehere.Vars.strPlace;
 import static com.urrecliner.savehere.Vars.utils;
 import static com.urrecliner.savehere.Vars.xPixel;
 import static com.urrecliner.savehere.Vars.yPixel;
@@ -40,7 +39,7 @@ class Utils {
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd", Locale.ENGLISH);
     private final SimpleDateFormat timeLogFormat = new SimpleDateFormat("MM/dd HH:mm:ss", Locale.ENGLISH);
     private final SimpleDateFormat jpegTimeFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.ENGLISH);
-    private int appendCount = 0;
+
     void appendText(String textLine) {
         File directory = getPackageDirectory();
         try {
@@ -93,27 +92,8 @@ class Utils {
         Bitmap screenBitmap = view.getDrawingCache();
         assert screenBitmap != null;
 
-//        bitMap2File (screenBitmap, tag+" a");
-//        int width = screenBitmap.getWidth();
-//        int height = screenBitmap.getHeight();
-//        float ratio = (float) width / (float) height;
-//        Log.w("size", screenBitmap.getWidth()+" x "+ screenBitmap.getHeight()+" before");
-//        if (ratio > 1.5f) {
-//            int width2 = (int) ((float) height * 1.5f);
-//            screenBitmap = Bitmap.createBitmap(screenBitmap, (width - width2) / 2, 0, width2, height);
-
-//            screenBitmap = getResizedBitmap(screenBitmap, (width * 80) / 100 , height);
-//        }
-//        Log.w("size", screenBitmap.getWidth()+" x "+ screenBitmap.getHeight()+" after");
-        return bitMap2File(screenBitmap, tag);
-    }
-
-    private File bitMap2File (Bitmap bitmap, String tag) {
-
-//        final SimpleDateFormat imgDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.KOREA);
-        Bitmap outMap = Bitmap.createBitmap(bitmap, 0, 0, xPixel, yPixel);  // remove right actiobar white area
+        Bitmap outMap = Bitmap.createBitmap(screenBitmap, 0, 0, xPixel, yPixel);  // remove right actiobar white area
         outMap = getResizedBitmap(outMap, xPixel*85/100, yPixel);
-//        String filename = imgDateFormat.format(nowTime) + "_" + strPlace + tag + "_ha.jpg";
         String filename = outFileName + "_" + tag + "_ha.jpg";
         if (phoneModel.equals(nexus6P))
             filename = "IMG_" + filename;
@@ -165,16 +145,9 @@ class Utils {
         int minute = (int) latitude;
         latitude *= 60;
         latitude -= (minute * 60.0d);
-        float second = (float) latitude;
+        float second = (float) latitude * 1000;
 
-        sb.setLength(0);
-        sb.append(degree);
-        sb.append("/1,");
-        sb.append(minute);
-        sb.append("/1,");
-        sb.append(second);
-        sb.append("/1");
-        return sb.toString();
+        return degree+"/1,"+minute+"/1,"+second+"/1000";
     }
 
     void deleteOldLogFiles() {

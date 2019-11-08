@@ -34,12 +34,11 @@ import static com.urrecliner.savehere.Vars.strPosition;
 import static com.urrecliner.savehere.Vars.utils;
 
 
-public class BuildImage {
-
-    String timeStamp;
+class BuildImage {
 
     void makeOutMap() {
 
+        String timeStamp;
         SimpleDateFormat dateTimeFormat = new SimpleDateFormat("`yy/MM/dd HH:mm", Locale.ENGLISH);
         timeStamp =  dateTimeFormat.format(nowTime);
 
@@ -78,7 +77,7 @@ public class BuildImage {
             return longitude<0.0d?"W":"E";
         }
 
-        static String convertGPS(double latitude) {
+        private static String convertGPS(double latitude) {
             latitude = Math.abs(latitude);
             int degree = (int) latitude;
             latitude *= 60;
