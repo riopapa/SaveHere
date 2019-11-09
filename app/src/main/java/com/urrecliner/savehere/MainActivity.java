@@ -21,7 +21,6 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.SurfaceView;
 import android.view.View;
@@ -187,15 +186,9 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                zoomValue = seekZoom.getProgress();
-                Log.w("start", ""+zoomValue);
-                showSeekBarValue(tV);
             }
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                zoomValue = seekZoom.getProgress();
-                Log.w("stop", ""+zoomValue);
-                showSeekBarValue(tV);
             }
         });
 //        seekZoom.post(new Runnable() {
