@@ -49,7 +49,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static com.urrecliner.savehere.Vars.CameraMapBoth;
-import static com.urrecliner.savehere.Vars.bitMapScreen;
+import static com.urrecliner.savehere.Vars.bitMapCamera;
 import static com.urrecliner.savehere.Vars.currActivity;
 import static com.urrecliner.savehere.Vars.isTimerOn;
 import static com.urrecliner.savehere.Vars.latitude;
@@ -57,10 +57,12 @@ import static com.urrecliner.savehere.Vars.longitude;
 import static com.urrecliner.savehere.Vars.mActivity;
 import static com.urrecliner.savehere.Vars.mCamera;
 import static com.urrecliner.savehere.Vars.mainContext;
+import static com.urrecliner.savehere.Vars.nexus6P;
 import static com.urrecliner.savehere.Vars.nowTime;
 import static com.urrecliner.savehere.Vars.outFileName;
 import static com.urrecliner.savehere.Vars.phoneMake;
 import static com.urrecliner.savehere.Vars.phoneModel;
+import static com.urrecliner.savehere.Vars.phonePrefix;
 import static com.urrecliner.savehere.Vars.strAddress;
 import static com.urrecliner.savehere.Vars.strDateTime;
 import static com.urrecliner.savehere.Vars.strMapAddress;
@@ -89,6 +91,9 @@ public class MainActivity extends AppCompatActivity {
         mActivity = this;
         phoneModel = Build.MODEL;           // SM-G965N             Nexus 6P
         phoneMake = Build.MANUFACTURER;     // samsung              Huawei
+        if (phoneModel.equals(nexus6P))
+            phonePrefix = "IMG_";
+
 //        String hardware = Build.HARDWARE;   // samsungexynos9810    angler
 //        utils.appendText("this phone model is " + phoneModel + " manu " + manufacturer + " hardware " + hardware);
 
@@ -270,7 +275,7 @@ public class MainActivity extends AppCompatActivity {
         public void onPictureTaken(byte[] data, Camera camera) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        bitMapScreen = BitmapFactory.decodeByteArray(data, 0, data.length, options);
+        bitMapCamera = BitmapFactory.decodeByteArray(data, 0, data.length, options);
             new SaveImageTask().execute("");
             }
         };
@@ -287,7 +292,7 @@ public class MainActivity extends AppCompatActivity {
 //            Log.w("post", "Executed");
             mCamera.stopPreview();
             mCamera.release();
-            Intent intent = new Intent(getApplicationContext(), com.urrecliner.savehere.CameraActivity.class);
+            Intent intent = new Intent(getApplicationContext(), CameraActivity.class);
             startActivity(intent);
         }
     }

@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-import static com.urrecliner.savehere.Vars.bitMapScreen;
+import static com.urrecliner.savehere.Vars.bitMapCamera;
 import static com.urrecliner.savehere.Vars.latitude;
 import static com.urrecliner.savehere.Vars.longitude;
 import static com.urrecliner.savehere.Vars.mActivity;
@@ -28,6 +28,7 @@ import static com.urrecliner.savehere.Vars.nowTime;
 import static com.urrecliner.savehere.Vars.outFileName;
 import static com.urrecliner.savehere.Vars.phoneMake;
 import static com.urrecliner.savehere.Vars.phoneModel;
+import static com.urrecliner.savehere.Vars.phonePrefix;
 import static com.urrecliner.savehere.Vars.strAddress;
 import static com.urrecliner.savehere.Vars.strPlace;
 import static com.urrecliner.savehere.Vars.strPosition;
@@ -42,9 +43,9 @@ class BuildImage {
         SimpleDateFormat dateTimeFormat = new SimpleDateFormat("`yy/MM/dd HH:mm", Locale.ENGLISH);
         timeStamp =  dateTimeFormat.format(nowTime);
 
-        Bitmap mergedMap = addSignature2Bitmaps(bitMapScreen, timeStamp);
+        Bitmap mergedMap = addSignature2Bitmaps(bitMapCamera, timeStamp);
 
-        File newFile = new File(utils.getPublicCameraDirectory(), outFileName + " _ha.jpg");
+        File newFile = new File(utils.getPublicCameraDirectory(), phonePrefix + outFileName + " _ha.jpg");
         writeCameraFile(mergedMap, newFile);
         setNewFileExif(newFile);
     }

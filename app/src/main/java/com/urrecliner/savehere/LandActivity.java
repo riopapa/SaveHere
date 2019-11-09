@@ -8,8 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
+import android.graphics.Path;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -88,25 +87,23 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onMapLoaded() {     // if map is displayed then try snapshot
-        if (mGoogleMap != null) {
+        while (mGoogleMap == null) {
             Handler handler = new Handler();
             handler.postDelayed(new Runnable() {
                 public void run() {
-                    mGoogleMap.snapshot(callback);
                 }
-            }, 300);        // delay till all views are displayed
+            }, 100);        // delay till all views are displayed
         }
+        mGoogleMap.snapshot(callback);
     }
 
     GoogleMap.SnapshotReadyCallback callback = new GoogleMap.SnapshotReadyCallback() {
         @Override
         public void onSnapshotReady(Bitmap snapshot) {
-            Bitmap scaleMap = drawScale(zoomValue);
+            Bitmap scaleMap = getScaleMap(zoomValue);
             Bitmap mergedMap = mergeScaleBitmap(snapshot, scaleMap);
-            utils.appendText("snapshot size x:"+snapshot.getWidth()+" y:"+snapshot.getHeight());
             ImageView mapImageView = findViewById(R.id.mapImage);
             mapImageView.setImageBitmap(mergedMap);
-            utils.appendText("screen size x:"+mapImageView.getWidth()+" y:"+mapImageView.getHeight());
             View rootView = getWindow().getDecorView();
             takeScreenShot(rootView);
         }
@@ -119,38 +116,39 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
         Canvas canvas = new Canvas(mapImage);
         Paint paint = new Paint();
         canvas.drawBitmap(mapImage, 0, 0, paint);
-        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.XOR));
+//        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.XOR));
         int xPos = mapImage.getWidth() - mapImage.getWidth()/20 - scaleMap.getWidth();
         int yPos = mapImage.getHeight() - mapImage.getHeight()/20 - scaleMap.getHeight();
         canvas.drawBitmap(scaleMap, xPos, yPos, paint);
         return mapImage;
     }
 
-    private Bitmap drawScale (int zoom) {
-        Paint paint = new Paint();
+    private Bitmap getScaleMap(int zoom) {
                                 //      20,      19,     18,    17,     16,     15,     14,     13,     12,     11,     10,     9
         final int [] xWidths =   {  0,   113,	 113,    90,    90,		90,	    113,	113,	113,	90,	    90,	    90,     113, };
         final String [] xUnits = {  "",  "10 m",	"20 m", "50 m", "100 m","200 m","500 m","1 Km",	"2 Km",	"5 Km", "10 Km","20 Km","50 Km"};
         Bitmap bitmap = Bitmap.createBitmap(300, 80, Bitmap.Config.ARGB_8888);
-        int baseX, baseY, startX, startY, stopX, stopY, yWith;
         Canvas canvas = new Canvas(bitmap);
+        int xWidth = (int) ((float) (xWidths[20 - zoom]) * 2.0f);   // if snapshot resolution changed 2.0f should be changed also
+        int baseX = 10; int baseY = 60; int yHeight = 15;
+        int []xPos = {baseX, baseX        , baseX+xWidth     , baseX+xWidth, baseX+(xWidth/2)     , baseX };
+        int []yPos = {baseY, baseY-yHeight, baseY-yHeight    , baseY       , baseY-yHeight        , baseY };
+        Path path = new Path();
+        path.moveTo(baseX, baseY);
+        for (int i = 0; i < xPos.length; i++) {
+            path.lineTo(xPos[i], yPos[i]);
+        }
+        Paint paint = new Paint();
         paint.setColor(Color.BLUE);
-        paint.setStrokeWidth(5f);
-        int xWidth = (int) ((float) (xWidths[20 - zoom]) * 2.4f);
-        String xUnit = xUnits[20 - zoom];
-//        utils.appendText("xPixel "+xWidth+" zoom:"+zoom+" unit:"+xUnit);
-        yWith = 10; baseX = 15; baseY = 60;
-        startX = baseX; startY = baseY; stopX = baseX + xWidth; stopY = baseY;
-        canvas.drawLine(startX, startY, stopX, stopY, paint);       // ____
-        startX = baseX; startY = baseY + 5; stopX = startX ; stopY = baseY - yWith;
-        canvas.drawLine(startX, startY, stopX, stopY, paint);       // |_
-        startX = baseX + xWidth; startY = baseY + 5; stopX = startX; stopY = baseY - yWith;
-        canvas.drawLine(startX, startY, stopX, stopY, paint);       //    _|
+        paint.setStrokeWidth(3f);
+        paint.setAntiAlias(true);
+        canvas.drawPath(path, paint);
+
         paint.setTextSize(36);
         paint.setStrokeWidth(20f);
         paint.setColor(Color.BLACK);
-        startX = baseX + xWidth / 4 - 10; startY = baseY - 20;
-        canvas.drawText(xUnit, startX, startY, paint);
+        String xUnit = xUnits[20 - zoom];
+        canvas.drawText(xUnit, baseX+ 20, baseY - yHeight - 10, paint);
         return bitmap;
     }
 

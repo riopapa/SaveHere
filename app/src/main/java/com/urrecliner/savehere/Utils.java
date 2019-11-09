@@ -23,11 +23,11 @@ import static com.urrecliner.savehere.Vars.currActivity;
 import static com.urrecliner.savehere.Vars.latitude;
 import static com.urrecliner.savehere.Vars.longitude;
 import static com.urrecliner.savehere.Vars.mainContext;
-import static com.urrecliner.savehere.Vars.nexus6P;
 import static com.urrecliner.savehere.Vars.nowTime;
 import static com.urrecliner.savehere.Vars.outFileName;
 import static com.urrecliner.savehere.Vars.phoneMake;
 import static com.urrecliner.savehere.Vars.phoneModel;
+import static com.urrecliner.savehere.Vars.phonePrefix;
 import static com.urrecliner.savehere.Vars.utils;
 import static com.urrecliner.savehere.Vars.xPixel;
 import static com.urrecliner.savehere.Vars.yPixel;
@@ -94,19 +94,14 @@ class Utils {
 
         Bitmap outMap = Bitmap.createBitmap(screenBitmap, 0, 0, xPixel, yPixel);  // remove right actiobar white area
         outMap = getResizedBitmap(outMap, xPixel*85/100, yPixel);
-        String filename = outFileName + "_" + tag + "_ha.jpg";
-        if (phoneModel.equals(nexus6P))
-            filename = "IMG_" + filename;
+        String fileName = phonePrefix + outFileName + "_" + tag + "_ha.jpg";
+        return bitmap2File (fileName, outMap);
+    }
+
+    File bitmap2File (String fileName, Bitmap outMap) {
         File directory = getPublicCameraDirectory();
-        try {
-            if (!directory.exists()) {
-                boolean mkdirs = directory.mkdirs();
-                Log.w("mkdirs", ""+mkdirs);
-            }
-        } catch (Exception e) {
-            Log.w("creating file error", e.toString());
-        }
-        File file = new File(directory, filename);
+
+        File file = new File(directory, fileName);
         FileOutputStream os;
         try {
             os = new FileOutputStream(file);
@@ -118,7 +113,6 @@ class Utils {
         }
         return file;
     }
-
     void setPhotoTag(File file) {
         try {
             ExifInterface exif = new ExifInterface(file.getAbsolutePath());

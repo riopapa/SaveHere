@@ -12,6 +12,7 @@
         tools:context="com.urrecliner.savehere.LandActivity"
         tools:layout="@layout/activity_land">
     </fragment>
+
     <ImageView
         android:id="@+id/mapImage"
         android:layout_width="match_parent"
