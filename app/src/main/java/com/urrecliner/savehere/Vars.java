@@ -38,5 +38,6 @@ public class Vars {
     static String outFileName = null;
     static int cameraOrientation;
     static long nowTime;
+    static boolean terrain = false;
 
 }

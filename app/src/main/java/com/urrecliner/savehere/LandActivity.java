@@ -31,6 +31,7 @@ import static com.urrecliner.savehere.Vars.latitude;
 import static com.urrecliner.savehere.Vars.longitude;
 import static com.urrecliner.savehere.Vars.mActivity;
 import static com.urrecliner.savehere.Vars.mGoogleMap;
+import static com.urrecliner.savehere.Vars.terrain;
 import static com.urrecliner.savehere.Vars.utils;
 import static com.urrecliner.savehere.Vars.zoomValue;
 
@@ -44,7 +45,7 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         utils.log(logID,"Start to LandActivity =====");
         setContentView(R.layout.activity_land);
-       if (cameraOrientation == 1) {
+       if (cameraOrientation == 1 || cameraOrientation == 3) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -69,8 +70,9 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(here,zoomValue));
         mGoogleMap.addMarker(new MarkerOptions().position(here)
                 .icon(BitmapDescriptorFactory.fromResource(R.mipmap.icon_face_marker_big)));
-        mGoogleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
-        mGoogleMap.setTrafficEnabled(false);
+        int mapType = (terrain)? GoogleMap.MAP_TYPE_TERRAIN : GoogleMap.MAP_TYPE_NORMAL;
+        mGoogleMap.setMapType(mapType);  // 지형 포함
+//        mGoogleMap.setTrafficEnabled(false);
         mGoogleMap.setOnMapLoadedCallback(this);  // wait till all map is displayed
    }
 
@@ -81,7 +83,7 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
             handler.postDelayed(new Runnable() {
                 public void run() {
                 }
-            }, 100);        // delay till all views are displayed
+            }, 300);        // delay till all views are displayed
         }
         mGoogleMap.snapshot(callback);
     }
@@ -160,6 +162,6 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
                     utils.logE(logID,"Screenshot is NULL");
                 }
             }
-        }, 200);
+        }, 300);
     }
 }

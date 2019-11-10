@@ -48,12 +48,12 @@ class BuildImage {
         int height = bitMapCamera.getHeight();
         utils.log(logID, "bitMapCamera "+width+" x "+height+" orientation "+cameraOrientation+" ooooooo");
 
-        if (cameraOrientation == 6 && width > height) {
+        if (cameraOrientation == 6 && width > height)
             bitMapCamera = utils.rotateBitMap(bitMapCamera, 90);
-        }
-        if (cameraOrientation == 1 && width < height) {
+        if (cameraOrientation == 1 && width < height)
             bitMapCamera = utils.rotateBitMap(bitMapCamera, 90);
-        }
+        if (cameraOrientation == 3)
+            bitMapCamera = utils.rotateBitMap(bitMapCamera, 180);
 
         Bitmap mergedMap = addSignature2Bitmaps(bitMapCamera, timeStamp);
 

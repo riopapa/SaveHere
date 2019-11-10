@@ -32,6 +32,7 @@ import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -75,6 +76,7 @@ import static com.urrecliner.savehere.Vars.strMapAddress;
 import static com.urrecliner.savehere.Vars.strMapPlace;
 import static com.urrecliner.savehere.Vars.strPlace;
 import static com.urrecliner.savehere.Vars.strPosition;
+import static com.urrecliner.savehere.Vars.terrain;
 import static com.urrecliner.savehere.Vars.utils;
 import static com.urrecliner.savehere.Vars.xPixel;
 import static com.urrecliner.savehere.Vars.yPixel;
@@ -141,13 +143,22 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 CameraMapBoth = true;
-//                mCamera.enableShutterSound(false);
                 reactClick(btnCameraMap);
                 take_Picture();
             }
         });
 
-//        buildZoomSeekBar();
+        CheckBox checkBox = findViewById(R.id.terrain);
+        terrain = mSettings.getBoolean("terrain", false);
+        checkBox.setChecked(terrain);
+        checkBox.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                terrain = !terrain;
+                editor.putBoolean("terrain", terrain).apply();
+            }
+        });
+
         buildWheelView();
         buildTimerToggle();
         buildCameraView();
@@ -219,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
         wheel.setVisibleItems(1);
         wheel.setCurrentItem(zoomValue-9);
         wheel.addChangingListener(changedListener);
-        wheel.addScrollingListener(scrolledListener);
+//        wheel.addScrollingListener(scrolledListener);
         zoomTextV = findViewById(R.id.mapScale);
     }
 
@@ -235,31 +246,31 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private OnWheelScrollListener scrolledListener = new OnWheelScrollListener()
-    {
-        public void onScrollStarts(WheelView wheel)
-        {
-            wheelScrolled = true;
-        }
-
-        public void onScrollEnds(WheelView wheel)
-        {
-            wheelScrolled = false;
-            updateStatus();
-        }
-
-        @Override
-        public void onScrollingStarted(WheelView wheel) {
-            // TODO Auto-generated method stub
-
-        }
-
-        @Override
-        public void onScrollingFinished(WheelView wheel) {
-            // TODO Auto-generated method stub
-
-        }
-    };
+//    private OnWheelScrollListener scrolledListener = new OnWheelScrollListener()
+//    {
+//        public void onScrollStarts(WheelView wheel)
+//        {
+//            wheelScrolled = true;
+//        }
+//
+//        public void onScrollEnds(WheelView wheel)
+//        {
+//            wheelScrolled = false;
+//            updateStatus();
+//        }
+//
+//        @Override
+//        public void onScrollingStarted(WheelView wheel) {
+//            // TODO Auto-generated method stub
+//
+//        }
+//
+//        @Override
+//        public void onScrollingFinished(WheelView wheel) {
+//            // TODO Auto-generated method stub
+//
+//        }
+//    };
 
     /**
      * Updates entered PIN status
@@ -327,18 +338,15 @@ public class MainActivity extends AppCompatActivity {
         yPixel = Resources.getSystem().getDisplayMetrics().heightPixels;    // 1080, 1440
 
         int mDeviceRotation = ORIENTATIONS.get(deviceOrientation.getOrientation());
-        if (mDeviceRotation == 0 || mDeviceRotation == 180) { // Landscape
+        utils.logE(logID, "*** rotation="+mDeviceRotation);
+        if (mDeviceRotation == 0)
             cameraOrientation = 1;
-//            if (xPixel < yPixel) {
-//                int t = xPixel; xPixel = yPixel; yPixel = t;
-//            }
-        }
-        else {
+        else if (mDeviceRotation == 180)
+            cameraOrientation = 3;
+        else if (mDeviceRotation == 90)
             cameraOrientation = 6;
-//            if (xPixel > yPixel) {
-//                int t = xPixel; xPixel = yPixel; yPixel = t;
-//            }
-        }
+        else
+            cameraOrientation = 8;
 
         TextView mAddressTextView = findViewById(R.id.addressText);
         strAddress = mAddressTextView.getText().toString();
