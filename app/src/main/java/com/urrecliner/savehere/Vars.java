@@ -27,7 +27,7 @@ public class Vars {
     static boolean CameraMapBoth = false;
     static boolean isTimerOn = false;
 
-    static com.urrecliner.savehere.Utils utils = new com.urrecliner.savehere.Utils();
+    static Utils utils = new Utils();
     static Activity mActivity;
     static String phoneModel = null;
     static String phoneMake = null;
@@ -36,5 +36,7 @@ public class Vars {
     static String nexus6P = "Nexus 6P";
     static int xPixel, yPixel;
     static String outFileName = null;
+    static int cameraOrientation;
     static long nowTime;
+
 }

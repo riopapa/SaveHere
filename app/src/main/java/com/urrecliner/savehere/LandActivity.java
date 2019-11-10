@@ -2,8 +2,6 @@ package com.urrecliner.savehere;
 
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -12,7 +10,6 @@ import android.graphics.Path;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v13.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.WindowManager;
@@ -29,26 +26,25 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.File;
 
-import static com.urrecliner.savehere.Vars.currActivity;
+import static com.urrecliner.savehere.Vars.cameraOrientation;
 import static com.urrecliner.savehere.Vars.latitude;
 import static com.urrecliner.savehere.Vars.longitude;
 import static com.urrecliner.savehere.Vars.mActivity;
 import static com.urrecliner.savehere.Vars.mGoogleMap;
-import static com.urrecliner.savehere.Vars.strPlace;
 import static com.urrecliner.savehere.Vars.utils;
 import static com.urrecliner.savehere.Vars.zoomValue;
 
 public class LandActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMapLoadedCallback {
 
+    private String logID = "LandAct";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        utils.appendText("Start to LandActivity =====");
+        utils.log(logID,"Start to LandActivity =====");
         setContentView(R.layout.activity_land);
-        currActivity =  this.getClass().getSimpleName();
-        int screenOrientation = getResources().getConfiguration().orientation;
-        if (screenOrientation == Configuration.ORIENTATION_PORTRAIT) {
+       if (cameraOrientation == 1) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -69,19 +65,12 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap googleMap) {
 
         mGoogleMap = googleMap;
-        if (ActivityCompat.checkSelfPermission(this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION) !=
-                PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this,
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION) !=
-                        PackageManager.PERMISSION_GRANTED) {
-
-            return;
-        }
         LatLng here = new LatLng(latitude, longitude);
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(here,zoomValue));
         mGoogleMap.addMarker(new MarkerOptions().position(here)
                 .icon(BitmapDescriptorFactory.fromResource(R.mipmap.icon_face_marker_big)));
+        mGoogleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+        mGoogleMap.setTrafficEnabled(false);
         mGoogleMap.setOnMapLoadedCallback(this);  // wait till all map is displayed
    }
 
@@ -104,6 +93,7 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
             Bitmap mergedMap = mergeScaleBitmap(snapshot, scaleMap);
             ImageView mapImageView = findViewById(R.id.mapImage);
             mapImageView.setImageBitmap(mergedMap);
+//            utils.log(logID, "callback rootview ///");
             View rootView = getWindow().getDecorView();
             takeScreenShot(rootView);
         }
@@ -111,8 +101,6 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private Bitmap mergeScaleBitmap(Bitmap mapImage, Bitmap scaleMap){
 
-//        Bitmap result = Bitmap.createBitmap(mapImage.getWidth(), mapImage.getHeight(), mapImage.getConfig());
-//        Canvas canvas = new Canvas(result);
         Canvas canvas = new Canvas(mapImage);
         Paint paint = new Paint();
         canvas.drawBitmap(mapImage, 0, 0, paint);
@@ -154,21 +142,22 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     public void takeScreenShot(View view) {
 
+//        utils.log(logID, "callback rootview ///");
+
         final View rootView = view;
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             public void run() {
-                strPlace += "_";
-                final File screenShot = utils.captureScreen(rootView, "");
+                File screenShot = utils.captureMapScreen(rootView);
                 if (screenShot != null) {
                     utils.setPhotoTag(screenShot);
                     mActivity.sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(screenShot)));
                     mActivity.finishAffinity();
-                    System.exit(0);
                     android.os.Process.killProcess(android.os.Process.myPid());
+                    System.exit(0);
                 } else {
-                    utils.appendText("Screenshot is NULL");
+                    utils.logE(logID,"Screenshot is NULL");
                 }
             }
         }, 200);

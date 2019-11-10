@@ -21,6 +21,7 @@ class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
     Size mPreviewSize;
     List<Size> mSupportedPreviewSizes;
     Camera mCamera;
+    private String logID = "cameraPrv";
 
     CameraPreview(Context context, SurfaceView sv ) {
         super(context);
@@ -130,7 +131,7 @@ class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
                 mCamera.setPreviewDisplay(holder);
             }
         } catch (IOException exception) {
-            utils.appendText("IOException caused by setPreviewDisplay() " + exception.toString());
+            utils.logE(logID,"IOException caused by setPreviewDisplay() " + exception.toString());
         }
     }
 

@@ -5,13 +5,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.hardware.Camera;
+import android.hardware.Sensor;
+import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.media.ExifInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -21,6 +26,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.SparseIntArray;
 import android.view.KeyEvent;
 import android.view.SurfaceView;
 import android.view.View;
@@ -29,7 +35,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,6 +55,7 @@ import java.util.TimerTask;
 
 import static com.urrecliner.savehere.Vars.CameraMapBoth;
 import static com.urrecliner.savehere.Vars.bitMapCamera;
+import static com.urrecliner.savehere.Vars.cameraOrientation;
 import static com.urrecliner.savehere.Vars.currActivity;
 import static com.urrecliner.savehere.Vars.isTimerOn;
 import static com.urrecliner.savehere.Vars.latitude;
@@ -70,14 +76,27 @@ import static com.urrecliner.savehere.Vars.strMapPlace;
 import static com.urrecliner.savehere.Vars.strPlace;
 import static com.urrecliner.savehere.Vars.strPosition;
 import static com.urrecliner.savehere.Vars.utils;
+import static com.urrecliner.savehere.Vars.xPixel;
+import static com.urrecliner.savehere.Vars.yPixel;
 import static com.urrecliner.savehere.Vars.zoomValue;
 
 public class MainActivity extends AppCompatActivity {
 
     private GoogleApiClient mGoogleApiClient;
-
     private final static int PLACE_PICKER_REQUEST = 1;
-    private com.urrecliner.savehere.CameraPreview mCameraPreview;
+    private CameraPreview mCameraPreview;
+    private String logID = "main";
+
+    TextView zoomTextV;
+    String [] zoomTables = {"9","10","11","12","13","14","15","16","17","18","19","20"};
+    // Wheel scrolled flag
+    private boolean wheelScrolled = false;
+    SharedPreferences.Editor editor = null;
+
+    private Sensor mAccelerometer;
+    private Sensor mMagnetometer;
+    private SensorManager mSensorManager;
+    private DeviceOrientation deviceOrientation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,16 +105,27 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         currActivity =  this.getClass().getSimpleName();
         mainContext = getApplicationContext();
-        if (!com.urrecliner.savehere.AccessPermission.isPermissionOK(getApplicationContext(), this))
+        if (!AccessPermission.isPermissionOK(getApplicationContext(), this))
             return;
+
+        mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
+        mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        deviceOrientation = new DeviceOrientation();
+
+
         mActivity = this;
         phoneModel = Build.MODEL;           // SM-G965N             Nexus 6P
         phoneMake = Build.MANUFACTURER;     // samsung              Huawei
         if (phoneModel.equals(nexus6P))
             phonePrefix = "IMG_";
 
+        SharedPreferences mSettings = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = mSettings.edit();
+        zoomValue = mSettings.getInt("Zoom", 16);
+
 //        String hardware = Build.HARDWARE;   // samsungexynos9810    angler
-//        utils.appendText("this phone model is " + phoneModel + " manu " + manufacturer + " hardware " + hardware);
+//        utils.log(logID,"this phone model is " + phoneModel + " manu " + manufacturer + " hardware " + hardware);
 
         final Button btnCameraOnly = findViewById(R.id.btnCamera);
         btnCameraOnly.setOnClickListener(new View.OnClickListener() {
@@ -117,7 +147,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        buildZoomSeekBar();
+//        buildZoomSeekBar();
+        buildWheelView();
         buildTimerToggle();
         buildCameraView();
         startCamera();
@@ -129,7 +160,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 intent = builder.build(MainActivity.this);
             } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
-                utils.appendText("#PP" + e.toString());
+                utils.log(logID,"#PP" + e.toString());
                 e.printStackTrace();
             }
             startActivityForResult(intent, PLACE_PICKER_REQUEST);
@@ -140,6 +171,19 @@ public class MainActivity extends AppCompatActivity {
         }
         utils.deleteOldLogFiles();
 
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        utils.log(logID," new Config "+newConfig.orientation);
+        Toast.makeText(mainContext,"curr orentation is "+newConfig.orientation,Toast.LENGTH_SHORT).show();
+//        // Checks the orientation of the screen for landscape and portrait and set portrait mode always
+//        if (newConfig.orientation ==Configuration.ORIENTATION_LANDSCAPE) {
+//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+//        } else if (newConfig.orientation ==Configuration.ORIENTATION_PORTRAIT){
+//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+//        }
     }
 
     private void ready_GoogleAPIClient() {
@@ -167,46 +211,80 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void buildZoomSeekBar() {
-        SharedPreferences mSettings = PreferenceManager.getDefaultSharedPreferences(this);
-        final SharedPreferences.Editor editor = mSettings.edit();
-        final TextView tV = findViewById(R.id.zoomText);
-        final SeekBar seekZoom = findViewById(R.id.seek_bar_zoom);
-        zoomValue = mSettings.getInt("Zoom", 16);
-        seekZoom.setProgress(zoomValue);
-        showSeekBarValue(tV);
-        seekZoom.setMax(20);
-        seekZoom.setMin(9);
-        seekZoom.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                zoomValue = seekZoom.getProgress();
-                showSeekBarValue(tV);
-                editor.putInt("Zoom", zoomValue).apply();
-            }
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-            }
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-            }
-        });
-//        seekZoom.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                Display display = getWindowManager().getDefaultDisplay();
-//                Point size = new Point();
-//                display.getSize(size);
-//                int height = seekZoom.getHeight();
-//                int seekZoomTop = seekZoom.getTop();
-//                FrameLayout camera_surface = findViewById(R.id.frame);
-//                int width = size.x - camera_surface.getWidth();
-//                ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(width, height);
-//                layoutParams.setMargins(0,seekZoomTop,0,0);
-//                seekZoom.setLayoutParams(layoutParams);
-//            }
-//        });
+    /* WHEEL related start */
+    private void buildWheelView() {
+
+        WheelView wheel = findViewById(R.id.wheel_zoom);
+        wheel.setViewAdapter(new ArrayWheelAdapter(mainContext,zoomTables));
+        wheel.setVisibleItems(1);
+        wheel.setCurrentItem(zoomValue-9);
+        wheel.addChangingListener(changedListener);
+        wheel.addScrollingListener(scrolledListener);
+        zoomTextV = findViewById(R.id.mapScale);
     }
+
+    // Wheel changed listener
+    private final OnWheelChangedListener changedListener = new OnWheelChangedListener()
+    {
+        public void onChanged(WheelView wheel, int oldValue, int newValue)
+        {
+            if (!wheelScrolled)
+            {
+                updateStatus();
+            }
+        }
+    };
+
+    private OnWheelScrollListener scrolledListener = new OnWheelScrollListener()
+    {
+        public void onScrollStarts(WheelView wheel)
+        {
+            wheelScrolled = true;
+        }
+
+        public void onScrollEnds(WheelView wheel)
+        {
+            wheelScrolled = false;
+            updateStatus();
+        }
+
+        @Override
+        public void onScrollingStarted(WheelView wheel) {
+            // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void onScrollingFinished(WheelView wheel) {
+            // TODO Auto-generated method stub
+
+        }
+    };
+
+    /**
+     * Updates entered PIN status
+     */
+    private void updateStatus()
+    {
+        int idx = getWheel(R.id.wheel_zoom).getCurrentItem();
+        zoomValue = Integer.parseInt(zoomTables[idx]);
+        editor.putInt("Zoom", zoomValue).apply();
+    }
+
+    /**
+     * Returns wheel by Id
+     *
+     * @param id
+     *          the wheel Id
+     * @return the wheel with passed Id
+     */
+    private WheelView getWheel(int id)
+    {
+        return (WheelView) findViewById(id);
+    }
+
+    /* WHEEL related end */
+
 
     private void buildCameraView() {
 //        final FrameLayout frame = findViewById(R.id.frame);
@@ -228,18 +306,40 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 isTimerOn ^= true;
-                vTimerToggle.setImageResource((isTimerOn)? R.mipmap.icon_timer_active_min: R.mipmap.icon_timer_off_min);
+                vTimerToggle.setImageResource((isTimerOn)? R.mipmap.icon_timer_on_min: R.mipmap.icon_timer_off_min);
             }
         });
     }
 
-    private void showSeekBarValue (TextView tV) {
-        String ZoomValue = "" + zoomValue;
-        tV.setText(ZoomValue);
+    private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
+    static {
+        ORIENTATIONS.append(ExifInterface.ORIENTATION_NORMAL, 0);
+        ORIENTATIONS.append(ExifInterface.ORIENTATION_ROTATE_90, 90);
+        ORIENTATIONS.append(ExifInterface.ORIENTATION_ROTATE_180, 180);
+        ORIENTATIONS.append(ExifInterface.ORIENTATION_ROTATE_270, 270);
     }
+
     private void reactClick(Button button) {
 
+
         button.setBackgroundColor(Color.parseColor("#205eaa"));
+        xPixel = Resources.getSystem().getDisplayMetrics().widthPixels;     // 2094, 2960
+        yPixel = Resources.getSystem().getDisplayMetrics().heightPixels;    // 1080, 1440
+
+        int mDeviceRotation = ORIENTATIONS.get(deviceOrientation.getOrientation());
+        if (mDeviceRotation == 0 || mDeviceRotation == 180) { // Landscape
+            cameraOrientation = 1;
+//            if (xPixel < yPixel) {
+//                int t = xPixel; xPixel = yPixel; yPixel = t;
+//            }
+        }
+        else {
+            cameraOrientation = 6;
+//            if (xPixel > yPixel) {
+//                int t = xPixel; xPixel = yPixel; yPixel = t;
+//            }
+        }
+
         TextView mAddressTextView = findViewById(R.id.addressText);
         strAddress = mAddressTextView.getText().toString();
         try {
@@ -254,9 +354,6 @@ public class MainActivity extends AppCompatActivity {
             strPlace = strAddress;
             strAddress = "?";
         }
-
-        final SeekBar seekZoom = findViewById(R.id.seek_bar_zoom);
-        zoomValue = seekZoom.getProgress();
 
         mAddressTextView.setBackgroundColor(Color.MAGENTA);
     }
@@ -308,7 +405,7 @@ public class MainActivity extends AppCompatActivity {
     private class MyOnConnectionFailedListener implements GoogleApiClient.OnConnectionFailedListener {
         @Override
         public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-//            utils.appendText("#oF");
+//            utils.log(logID,"#oF");
         }
     }
 
@@ -340,13 +437,13 @@ public class MainActivity extends AppCompatActivity {
         }
         mCamera = Camera.open(0);
         try {
-            // camera orientation
+            // camera cameraOrientation
             mCamera.setDisplayOrientation(90);
 
         } catch (RuntimeException ex) {
-            Toast.makeText(getApplicationContext(), "camera orientation " + ex.getMessage(),
+            Toast.makeText(getApplicationContext(), "camera cameraOrientation " + ex.getMessage(),
                     Toast.LENGTH_LONG).show();
-            utils.appendText("CAMERA not found " + ex.getMessage());
+            utils.log(logID,"CAMERA not found " + ex.getMessage());
         }
         Camera.Parameters params = mCamera.getParameters();
         params.setRotation(90);
@@ -364,27 +461,21 @@ public class MainActivity extends AppCompatActivity {
         mCamera.setParameters(params);
         mCamera.startPreview();
         mCameraPreview.setCamera(mCamera);
-
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//        utils.appendText("#oP");
+//        utils.log(logID,"#oP");
     }
 
     public void showCurrentLocation() {
 
         double altitude;
-//        utils.appendText("#a geocoder");
+//        utils.log(logID,"#a geocoder");
         Location location = getGPSCord();
         if (location == null) {
-//            utils.appendText("Location is null");
+//            utils.log(logID,"Location is null");
             strPosition = " ";
         }
         else {
@@ -393,7 +484,7 @@ public class MainActivity extends AppCompatActivity {
             altitude = location.getAltitude();
             strPosition = String.format(Locale.ENGLISH,"%.5f ; %.5f ; %.2f", latitude, longitude, altitude);
         }
-//        utils.appendText(strPosition);
+//        utils.log(logID,strPosition);
 
         if (isNetworkAvailable()) {
             Geocoder geocoder = new Geocoder(this, Locale.KOREA);
@@ -406,7 +497,7 @@ public class MainActivity extends AppCompatActivity {
         EditText et = findViewById(R.id.addressText);
         et.setText(text);
         et.setSelection(text.indexOf("\n"));
-//        utils.appendText("#shown");
+//        utils.log(logID,"#shown");
     }
 
     public Location getGPSCord() {
@@ -451,7 +542,7 @@ public class MainActivity extends AppCompatActivity {
             }
         } catch (IOException e) {
             Toast.makeText(this, "No Address List", Toast.LENGTH_LONG).show();
-            utils.appendText("#IOE " + e.toString());
+            utils.log(logID,"#IOE " + e.toString());
             return "\n" + strPosition;
         }
     }
@@ -567,4 +658,11 @@ public class MainActivity extends AppCompatActivity {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        mSensorManager.registerListener(deviceOrientation.getEventListener(), mAccelerometer, SensorManager.SENSOR_DELAY_UI);
+        mSensorManager.registerListener(deviceOrientation.getEventListener(), mMagnetometer, SensorManager.SENSOR_DELAY_UI);
+    }
 }

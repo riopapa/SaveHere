@@ -17,9 +17,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.Collator;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
-import static com.urrecliner.savehere.Vars.currActivity;
+import static com.urrecliner.savehere.Vars.cameraOrientation;
 import static com.urrecliner.savehere.Vars.latitude;
 import static com.urrecliner.savehere.Vars.longitude;
 import static com.urrecliner.savehere.Vars.mainContext;
@@ -35,35 +36,52 @@ import static com.urrecliner.savehere.Vars.yPixel;
 class Utils {
 
     final private String PREFIX = "log_";
+    final private String logID = "utils";
 
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd", Locale.ENGLISH);
-    private final SimpleDateFormat timeLogFormat = new SimpleDateFormat("MM/dd HH:mm:ss", Locale.ENGLISH);
-    private final SimpleDateFormat jpegTimeFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.ENGLISH);
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd", Locale.US);
+    private final SimpleDateFormat dateTimeLogFormat = new SimpleDateFormat("yy-MM-dd HH.mm.ss sss", Locale.US);
 
-    void appendText(String textLine) {
+    void log(String tag, String text) {
+        StackTraceElement[] traces;
+        traces = Thread.currentThread().getStackTrace();
+        String log = traceName(traces[5].getMethodName()) + traceName(traces[4].getMethodName()) + traceClassName(traces[3].getClassName())+"> "+traces[3].getMethodName() + "#" + traces[3].getLineNumber() + " {"+ tag + "} " + text;
+        Log.w(tag , log);
+        append2file(dateTimeLogFormat.format(new Date())+" " +log);
+    }
+
+    private String traceName (String s) {
+        if (s.equals("performResume") || s.equals("performCreate") || s.equals("callActivityOnResume") || s.equals("access$1200")
+                || s.equals("handleReceiver"))
+            return "";
+        else
+            return s + "> ";
+    }
+    private String traceClassName(String s) {
+        return s.substring(s.lastIndexOf(".")+1);
+    }
+
+    void logE(String tag, String text) {
+        StackTraceElement[] traces;
+        traces = Thread.currentThread().getStackTrace();
+        String log = traceName(traces[5].getMethodName()) + traceName(traces[4].getMethodName()) + traceClassName(traces[3].getClassName())+"> "+traces[3].getMethodName() + "#" + traces[3].getLineNumber() + " {"+ tag + "} " + text;
+        Log.e("<" + tag + ">" , log);
+        append2file(dateTimeLogFormat.format(new Date())+" : " +log);
+    }
+
+    private void append2file(String textLine) {
+
         File directory = getPackageDirectory();
-        try {
-            if (!directory.exists()) {
-                boolean result = directory.mkdirs();
-                Log.e("Directory",  directory.toString() + " created " + result);
-            }
-        } catch (Exception e) {
-            Log.e("Directory", "Create error " + directory.toString() + "_" + e.toString());
-        }
-
         BufferedWriter bw = null;
         FileWriter fw = null;
+        String fullName = directory.toString() + "/" + PREFIX + dateFormat.format(new Date())+".txt";
         try {
-            File file = new File(directory, PREFIX + dateFormat.format(nowTime)+".txt");
+            File file = new File(fullName);
             if (!file.exists()) {
                 if (!file.createNewFile()) {
-                    Log.e("createFile", " Error");
+                    logE("createFile", " Error");
                 }
             }
-            StackTraceElement[] traces;
-            traces = Thread.currentThread().getStackTrace();
-            String outText = timeLogFormat.format(nowTime) + " " + currActivity + " " + traces[5].getMethodName() + " > " + traces[4].getMethodName() + " > " + traces[3].getMethodName() + " #" + traces[3].getLineNumber() + " [[" + textLine + "]]\n";
-            // true = append file
+            String outText = "\n"+textLine+"\n";
             fw = new FileWriter(file.getAbsoluteFile(), true);
             bw = new BufferedWriter(fw);
             bw.write(outText);
@@ -80,27 +98,55 @@ class Utils {
         }
     }
 
+
+    private File getPackageDirectory() {
+        File directory = new File(Environment.getExternalStorageDirectory(), utils.getAppLabel(mainContext));
+        try {
+            if (!directory.exists()) {
+                if(directory.mkdirs()) {
+                    Log.e("mkdirs","Failed "+directory);
+                }
+            }
+        } catch (Exception e) {
+            Log.e("creating Directory error", directory.toString() + "_" + e.toString());
+        }
+        return directory;
+    }
+
     File getPublicCameraDirectory() {
         return new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_DCIM),"/Camera");
     }
 
-    File captureScreen(View view, String tag) {
+    Bitmap rotateBitMap(Bitmap bitmap, int degree) {
+            Matrix matrix = new Matrix();
+            matrix.postRotate(degree);
+            return Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, false);
+    }
 
+    File captureMapScreen(View view) {
+
+        utils.log(logID, "capture screen ///");
+
+        if (xPixel < yPixel) {
+            int t = xPixel; xPixel = yPixel; yPixel = t;
+        }
         view.setDrawingCacheEnabled(true);
         view.buildDrawingCache();
         Bitmap screenBitmap = view.getDrawingCache();
         assert screenBitmap != null;
+        int width = screenBitmap.getWidth();
+        int height = screenBitmap.getHeight();
+        if (xPixel < width && yPixel <= height)
+            screenBitmap = Bitmap.createBitmap(screenBitmap, 0, 0, xPixel, yPixel);  // remove right actiobar white area
 
-        Bitmap outMap = Bitmap.createBitmap(screenBitmap, 0, 0, xPixel, yPixel);  // remove right actiobar white area
-        outMap = getResizedBitmap(outMap, xPixel*85/100, yPixel);
-        String fileName = phonePrefix + outFileName + "_" + tag + "_ha.jpg";
-        return bitmap2File (fileName, outMap);
+        String fileName = phonePrefix + outFileName + "__ha.jpg";
+
+        return bitmap2File (fileName, screenBitmap);
     }
 
     File bitmap2File (String fileName, Bitmap outMap) {
         File directory = getPublicCameraDirectory();
-
         File file = new File(directory, fileName);
         FileOutputStream os;
         try {
@@ -108,14 +154,17 @@ class Utils {
             outMap.compress(Bitmap.CompressFormat.JPEG, 100, os);
             os.close();
         } catch (IOException e) {
-            utils.appendText("Create ioException\n"+e);
+            utils.logE(logID,"Create ioException\n"+e);
             return null;
         }
         return file;
     }
     void setPhotoTag(File file) {
+        SimpleDateFormat jpegTimeFormat = new SimpleDateFormat("yyyy:MM:dd HH:mm:ss", Locale.ENGLISH);
+
         try {
             ExifInterface exif = new ExifInterface(file.getAbsolutePath());
+            exif.setAttribute(ExifInterface.TAG_ORIENTATION, ""+cameraOrientation);
             exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE,convertGpsToDMS(latitude));
             exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF,(latitude > 0) ? "N":"S");
             exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, convertGpsToDMS(longitude));
@@ -126,7 +175,7 @@ class Utils {
             exif.setAttribute(ExifInterface.TAG_DATETIME, jpegTimeFormat.format(nowTime));
             exif.saveAttributes();
         } catch (IOException e) {
-            utils.appendText("EXIF ioException\n"+e.toString());
+            utils.log(logID,"EXIF ioException\n"+e.toString());
         }
     }
 
@@ -170,20 +219,6 @@ class Utils {
         return (String) (applicationInfo != null ? packageManager.getApplicationLabel(applicationInfo) : "Unknown");
     }
 
-    private File getPackageDirectory() {
-        File directory = new File(Environment.getExternalStorageDirectory(), getAppLabel(mainContext));
-        try {
-            if (!directory.exists()) {
-                if(directory.mkdirs()) {
-                    Log.e("mkdirs","Failed "+directory);
-                }
-            }
-        } catch (Exception e) {
-            Log.e("creating Directory error", directory.toString() + "_" + e.toString());
-        }
-        return directory;
-    }
-
     private File[] getFilesList(File fullPath) {
         return fullPath.listFiles();
     }
@@ -204,4 +239,5 @@ class Utils {
 //        bm.recycle();
         return resizedBitmap;
     }
+
 }

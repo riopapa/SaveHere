@@ -7,11 +7,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
-
-import androidx.exifinterface.media.ExifInterface;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,6 +24,7 @@ import static com.urrecliner.savehere.Vars.longitude;
 import static com.urrecliner.savehere.Vars.mActivity;
 import static com.urrecliner.savehere.Vars.mainContext;
 import static com.urrecliner.savehere.Vars.nowTime;
+import static com.urrecliner.savehere.Vars.cameraOrientation;
 import static com.urrecliner.savehere.Vars.outFileName;
 import static com.urrecliner.savehere.Vars.phoneMake;
 import static com.urrecliner.savehere.Vars.phoneModel;
@@ -37,11 +37,23 @@ import static com.urrecliner.savehere.Vars.utils;
 
 class BuildImage {
 
+    private String logID = "buildCameraImage";
+
     void makeOutMap() {
 
         String timeStamp;
         SimpleDateFormat dateTimeFormat = new SimpleDateFormat("`yy/MM/dd HH:mm", Locale.ENGLISH);
         timeStamp =  dateTimeFormat.format(nowTime);
+        int width = bitMapCamera.getWidth();
+        int height = bitMapCamera.getHeight();
+        utils.log(logID, "bitMapCamera "+width+" x "+height+" orientation "+cameraOrientation+" ooooooo");
+
+        if (cameraOrientation == 6 && width > height) {
+            bitMapCamera = utils.rotateBitMap(bitMapCamera, 90);
+        }
+        if (cameraOrientation == 1 && width < height) {
+            bitMapCamera = utils.rotateBitMap(bitMapCamera, 90);
+        }
 
         Bitmap mergedMap = addSignature2Bitmaps(bitMapCamera, timeStamp);
 
@@ -63,7 +75,7 @@ class BuildImage {
             exifHa.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF, latitudeRefGPS(latitude));
             exifHa.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, convertGPS(longitude));
             exifHa.setAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF, longitudeRefGPS(longitude));
-            exifHa.setAttribute(ExifInterface.TAG_ORIENTATION, "1");
+            exifHa.setAttribute(ExifInterface.TAG_ORIENTATION, ""+cameraOrientation);
             exifHa.setAttribute(ExifInterface.TAG_DATETIME,sdfHourMinSec.format(nowTime));
             exifHa.setAttribute(ExifInterface.TAG_IMAGE_DESCRIPTION, "by riopapa");
             exifHa.saveAttributes();
@@ -98,8 +110,8 @@ class BuildImage {
         Bitmap newMap = Bitmap.createBitmap(width, height, photoMap.getConfig());
         Canvas canvas = new Canvas(newMap);
         canvas.drawBitmap(photoMap, 0f, 0f, null);
-        int fontSize = width/27;
-        int xPos = width/5;
+        int fontSize = (cameraOrientation == 1) ? height/16 : width/16;
+        int xPos = (cameraOrientation == 1) ? width/5 : width*3/10;
         int yPos = height/12;
         isBright = checkBright(photoMap, xPos, yPos);
         drawTextOnCanvas(canvas, dateTime, fontSize, xPos, yPos, false, isBright);
@@ -114,17 +126,17 @@ class BuildImage {
         canvas.drawBitmap(sigMap, xPos, yPos, sigPaint);
 
         if (strPlace.length() == 0) strPlace = " ";
-        fontSize = (width+height)/36;
+        fontSize = (cameraOrientation == 1) ? width/24 : width/16;
         xPos = width/2;
         yPos = height - height/24 - fontSize - fontSize;
         isBright = checkBright(photoMap, xPos, yPos);
         drawTextOnCanvas(canvas, strPlace, fontSize, xPos, yPos, true, isBright);
         yPos += fontSize;
-        fontSize = width/32;
+        fontSize = fontSize * 3 / 4;
         yPos += fontSize / 2;
         drawTextOnCanvas(canvas, strAddress, fontSize, xPos, yPos,false, isBright);
         yPos += fontSize;
-        fontSize = width/40;
+        fontSize = fontSize * 3 / 4;
         drawTextOnCanvas(canvas, strPosition, fontSize, xPos, yPos,false, isBright);
         return newMap;
     }
