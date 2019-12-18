@@ -43,7 +43,6 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        utils.log(logID,"Start to LandActivity =====");
         setContentView(R.layout.activity_land);
        if (cameraOrientation == 1 || cameraOrientation == 3) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);

@@ -125,10 +125,10 @@ class Utils {
 
     File captureMapScreen(View view) {
 
-        utils.log(logID, "capture screen ///");
-
         if (xPixel < yPixel) {
-            int t = xPixel; xPixel = yPixel; yPixel = t;
+            int t = xPixel;
+            xPixel = yPixel;
+            yPixel = t;
         }
         view.setDrawingCacheEnabled(true);
         view.buildDrawingCache();

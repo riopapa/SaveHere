@@ -109,15 +109,13 @@ class BuildImage {
 
         int width = photoMap.getWidth();
         int height = photoMap.getHeight();
-        boolean isBright;
         Bitmap newMap = Bitmap.createBitmap(width, height, photoMap.getConfig());
         Canvas canvas = new Canvas(newMap);
         canvas.drawBitmap(photoMap, 0f, 0f, null);
         int fontSize = (cameraOrientation == 1) ? height/16 : width/16;
         int xPos = (cameraOrientation == 1) ? width/5 : width*3/10;
         int yPos = height/12;
-        isBright = checkBright(photoMap, xPos, yPos);
-        drawTextOnCanvas(canvas, dateTime, fontSize, xPos, yPos, false, isBright);
+        drawTextOnCanvas(canvas, dateTime, fontSize, xPos, yPos);
 
         int sigSize = (width > height) ? height/6 : width/4;
         Bitmap sigMap = BitmapFactory.decodeResource(mainContext.getResources(), R.raw.signature_yellow_min);
@@ -132,57 +130,35 @@ class BuildImage {
         fontSize = (cameraOrientation == 1) ? width/24 : width/16;
         xPos = width/2;
         yPos = height - height/24 - fontSize - fontSize;
-        isBright = checkBright(photoMap, xPos, yPos);
-        drawTextOnCanvas(canvas, strPlace, fontSize, xPos, yPos, true, isBright);
+        drawTextOnCanvas(canvas, strPlace, fontSize, xPos, yPos);
         yPos += fontSize;
         fontSize = fontSize * 5 / 8;
         yPos += fontSize / 2;
-        drawTextOnCanvas(canvas, strAddress, fontSize, xPos, yPos,false, isBright);
+        drawTextOnCanvas(canvas, strAddress, fontSize, xPos, yPos);
         yPos += fontSize;
         fontSize = fontSize * 3 / 4;
-        drawTextOnCanvas(canvas, strPosition, fontSize, xPos, yPos,false, isBright);
+        drawTextOnCanvas(canvas, strPosition, fontSize, xPos, yPos);
         return newMap;
     }
 
-    private void drawTextOnCanvas(Canvas canvas, String text, int fontSize, int xPos, int yPos, boolean wide, boolean isBright) {
+    private void drawTextOnCanvas(Canvas canvas, String text, int fontSize, int xPos, int yPos) {
         Paint paint = new Paint();
-        paint.setColor(isBright ? Color.YELLOW:Color.BLACK);
-
+        paint.setColor(Color.BLACK);
         paint.setTextSize(fontSize);
 //        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.XOR));
         paint.setTypeface(Typeface.DEFAULT_BOLD);
         paint.setTextAlign(Paint.Align.CENTER);
-        if (wide) {
-            canvas.drawText(text, xPos-4, yPos-4, paint);
-            canvas.drawText(text, xPos+4, yPos-4, paint);
-            canvas.drawText(text, xPos-4, yPos+4, paint);
-            canvas.drawText(text, xPos+4, yPos+4, paint);
-            canvas.drawText(text, xPos+6, yPos+6, paint);
-        } else {
-            canvas.drawText(text, xPos-2, yPos-2, paint);
-            canvas.drawText(text, xPos+2, yPos-2, paint);
-            canvas.drawText(text, xPos-2, yPos+2, paint);
-            canvas.drawText(text, xPos+2, yPos+2, paint);
-            canvas.drawText(text, xPos+4, yPos+4, paint);
-        }
-        paint.setColor(isBright ? Color.BLACK:Color.YELLOW);
+        int d = fontSize / 16;
+        canvas.drawText(text, xPos-d, yPos-d, paint);
+        canvas.drawText(text, xPos+d, yPos-d, paint);
+        canvas.drawText(text, xPos-d, yPos+d, paint);
+        canvas.drawText(text, xPos+d, yPos+d, paint);
+        canvas.drawText(text, xPos-d, yPos, paint);
+        canvas.drawText(text, xPos+d, yPos, paint);
+        canvas.drawText(text, xPos, yPos-d, paint);
+        canvas.drawText(text, xPos, yPos+d, paint);
+        paint.setColor(Color.YELLOW);
         canvas.drawText(text, xPos, yPos, paint);
-    }
-
-    private boolean checkBright(Bitmap bitmap, int xPos, int yPos) {
-//        int brightness = 0;
-//        final int xMax = 120;
-//        final int yMax = 80;
-//        for (int x = -xMax; x < xMax; x+=4) {
-//            for (int y = -yMax; y < yMax; y+=4) {
-//                int color = bitmap.getPixel(xPos+x, yPos+y);
-//                int R = color & 0xff0000; int G = color & 0x00ff00; int B = color & 0xff;
-//                if (R > 0x8f0000 && G > 0x8f00 && B > 0x8f)
-//                    brightness++;
-//            }
-//        }
-//        return brightness < (xMax/3) * (yMax/3) / 3;
-        return false;
     }
 
     private void writeCameraFile(Bitmap bitmap, File file) {
