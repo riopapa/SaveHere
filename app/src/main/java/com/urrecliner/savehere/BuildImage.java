@@ -19,12 +19,12 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 import static com.urrecliner.savehere.Vars.bitMapCamera;
+import static com.urrecliner.savehere.Vars.cameraOrientation;
 import static com.urrecliner.savehere.Vars.latitude;
 import static com.urrecliner.savehere.Vars.longitude;
 import static com.urrecliner.savehere.Vars.mActivity;
 import static com.urrecliner.savehere.Vars.mainContext;
 import static com.urrecliner.savehere.Vars.nowTime;
-import static com.urrecliner.savehere.Vars.cameraOrientation;
 import static com.urrecliner.savehere.Vars.outFileName;
 import static com.urrecliner.savehere.Vars.phoneMake;
 import static com.urrecliner.savehere.Vars.phoneModel;
@@ -55,6 +55,9 @@ class BuildImage {
         if (cameraOrientation == 3)
             bitMapCamera = utils.rotateBitMap(bitMapCamera, 180);
 
+        width = bitMapCamera.getWidth();
+        height = bitMapCamera.getHeight();
+        utils.log(logID, "before Merge "+width+" x "+height+" orientation "+cameraOrientation+" ooooooo");
         Bitmap mergedMap = addSignature2Bitmaps(bitMapCamera, timeStamp);
 
         File newFile = new File(utils.getPublicCameraDirectory(), phonePrefix + outFileName + " _ha.jpg");
@@ -75,7 +78,7 @@ class BuildImage {
             exifHa.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF, latitudeRefGPS(latitude));
             exifHa.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, convertGPS(longitude));
             exifHa.setAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF, longitudeRefGPS(longitude));
-            exifHa.setAttribute(ExifInterface.TAG_ORIENTATION, ""+cameraOrientation);
+            exifHa.setAttribute(ExifInterface.TAG_ORIENTATION, "1");
             exifHa.setAttribute(ExifInterface.TAG_DATETIME,sdfHourMinSec.format(nowTime));
             exifHa.setAttribute(ExifInterface.TAG_IMAGE_DESCRIPTION, "by riopapa");
             exifHa.saveAttributes();
@@ -132,7 +135,7 @@ class BuildImage {
         isBright = checkBright(photoMap, xPos, yPos);
         drawTextOnCanvas(canvas, strPlace, fontSize, xPos, yPos, true, isBright);
         yPos += fontSize;
-        fontSize = fontSize * 3 / 4;
+        fontSize = fontSize * 5 / 8;
         yPos += fontSize / 2;
         drawTextOnCanvas(canvas, strAddress, fontSize, xPos, yPos,false, isBright);
         yPos += fontSize;
@@ -145,8 +148,8 @@ class BuildImage {
         Paint paint = new Paint();
         paint.setColor(isBright ? Color.YELLOW:Color.BLACK);
 
-//        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.XOR));
         paint.setTextSize(fontSize);
+//        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.XOR));
         paint.setTypeface(Typeface.DEFAULT_BOLD);
         paint.setTextAlign(Paint.Align.CENTER);
         if (wide) {
@@ -167,18 +170,19 @@ class BuildImage {
     }
 
     private boolean checkBright(Bitmap bitmap, int xPos, int yPos) {
-        int brightness = 0;
-        final int xMax = 120;
-        final int yMax = 80;
-        for (int x = -xMax; x < xMax; x+=4) {
-            for (int y = -yMax; y < yMax; y+=4) {
-                int color = bitmap.getPixel(xPos+x, yPos+y);
-                int R = color & 0xff0000; int G = color & 0x00ff00; int B = color & 0xff;
-                if (R > 0x6f0000 && G > 0x6f00 && B > 0x6f)
-                    brightness++;
-            }
-        }
-        return brightness >= (xMax/2) * (yMax/2) / 2;
+//        int brightness = 0;
+//        final int xMax = 120;
+//        final int yMax = 80;
+//        for (int x = -xMax; x < xMax; x+=4) {
+//            for (int y = -yMax; y < yMax; y+=4) {
+//                int color = bitmap.getPixel(xPos+x, yPos+y);
+//                int R = color & 0xff0000; int G = color & 0x00ff00; int B = color & 0xff;
+//                if (R > 0x8f0000 && G > 0x8f00 && B > 0x8f)
+//                    brightness++;
+//            }
+//        }
+//        return brightness < (xMax/3) * (yMax/3) / 3;
+        return false;
     }
 
     private void writeCameraFile(Bitmap bitmap, File file) {

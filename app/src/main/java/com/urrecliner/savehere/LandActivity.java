@@ -69,7 +69,7 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
         LatLng here = new LatLng(latitude, longitude);
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(here,zoomValue));
         mGoogleMap.addMarker(new MarkerOptions().position(here)
-                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.icon_face_marker_big)));
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.icon_face_marker)));
         int mapType = (terrain)? GoogleMap.MAP_TYPE_TERRAIN : GoogleMap.MAP_TYPE_NORMAL;
         mGoogleMap.setMapType(mapType);  // 지형 포함
 //        mGoogleMap.setTrafficEnabled(false);

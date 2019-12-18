@@ -20,7 +20,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import static com.urrecliner.savehere.Vars.cameraOrientation;
 import static com.urrecliner.savehere.Vars.latitude;
 import static com.urrecliner.savehere.Vars.longitude;
 import static com.urrecliner.savehere.Vars.mainContext;
@@ -164,7 +163,7 @@ class Utils {
 
         try {
             ExifInterface exif = new ExifInterface(file.getAbsolutePath());
-            exif.setAttribute(ExifInterface.TAG_ORIENTATION, ""+cameraOrientation);
+            exif.setAttribute(ExifInterface.TAG_ORIENTATION, "1");
             exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE,convertGpsToDMS(latitude));
             exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF,(latitude > 0) ? "N":"S");
             exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, convertGpsToDMS(longitude));
