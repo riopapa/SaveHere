@@ -1,28 +1,26 @@
-package com.urrecliner.savehere;
+package com.urrecliner.phovomemo;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
 
-import com.google.android.gms.maps.GoogleMap;
-
 public class Vars {
 
     static String currActivity = null;
-    static Context mainContext = null;
+    static Context mContext = null;
     static String strPlace = null;
     static String strAddress = null;
     static String strMapPlace = null;
     static String strMapAddress = null;
     static String strPosition = null;
     static String strDateTime = null;
+    static String strVoice = " ";
 
     static Camera mCamera;
     static Bitmap bitMapCamera;
     static double latitude = 0;
     static double longitude = 0;
-    static GoogleMap mGoogleMap = null;
     static int zoomValue = 17;
     static boolean CameraMapBoth = false;
     static boolean isTimerOn = false;
@@ -38,6 +36,5 @@ public class Vars {
     static String outFileName = null;
     static int cameraOrientation;
     static long nowTime;
-    static boolean terrain = false;
 
 }

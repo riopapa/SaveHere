@@ -1,4 +1,4 @@
-package com.urrecliner.savehere;
+package com.urrecliner.phovomemo;
 
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;

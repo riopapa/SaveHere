@@ -1,4 +1,4 @@
-package com.urrecliner.savehere;
+package com.urrecliner.phovomemo;
 
 import android.content.Context;
 import android.hardware.Camera;
@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import java.io.IOException;
 import java.util.List;
 
-import static com.urrecliner.savehere.Vars.utils;
+import static com.urrecliner.phovomemo.Vars.utils;
 
 
 class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
@@ -36,16 +36,11 @@ class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
     }
 
     public void setCamera(Camera camera) {
-        if (mCamera != null) {
-            // Call stopPreview() to stop updating the preview surface.
+        try {
             mCamera.stopPreview();
-
-            // Important: Call release() to release the camera for use by other
-            // applications. Applications should release the camera immediately
-            // during onPause() and re-open() it during onResume()).
             mCamera.release();
+        } catch (Exception e) {
 
-            mCamera = null;
         }
 
         mCamera = camera;
@@ -122,10 +117,6 @@ class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 
     public void surfaceCreated(SurfaceHolder holder) {
 
-        //Toast.makeText(getContext(), "surfaceCreated", Toast.LENGTH_LONG).show();
-
-        // The Surface has been created, acquire the camera and tell it where
-        // to draw.
         try {
             if (mCamera != null) {
                 mCamera.setPreviewDisplay(holder);

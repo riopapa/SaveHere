@@ -1,4 +1,4 @@
-package com.urrecliner.savehere;
+package com.urrecliner.phovomemo;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
@@ -20,18 +20,17 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import static com.urrecliner.savehere.Vars.cameraOrientation;
-import static com.urrecliner.savehere.Vars.latitude;
-import static com.urrecliner.savehere.Vars.longitude;
-import static com.urrecliner.savehere.Vars.mainContext;
-import static com.urrecliner.savehere.Vars.nowTime;
-import static com.urrecliner.savehere.Vars.outFileName;
-import static com.urrecliner.savehere.Vars.phoneMake;
-import static com.urrecliner.savehere.Vars.phoneModel;
-import static com.urrecliner.savehere.Vars.phonePrefix;
-import static com.urrecliner.savehere.Vars.utils;
-import static com.urrecliner.savehere.Vars.xPixel;
-import static com.urrecliner.savehere.Vars.yPixel;
+import static com.urrecliner.phovomemo.Vars.latitude;
+import static com.urrecliner.phovomemo.Vars.longitude;
+import static com.urrecliner.phovomemo.Vars.mContext;
+import static com.urrecliner.phovomemo.Vars.nowTime;
+import static com.urrecliner.phovomemo.Vars.outFileName;
+import static com.urrecliner.phovomemo.Vars.phoneMake;
+import static com.urrecliner.phovomemo.Vars.phoneModel;
+import static com.urrecliner.phovomemo.Vars.phonePrefix;
+import static com.urrecliner.phovomemo.Vars.utils;
+import static com.urrecliner.phovomemo.Vars.xPixel;
+import static com.urrecliner.phovomemo.Vars.yPixel;
 
 class Utils {
 
@@ -39,7 +38,7 @@ class Utils {
     final private String logID = "utils";
 
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("yy-MM-dd", Locale.US);
-    private final SimpleDateFormat dateTimeLogFormat = new SimpleDateFormat("yy-MM-dd HH.mm.ss sss", Locale.US);
+    private final SimpleDateFormat dateTimeLogFormat = new SimpleDateFormat("MM-dd HH.mm.ss sss", Locale.US);
 
     void log(String tag, String text) {
         StackTraceElement[] traces;
@@ -51,7 +50,7 @@ class Utils {
 
     private String traceName (String s) {
         if (s.equals("performResume") || s.equals("performCreate") || s.equals("callActivityOnResume") || s.equals("access$1200")
-                || s.equals("handleReceiver"))
+                || s.equals("access$000") || s.equals("handleReceiver"))
             return "";
         else
             return s + "> ";
@@ -100,7 +99,7 @@ class Utils {
 
 
     private File getPackageDirectory() {
-        File directory = new File(Environment.getExternalStorageDirectory(), utils.getAppLabel(mainContext));
+        File directory = new File(Environment.getExternalStorageDirectory(), utils.getAppLabel(mContext));
         try {
             if (!directory.exists()) {
                 if(directory.mkdirs()) {
@@ -164,7 +163,7 @@ class Utils {
 
         try {
             ExifInterface exif = new ExifInterface(file.getAbsolutePath());
-            exif.setAttribute(ExifInterface.TAG_ORIENTATION, ""+cameraOrientation);
+            exif.setAttribute(ExifInterface.TAG_ORIENTATION, "1");
             exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE,convertGpsToDMS(latitude));
             exif.setAttribute(ExifInterface.TAG_GPS_LATITUDE_REF,(latitude > 0) ? "N":"S");
             exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, convertGpsToDMS(longitude));

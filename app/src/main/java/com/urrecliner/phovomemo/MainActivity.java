@@ -1,6 +1,7 @@
-package com.urrecliner.savehere;
+package com.urrecliner.phovomemo;
 
 import android.Manifest;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,6 +11,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
@@ -23,19 +25,19 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.speech.RecognizerIntent;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.SparseIntArray;
-import android.view.KeyEvent;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -49,38 +51,35 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import static com.urrecliner.savehere.Vars.CameraMapBoth;
-import static com.urrecliner.savehere.Vars.bitMapCamera;
-import static com.urrecliner.savehere.Vars.cameraOrientation;
-import static com.urrecliner.savehere.Vars.currActivity;
-import static com.urrecliner.savehere.Vars.isTimerOn;
-import static com.urrecliner.savehere.Vars.latitude;
-import static com.urrecliner.savehere.Vars.longitude;
-import static com.urrecliner.savehere.Vars.mActivity;
-import static com.urrecliner.savehere.Vars.mCamera;
-import static com.urrecliner.savehere.Vars.mainContext;
-import static com.urrecliner.savehere.Vars.nexus6P;
-import static com.urrecliner.savehere.Vars.nowTime;
-import static com.urrecliner.savehere.Vars.outFileName;
-import static com.urrecliner.savehere.Vars.phoneMake;
-import static com.urrecliner.savehere.Vars.phoneModel;
-import static com.urrecliner.savehere.Vars.phonePrefix;
-import static com.urrecliner.savehere.Vars.strAddress;
-import static com.urrecliner.savehere.Vars.strDateTime;
-import static com.urrecliner.savehere.Vars.strMapAddress;
-import static com.urrecliner.savehere.Vars.strMapPlace;
-import static com.urrecliner.savehere.Vars.strPlace;
-import static com.urrecliner.savehere.Vars.strPosition;
-import static com.urrecliner.savehere.Vars.terrain;
-import static com.urrecliner.savehere.Vars.utils;
-import static com.urrecliner.savehere.Vars.xPixel;
-import static com.urrecliner.savehere.Vars.yPixel;
-import static com.urrecliner.savehere.Vars.zoomValue;
+import static com.urrecliner.phovomemo.Vars.bitMapCamera;
+import static com.urrecliner.phovomemo.Vars.cameraOrientation;
+import static com.urrecliner.phovomemo.Vars.currActivity;
+import static com.urrecliner.phovomemo.Vars.latitude;
+import static com.urrecliner.phovomemo.Vars.longitude;
+import static com.urrecliner.phovomemo.Vars.mActivity;
+import static com.urrecliner.phovomemo.Vars.mCamera;
+import static com.urrecliner.phovomemo.Vars.mContext;
+import static com.urrecliner.phovomemo.Vars.nexus6P;
+import static com.urrecliner.phovomemo.Vars.nowTime;
+import static com.urrecliner.phovomemo.Vars.outFileName;
+import static com.urrecliner.phovomemo.Vars.phoneMake;
+import static com.urrecliner.phovomemo.Vars.phoneModel;
+import static com.urrecliner.phovomemo.Vars.phonePrefix;
+import static com.urrecliner.phovomemo.Vars.strAddress;
+import static com.urrecliner.phovomemo.Vars.strDateTime;
+import static com.urrecliner.phovomemo.Vars.strMapAddress;
+import static com.urrecliner.phovomemo.Vars.strMapPlace;
+import static com.urrecliner.phovomemo.Vars.strPlace;
+import static com.urrecliner.phovomemo.Vars.strPosition;
+import static com.urrecliner.phovomemo.Vars.strVoice;
+import static com.urrecliner.phovomemo.Vars.utils;
+import static com.urrecliner.phovomemo.Vars.xPixel;
+import static com.urrecliner.phovomemo.Vars.yPixel;
+import static com.urrecliner.phovomemo.Vars.zoomValue;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -89,10 +88,6 @@ public class MainActivity extends AppCompatActivity {
     private CameraPreview mCameraPreview;
     private String logID = "main";
 
-    TextView zoomTextV;
-    String [] zoomTables = {"9","10","11","12","13","14","15","16","17","18","19","20"};
-    // Wheel scrolled flag
-    private boolean wheelScrolled = false;
     SharedPreferences.Editor editor = null;
 
     private Sensor mAccelerometer;
@@ -100,21 +95,30 @@ public class MainActivity extends AppCompatActivity {
     private SensorManager mSensorManager;
     private DeviceOrientation deviceOrientation;
 
+    private Button btnCamera;
+    private ImageButton btnClear;
+    private int buttonBackColor;
+
+    private TextView tVAddress;
+    private int addressBackColor;
+
+    private TextView tvVoice;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
         currActivity =  this.getClass().getSimpleName();
-        mainContext = getApplicationContext();
-        if (!AccessPermission.isPermissionOK(getApplicationContext(), this))
+        mContext = getApplicationContext();
+        if (!AccessPermission.isPermissionOK(getApplicationContext(), this)) {
+            finish();
             return;
-
+        }
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         deviceOrientation = new DeviceOrientation();
-
 
         mActivity = this;
         phoneModel = Build.MODEL;           // SM-G965N             Nexus 6P
@@ -122,6 +126,10 @@ public class MainActivity extends AppCompatActivity {
         if (phoneModel.equals(nexus6P))
             phonePrefix = "IMG_";
 
+        xPixel = Resources.getSystem().getDisplayMetrics().widthPixels;     // 2094, 2960
+        yPixel = Resources.getSystem().getDisplayMetrics().heightPixels;    // 1080, 1440
+
+        tVAddress = findViewById(R.id.addressText);
         SharedPreferences mSettings = PreferenceManager.getDefaultSharedPreferences(this);
         editor = mSettings.edit();
         zoomValue = mSettings.getInt("Zoom", 16);
@@ -129,40 +137,49 @@ public class MainActivity extends AppCompatActivity {
 //        String hardware = Build.HARDWARE;   // samsungexynos9810    angler
 //        utils.log(logID,"this phone model is " + phoneModel + " manu " + manufacturer + " hardware " + hardware);
 
-        final Button btnCameraOnly = findViewById(R.id.btnCamera);
-        btnCameraOnly.setOnClickListener(new View.OnClickListener() {
+        btnClear = findViewById(R.id.btnClear);
+        btnClear.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                reactClick(btnCameraOnly);
+                tvVoice = findViewById(R.id.textVoice);
+                tvVoice.setText("");
+            }
+        });
+
+        btnCamera = findViewById(R.id.btnCamera);
+        btnCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btnCamera.setBackgroundColor(Color.MAGENTA);
+                tVAddress.setBackgroundColor(Color.MAGENTA);
+                reactClick();
                 take_Picture();
             }
         });
+        ColorDrawable buttonColor = (ColorDrawable) btnCamera.getBackground();
+        this.buttonBackColor = buttonColor.getColor();
 
-        final Button btnCameraMap = findViewById(R.id.btnCameraMap);
-        btnCameraMap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CameraMapBoth = true;
-                reactClick(btnCameraMap);
-                take_Picture();
-            }
-        });
-
-        CheckBox checkBox = findViewById(R.id.terrain);
-        terrain = mSettings.getBoolean("terrain", false);
-        checkBox.setChecked(terrain);
-        checkBox.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                terrain = !terrain;
-                editor.putBoolean("terrain", terrain).apply();
-            }
-        });
-
-        buildWheelView();
-        buildTimerToggle();
-        buildCameraView();
         startCamera();
+
+        if (isNetworkAvailable()) {
+            ImageView mAudio = findViewById(R.id.btnSpeak);
+            mAudio.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+                    intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                            RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+                    intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+                    try {
+                        startActivityForResult(intent, 1234);
+                    } catch (ActivityNotFoundException a) {
+                        //
+                    }
+                }
+            });
+        } else {
+            Toast.makeText(getApplicationContext(), "Plese Connect to Internet", Toast.LENGTH_LONG).show();
+        }
 
         ready_GoogleAPIClient();
         if (isNetworkAvailable()) {
@@ -177,24 +194,19 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(intent, PLACE_PICKER_REQUEST);
         }
         else {
-            Toast.makeText(mainContext,"No Network", Toast.LENGTH_LONG).show();;
+            Toast.makeText(mContext,"No Network", Toast.LENGTH_LONG).show();;
             showCurrentLocation();
         }
         utils.deleteOldLogFiles();
-
+        TextView tv = findViewById(R.id.textVoice);
+        tv.setText("");
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         utils.log(logID," new Config "+newConfig.orientation);
-        Toast.makeText(mainContext,"curr orentation is "+newConfig.orientation,Toast.LENGTH_SHORT).show();
-//        // Checks the orientation of the screen for landscape and portrait and set portrait mode always
-//        if (newConfig.orientation ==Configuration.ORIENTATION_LANDSCAPE) {
-//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-//        } else if (newConfig.orientation ==Configuration.ORIENTATION_PORTRAIT){
-//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-//        }
+        Toast.makeText(mContext,"curr orentation is "+newConfig.orientation,Toast.LENGTH_SHORT).show();
     }
 
     private void ready_GoogleAPIClient() {
@@ -208,118 +220,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void take_Picture() {
-        if (isTimerOn) {
-            delayCount = 100;
-            delayTime = 1000;
-            try {
-                flashSeveralTimes();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        else {
-            mCamera.takePicture(null, null, rawCallback, jpegCallback); // null is for silent shot
-        }
-    }
-
-    /* WHEEL related start */
-    private void buildWheelView() {
-
-        WheelView wheel = findViewById(R.id.wheel_zoom);
-        wheel.setViewAdapter(new ArrayWheelAdapter(mainContext,zoomTables));
-        wheel.setVisibleItems(1);
-        wheel.setCurrentItem(zoomValue-9);
-        wheel.addChangingListener(changedListener);
-//        wheel.addScrollingListener(scrolledListener);
-        zoomTextV = findViewById(R.id.mapScale);
-    }
-
-    // Wheel changed listener
-    private final OnWheelChangedListener changedListener = new OnWheelChangedListener()
-    {
-        public void onChanged(WheelView wheel, int oldValue, int newValue)
-        {
-            if (!wheelScrolled)
-            {
-                updateStatus();
-            }
-        }
-    };
-
-//    private OnWheelScrollListener scrolledListener = new OnWheelScrollListener()
-//    {
-//        public void onScrollStarts(WheelView wheel)
-//        {
-//            wheelScrolled = true;
-//        }
-//
-//        public void onScrollEnds(WheelView wheel)
-//        {
-//            wheelScrolled = false;
-//            updateStatus();
-//        }
-//
-//        @Override
-//        public void onScrollingStarted(WheelView wheel) {
-//            // TODO Auto-generated method stub
-//
-//        }
-//
-//        @Override
-//        public void onScrollingFinished(WheelView wheel) {
-//            // TODO Auto-generated method stub
-//
-//        }
-//    };
-
-    /**
-     * Updates entered PIN status
-     */
-    private void updateStatus()
-    {
-        int idx = getWheel(R.id.wheel_zoom).getCurrentItem();
-        zoomValue = Integer.parseInt(zoomTables[idx]);
-        editor.putInt("Zoom", zoomValue).apply();
-    }
-
-    /**
-     * Returns wheel by Id
-     *
-     * @param id
-     *          the wheel Id
-     * @return the wheel with passed Id
-     */
-    private WheelView getWheel(int id)
-    {
-        return (WheelView) findViewById(id);
-    }
-
-    /* WHEEL related end */
-
-
-    private void buildCameraView() {
-//        final FrameLayout frame = findViewById(R.id.frame);
-//        frame.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                int width = frame.getWidth();
-//                int height = width * 160 / 100;
-//                Log.w("Size"," "+width+" x "+height);
-//                ConstraintLayout.LayoutParams layoutParams = new ConstraintLayout.LayoutParams(width, height);
-////                frame.setLayoutParams(layoutParams);
-//            }
-//        });
-    }
-
-    private void buildTimerToggle () {
-        final ImageButton vTimerToggle = findViewById(R.id.timer);
-        vTimerToggle.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                isTimerOn ^= true;
-                vTimerToggle.setImageResource((isTimerOn)? R.mipmap.icon_timer_on_min: R.mipmap.icon_timer_off_min);
-            }
-        });
+        mCamera.takePicture(null, null, rawCallback, jpegCallback); // null is for silent shot
     }
 
     private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
@@ -330,15 +231,9 @@ public class MainActivity extends AppCompatActivity {
         ORIENTATIONS.append(ExifInterface.ORIENTATION_ROTATE_270, 270);
     }
 
-    private void reactClick(Button button) {
-
-
-        button.setBackgroundColor(Color.parseColor("#205eaa"));
-        xPixel = Resources.getSystem().getDisplayMetrics().widthPixels;     // 2094, 2960
-        yPixel = Resources.getSystem().getDisplayMetrics().heightPixels;    // 1080, 1440
+    private void reactClick() {
 
         int mDeviceRotation = ORIENTATIONS.get(deviceOrientation.getOrientation());
-        utils.logE(logID, "*** rotation="+mDeviceRotation);
         if (mDeviceRotation == 0)
             cameraOrientation = 1;
         else if (mDeviceRotation == 180)
@@ -348,8 +243,7 @@ public class MainActivity extends AppCompatActivity {
         else
             cameraOrientation = 8;
 
-        TextView mAddressTextView = findViewById(R.id.addressText);
-        strAddress = mAddressTextView.getText().toString();
+        strAddress = tVAddress.getText().toString();
         try {
             strPlace = strAddress.substring(0, strAddress.indexOf("\n"));
             if (strPlace.equals("")) {
@@ -362,8 +256,6 @@ public class MainActivity extends AppCompatActivity {
             strPlace = strAddress;
             strAddress = "?";
         }
-
-        mAddressTextView.setBackgroundColor(Color.MAGENTA);
     }
 
     Camera.ShutterCallback shutterCallback = new Camera.ShutterCallback() {
@@ -399,8 +291,12 @@ public class MainActivity extends AppCompatActivity {
 //            Log.w("post", "Executed");
             mCamera.stopPreview();
             mCamera.release();
-            Intent intent = new Intent(getApplicationContext(), CameraActivity.class);
-            startActivity(intent);
+            BuildImage buildImage = new BuildImage();
+            buildImage.makeOutMap();
+            startCamera();
+            strVoice = "";
+            tVAddress.setBackgroundColor(addressBackColor);
+            btnCamera.setBackgroundColor(buttonBackColor);
         }
     }
 
@@ -431,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
     public void startCamera() {
 
         if (mCameraPreview == null) {
-            mCameraPreview = new com.urrecliner.savehere.CameraPreview(this, (SurfaceView) findViewById(R.id.camera_surface));
+            mCameraPreview = new com.urrecliner.phovomemo.CameraPreview(this, (SurfaceView) findViewById(R.id.camera_surface));
             mCameraPreview.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT));
             ((FrameLayout) findViewById(R.id.frame)).addView(mCameraPreview);
@@ -589,81 +485,38 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (resultCode == RESULT_OK) {  // user picked up place within the google map list
-            Place place = PlacePicker.getPlace(this, data);
-            strMapPlace = place.getName().toString();
-            String text = place.getAddress().toString();
-            strMapAddress = (text.length() > 10) ? text : null;
-        } else if (resultCode == RESULT_CANCELED) {
-            strMapPlace = null;
-            strMapAddress = null;
+        if (requestCode == PLACE_PICKER_REQUEST) {
+            if (resultCode == RESULT_OK) {  // user picked up place within the google map list
+                Place place = PlacePicker.getPlace(this, data);
+                strMapPlace = place.getName().toString();
+                String text = place.getAddress().toString();
+                strMapAddress = (text.length() > 10) ? text : null;
+            } else if (resultCode == RESULT_CANCELED) {
+                strMapPlace = null;
+                strMapAddress = null;
+            }
+            mCamera.enableShutterSound(true);
+            showCurrentLocation();
+            nowTime = System.currentTimeMillis();
+            final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("`yy/MM/dd HH:mm", Locale.ENGLISH);
+            strDateTime = dateTimeFormat.format(nowTime);
         }
-        mCamera.enableShutterSound(true);
-        showCurrentLocation();
-        nowTime = System.currentTimeMillis();
-        final SimpleDateFormat dateTimeFormat = new SimpleDateFormat("`yy/MM/dd HH:mm", Locale.ENGLISH);
-        strDateTime = dateTimeFormat.format(nowTime);
-    }
+        else if (requestCode == 1234 && resultCode == RESULT_OK) {
+            ArrayList<String> result = data
+                    .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            TextView mVoice = findViewById(R.id.textVoice);
+            strVoice = mVoice.getText().toString()+ " " + result.get(0);
+            mVoice.setText(strVoice);
+        }
+        else
+            Toast.makeText(mContext, "Request Code:"+requestCode+", Result Code:"+resultCode+" not as expected", Toast.LENGTH_LONG).show();
 
-    int delayTime = 1000;
-    int delayCount = 100;
-    private void flashSeveralTimes() throws InterruptedException {
-//        Log.w("delayTime", delayTime+" delayCount "+delayCount);
-        if (delayCount < 60) {
-            int sleepTime = 10;
-            if (delayCount < 10)
-                sleepTime = 5;
-            Camera.Parameters p = mCamera.getParameters();
-            p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-            mCamera.setParameters(p);
-            Thread.sleep(sleepTime);
-            p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
-            mCamera.setParameters(p);
-        }
-        if (delayCount > 10) {
-            delayCount -= 10;
-        }
-        else if (delayCount == 10) {
-            delayTime = 200;
-            delayCount--;
-        }
-        else if (delayCount > 0) {
-            delayCount--;
-        }
-        if (delayCount > 0) {
-            new Timer().schedule(new TimerTask() {
-                public void run() {
-                    try {
-                        flashSeveralTimes();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }, delayTime);
-        }
-        else {
-            mCamera.takePicture(null, null, rawCallback, jpegCallback);
-        }
-    }
-
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        final Button btnCameraMap = findViewById(R.id.btnCameraMap);
-        switch (keyCode) {
-            case KeyEvent.KEYCODE_VOLUME_DOWN:      // assume camera and map
-            case KeyEvent.KEYCODE_VOLUME_UP:
-                CameraMapBoth = true;
-                reactClick(btnCameraMap);
-                take_Picture();
-                return true;
-        }
-        return super.onKeyDown(keyCode, event);
     }
 
     private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager
-                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
+        ConnectivityManager cM = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo aNI = cM.getActiveNetworkInfo();
+        return aNI != null && aNI.isConnected();
     }
 
     @Override

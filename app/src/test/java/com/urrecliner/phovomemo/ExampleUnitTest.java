@@ -1,4 +1,4 @@
-package com.urrecliner.savehere;
+package com.urrecliner.phovomemo;
 
 import org.junit.Test;
 
