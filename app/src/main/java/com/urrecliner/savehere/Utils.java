@@ -22,10 +22,10 @@ import java.util.Locale;
 
 import static com.urrecliner.savehere.Vars.latitude;
 import static com.urrecliner.savehere.Vars.longitude;
-import static com.urrecliner.savehere.Vars.mainContext;
+import static com.urrecliner.savehere.Vars.mContext;
 import static com.urrecliner.savehere.Vars.nowTime;
 import static com.urrecliner.savehere.Vars.outFileName;
-import static com.urrecliner.savehere.Vars.phoneMake;
+import static com.urrecliner.savehere.Vars.phoneMaker;
 import static com.urrecliner.savehere.Vars.phoneModel;
 import static com.urrecliner.savehere.Vars.phonePrefix;
 import static com.urrecliner.savehere.Vars.utils;
@@ -98,8 +98,9 @@ class Utils {
     }
 
 
-    private File getPackageDirectory() {
-        File directory = new File(Environment.getExternalStorageDirectory(), utils.getAppLabel(mainContext));
+
+    File getPackageDirectory() {
+        File directory = new File(Environment.getExternalStorageDirectory(), getAppLabel(mContext));
         try {
             if (!directory.exists()) {
                 if(directory.mkdirs()) {
@@ -169,7 +170,7 @@ class Utils {
             exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE, convertGpsToDMS(longitude));
             exif.setAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF,(longitude > 0) ? "E":"W");
             exif.setAttribute(ExifInterface.TAG_USER_COMMENT, "Created by riopapa");
-            exif.setAttribute(ExifInterface.TAG_MAKE, phoneMake);
+            exif.setAttribute(ExifInterface.TAG_MAKE, phoneMaker);
             exif.setAttribute(ExifInterface.TAG_MODEL, phoneModel);
             exif.setAttribute(ExifInterface.TAG_DATETIME, jpegTimeFormat.format(nowTime));
             exif.saveAttributes();

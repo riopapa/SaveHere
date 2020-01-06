@@ -1,12 +1,12 @@
 <resources>
     <string name="app_name">SaveHere</string>
-    <string name="show_name">내가 여기에 있음</string>
+    <string name="show_name">Save Here</string>
 
     <string name="txtMapOnly">Map\nShot\n</string>
     <string name="txtCameraOnly">Camera Only\nShot\n</string>
     <string name="txtCameraMap">Camera Map\nShot</string>
     <string name="txtPosition">Position</string>
-    <string name="txtDateTime">Date\nTime</string>
+    <string name="txtDateTime">Date Time</string>
 
     <string name="txtPlace">place info</string>
     <string name="txtAddress">address</string>
@@ -16,6 +16,5 @@
     <string name="map_scale">map scale</string>
     <string name="todo">TODO</string>
     <string name="date_time">`20/12/31 19:24</string>
-
 
 </resources>

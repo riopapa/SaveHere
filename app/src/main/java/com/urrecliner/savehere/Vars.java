@@ -10,7 +10,7 @@ import com.google.android.gms.maps.GoogleMap;
 public class Vars {
 
     static String currActivity = null;
-    static Context mainContext = null;
+    static Context mContext = null;
     static String strPlace = null;
     static String strAddress = null;
     static String strMapPlace = null;
@@ -30,7 +30,7 @@ public class Vars {
     static Utils utils = new Utils();
     static Activity mActivity;
     static String phoneModel = null;
-    static String phoneMake = null;
+    static String phoneMaker = null;
     static String phonePrefix = "";
     static String galaxyS9 = "SM-G965N";
     static String nexus6P = "Nexus 6P";
@@ -39,5 +39,6 @@ public class Vars {
     static int cameraOrientation;
     static long nowTime;
     static boolean terrain = false;
+    static Bitmap signatureMap;
 
 }

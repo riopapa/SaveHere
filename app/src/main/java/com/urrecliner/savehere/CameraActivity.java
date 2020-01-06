@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 
 import static com.urrecliner.savehere.Vars.CameraMapBoth;
 import static com.urrecliner.savehere.Vars.mActivity;
-import static com.urrecliner.savehere.Vars.utils;
 
 public class CameraActivity extends AppCompatActivity {
 
@@ -15,11 +14,9 @@ public class CameraActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String logID = "cameraAct";
-        utils.log(logID,"Started ...");
-
-        BuildImage buildImage = new BuildImage();
-        buildImage.makeOutMap();
+//        String logID = "cameraAct";
+        BuildBitMap buildBitMap = new BuildBitMap();
+        buildBitMap.makeOutMap();
         if (CameraMapBoth) {
             Intent intent = new Intent(getApplicationContext(), LandActivity.class);
             startActivity(intent);

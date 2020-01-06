@@ -9,7 +9,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.urrecliner.savehere.LandActivity"
+        tools:context=".LandActivity"
         tools:layout="@layout/activity_land">
     </fragment>
 
@@ -30,7 +30,7 @@
         android:layout_marginTop="18dp"
         android:layout_marginStart="35dp"
         android:textColor="@color/foreColor"
-        android:textSize="22sp"
+        android:textSize="20sp"
         android:textStyle="bold" />
 
     <TextView

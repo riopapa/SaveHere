@@ -13,7 +13,6 @@ import android.graphics.Color;
 import android.hardware.Camera;
 import android.hardware.Sensor;
 import android.hardware.SensorManager;
-import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.media.ExifInterface;
@@ -47,13 +46,12 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.urrecliner.savehere.BuildBitMap.buildSignatureMap;
 import static com.urrecliner.savehere.Vars.CameraMapBoth;
 import static com.urrecliner.savehere.Vars.bitMapCamera;
 import static com.urrecliner.savehere.Vars.cameraOrientation;
@@ -63,13 +61,14 @@ import static com.urrecliner.savehere.Vars.latitude;
 import static com.urrecliner.savehere.Vars.longitude;
 import static com.urrecliner.savehere.Vars.mActivity;
 import static com.urrecliner.savehere.Vars.mCamera;
-import static com.urrecliner.savehere.Vars.mainContext;
+import static com.urrecliner.savehere.Vars.mContext;
 import static com.urrecliner.savehere.Vars.nexus6P;
 import static com.urrecliner.savehere.Vars.nowTime;
 import static com.urrecliner.savehere.Vars.outFileName;
-import static com.urrecliner.savehere.Vars.phoneMake;
+import static com.urrecliner.savehere.Vars.phoneMaker;
 import static com.urrecliner.savehere.Vars.phoneModel;
 import static com.urrecliner.savehere.Vars.phonePrefix;
+import static com.urrecliner.savehere.Vars.signatureMap;
 import static com.urrecliner.savehere.Vars.strAddress;
 import static com.urrecliner.savehere.Vars.strDateTime;
 import static com.urrecliner.savehere.Vars.strMapAddress;
@@ -106,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
         currActivity =  this.getClass().getSimpleName();
-        mainContext = getApplicationContext();
+        mContext = getApplicationContext();
         if (!AccessPermission.isPermissionOK(getApplicationContext(), this))
             return;
 
@@ -115,10 +114,9 @@ public class MainActivity extends AppCompatActivity {
         mMagnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         deviceOrientation = new DeviceOrientation();
 
-
         mActivity = this;
         phoneModel = Build.MODEL;           // SM-G965N             Nexus 6P
-        phoneMake = Build.MANUFACTURER;     // samsung              Huawei
+        phoneMaker = Build.MANUFACTURER;     // samsung              Huawei
         if (phoneModel.equals(nexus6P))
             phonePrefix = "IMG_";
 
@@ -177,18 +175,19 @@ public class MainActivity extends AppCompatActivity {
             startActivityForResult(intent, PLACE_PICKER_REQUEST);
         }
         else {
-            Toast.makeText(mainContext,"No Network", Toast.LENGTH_LONG).show();;
+            Toast.makeText(mContext,"No Network", Toast.LENGTH_LONG).show();;
             showCurrentLocation();
         }
         utils.deleteOldLogFiles();
 
+        signatureMap = buildSignatureMap();
     }
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         utils.log(logID," new Config "+newConfig.orientation);
-        Toast.makeText(mainContext,"curr orentation is "+newConfig.orientation,Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext,"curr orentation is "+newConfig.orientation,Toast.LENGTH_SHORT).show();
 //        // Checks the orientation of the screen for landscape and portrait and set portrait mode always
 //        if (newConfig.orientation ==Configuration.ORIENTATION_LANDSCAPE) {
 //            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -226,7 +225,7 @@ public class MainActivity extends AppCompatActivity {
     private void buildWheelView() {
 
         WheelView wheel = findViewById(R.id.wheel_zoom);
-        wheel.setViewAdapter(new ArrayWheelAdapter(mainContext,zoomTables));
+        wheel.setViewAdapter(new ArrayWheelAdapter(mContext,zoomTables));
         wheel.setVisibleItems(1);
         wheel.setCurrentItem(zoomValue-9);
         wheel.addChangingListener(changedListener);
@@ -479,29 +478,25 @@ public class MainActivity extends AppCompatActivity {
 
     public void showCurrentLocation() {
 
-        double altitude;
-//        utils.log(logID,"#a geocoder");
+        double altitude = 0;
         Location location = getGPSCord();
         if (location == null) {
 //            utils.log(logID,"Location is null");
             strPosition = " ";
-        }
-        else {
+        } else {
             latitude = location.getLatitude();
             longitude = location.getLongitude();
             altitude = location.getAltitude();
-            strPosition = String.format(Locale.ENGLISH,"%.5f ; %.5f ; %.2f", latitude, longitude, altitude);
+            strPosition = String.format(Locale.ENGLISH, "%.5f ; %.5f ; %.2f", latitude, longitude, altitude);
         }
-//        utils.log(logID,strPosition);
 
         if (isNetworkAvailable()) {
             Geocoder geocoder = new Geocoder(this, Locale.KOREA);
-            strAddress = getAddressByGPSValue(geocoder, latitude, longitude);
-        }
-        else {
+            strAddress = GPS2Address.get(geocoder, latitude, longitude, altitude);
+        } else {
             strAddress = " ";
         }
-        String text = ((strMapPlace == null) ? " ":strMapPlace) + "\n" + ((strMapAddress == null) ? strAddress:strMapAddress);
+        String text = ((strMapPlace == null) ? " " : strMapPlace) + "\n" + ((strMapAddress == null) ? strAddress : strMapAddress);
         EditText et = findViewById(R.id.addressText);
         et.setText(text);
         et.setSelection(text.indexOf("\n"));
@@ -510,7 +505,6 @@ public class MainActivity extends AppCompatActivity {
 
     public Location getGPSCord() {
 
-//        Log.w("gpscord called", "here");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "ACCESS FINE LOCATION not allowed", Toast.LENGTH_LONG).show();
             return null;
@@ -520,72 +514,6 @@ public class MainActivity extends AppCompatActivity {
         return lastLocation;
     }
 
-    final String noInfo = "No_Info";
-    public String getAddressByGPSValue(Geocoder geocoder, double latitude, double longitude) {
-
-        try {
-            List<Address> addresses = geocoder.getFromLocation(latitude, longitude, 1);
-            if (addresses.size() > 0) {
-                Address address = addresses.get(0);
-                String Feature = address.getFeatureName();
-                String Thorough = address.getThoroughfare();
-                String Locality = address.getLocality();
-                String SubLocality = address.getSubLocality();
-                String Country = address.getCountryName();  // or getCountryName()
-                String CountryCode = address.getCountryCode();
-                String SState = address.getSubAdminArea();
-                String State = address.getAdminArea();
-                Feature = (Feature == null) ? noInfo : Feature;
-                Thorough = (Thorough == null) ? noInfo : Thorough;  // Kakakaua Avernue
-                SubLocality = (SubLocality == null) ? noInfo : SubLocality; // 분당구
-                Locality = (Locality == null) ? noInfo : Locality;  // Honolulu, 성남시
-                SState = (SState == null) ? noInfo : SState;
-                State = (State == null) ? noInfo : State;   // Hawaii, 경기도
-                if (Country == null && CountryCode == "KR")
-                    Country = noInfo; // United States, 대한민국
-
-                return MergedAddress(Feature, Thorough, SubLocality, Locality, State, SState, Country, CountryCode);
-            } else {
-                return "\nnull address text";
-            }
-        } catch (IOException e) {
-            Toast.makeText(this, "No Address List", Toast.LENGTH_LONG).show();
-            utils.log(logID,"#IOE " + e.toString());
-            return "\n" + strPosition;
-        }
-    }
-
-    public String MergedAddress(String Feature, String Thorough, String SubLocality, String Locality, String SState, String State, String Country, String CountryCode) {
-
-        if (Thorough.equals(Feature)) Feature = noInfo;
-        if (SubLocality.equals(Feature)) Feature = noInfo;
-        if (SubLocality.equals(Thorough)) Thorough = noInfo;
-        if (Locality.equals(Thorough)) Thorough = noInfo;
-        if (Locality.equals(SubLocality)) SubLocality = noInfo;
-        if (SState.equals(Locality)) Locality = noInfo;
-        if (State.equals(SState)) SState = noInfo;
-
-        String addressMerged = "";
-        if (CountryCode.equals("KR")) {
-            if (!State.equals(noInfo)) addressMerged += " " + State;
-            if (!SState.equals(noInfo)) addressMerged += " " + SState;
-            if (!Locality.equals(noInfo)) addressMerged += " " + Locality;
-            if (!SubLocality.equals(noInfo)) addressMerged += " " + SubLocality;
-            if (!Thorough.equals(noInfo)) addressMerged += " " + Thorough;
-            if (!Feature.equals(noInfo)) addressMerged += " " + Feature;
-        }
-        else {
-            if (!Feature.equals(noInfo)) addressMerged += " " + Feature;
-            if (!Thorough.equals(noInfo)) addressMerged += " " + Thorough;
-            if (!SubLocality.equals(noInfo)) addressMerged += " " + SubLocality;
-            if (!Locality.equals(noInfo)) addressMerged += " " + Locality;
-            if (!SState.equals(noInfo)) addressMerged += " " + SState;
-            if (!State.equals(noInfo)) addressMerged += " " + State;
-            addressMerged += " " + Country;
-        }
-        return addressMerged;
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
@@ -593,7 +521,8 @@ public class MainActivity extends AppCompatActivity {
             Place place = PlacePicker.getPlace(this, data);
             strMapPlace = place.getName().toString();
             String text = place.getAddress().toString();
-            strMapAddress = (text.length() > 10) ? text : null;
+            if (text.length()> 5)
+                strMapAddress = place.getAddress().toString().replace("대한민국 ","");
         } else if (resultCode == RESULT_CANCELED) {
             strMapPlace = null;
             strMapAddress = null;
