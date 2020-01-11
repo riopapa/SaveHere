@@ -125,17 +125,16 @@ class BuildBitMap {
         canvas.drawBitmap(sigMap, xPos, yPos, null);
 
         if (strPlace.length() == 0) strPlace = " ";
-        fontSize = (cameraOrientation == 1) ? width/24 : width/16;
-        xPos = width/2;
-        yPos = height - height/24 - fontSize - fontSize;
-        drawTextOnCanvas(canvas, strPlace, fontSize, xPos, yPos);
-        yPos += fontSize;
-        fontSize = fontSize * 5 / 8;
-        yPos += fontSize / 2;
-        drawTextOnCanvas(canvas, strAddress, fontSize, xPos, yPos);
-        yPos += fontSize;
-        fontSize = fontSize * 3 / 4;
+        xPos = width / 2;
+        fontSize = (height + width) / 60;  // gps
+        yPos = height - fontSize - fontSize / 5;
         drawTextOnCanvas(canvas, strPosition, fontSize, xPos, yPos);
+        fontSize = fontSize * 12 / 10;  // address
+        yPos -= fontSize + fontSize / 5;
+        drawTextOnCanvas(canvas, strAddress, fontSize, xPos, yPos);
+        fontSize = fontSize * 14 / 10;  // Place
+        yPos -= fontSize + fontSize / 5;
+        drawTextOnCanvas(canvas, strPlace, fontSize, xPos, yPos);
         return newMap;
     }
 
@@ -146,7 +145,7 @@ class BuildBitMap {
 //        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.XOR));
         paint.setTypeface(Typeface.DEFAULT_BOLD);
         paint.setTextAlign(Paint.Align.CENTER);
-        paint.setTypeface(mContext.getResources().getFont(R.font.nanumbarungothicbold));
+        paint.setTypeface(mContext.getResources().getFont(R.font.nanumbarungothic));
         int d = fontSize / 16;
         canvas.drawText(text, xPos-d, yPos-d, paint);
         canvas.drawText(text, xPos+d, yPos-d, paint);

@@ -23,8 +23,10 @@ import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.KeyEvent;
 import android.view.SurfaceView;
@@ -178,9 +180,19 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(mContext,"No Network", Toast.LENGTH_LONG).show();;
             showCurrentLocation();
         }
-        utils.deleteOldLogFiles();
-
-        signatureMap = buildSignatureMap();
+        final View v = findViewById(R.id.frame);
+        v.post(new Runnable() {
+            @Override
+            public void run() {
+                ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) v.getLayoutParams();
+                lp.width = lp.height * 10 / 17;
+                v.setLayoutParams(lp);
+                lp = (ConstraintLayout.LayoutParams) v.getLayoutParams();
+                Log.w("after w h",lp.width+" x "+lp.height);
+                utils.deleteOldLogFiles();
+                signatureMap = buildSignatureMap();
+            }
+        });
     }
 
     @Override
@@ -478,7 +490,6 @@ public class MainActivity extends AppCompatActivity {
 
     public void showCurrentLocation() {
 
-        double altitude = 0;
         Location location = getGPSCord();
         if (location == null) {
 //            utils.log(logID,"Location is null");
@@ -486,13 +497,13 @@ public class MainActivity extends AppCompatActivity {
         } else {
             latitude = location.getLatitude();
             longitude = location.getLongitude();
-            altitude = location.getAltitude();
+            double altitude = location.getAltitude();
             strPosition = String.format(Locale.ENGLISH, "%.5f ; %.5f ; %.2f", latitude, longitude, altitude);
         }
 
         if (isNetworkAvailable()) {
             Geocoder geocoder = new Geocoder(this, Locale.KOREA);
-            strAddress = GPS2Address.get(geocoder, latitude, longitude, altitude);
+            strAddress = GPS2Address.get(geocoder, latitude, longitude);
         } else {
             strAddress = " ";
         }
