@@ -3,6 +3,7 @@ package com.urrecliner.savehere;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
@@ -29,8 +30,6 @@ import static com.urrecliner.savehere.Vars.phoneMaker;
 import static com.urrecliner.savehere.Vars.phoneModel;
 import static com.urrecliner.savehere.Vars.phonePrefix;
 import static com.urrecliner.savehere.Vars.utils;
-import static com.urrecliner.savehere.Vars.xPixel;
-import static com.urrecliner.savehere.Vars.yPixel;
 
 class Utils {
 
@@ -126,6 +125,9 @@ class Utils {
 
     File captureMapScreen(View view) {
 
+        int xPixel = Resources.getSystem().getDisplayMetrics().widthPixels;     // 2094, 2960
+        int yPixel = Resources.getSystem().getDisplayMetrics().heightPixels;    // 1080, 1440
+
         if (xPixel < yPixel) {
             int t = xPixel;
             xPixel = yPixel;
@@ -138,7 +140,7 @@ class Utils {
         int width = screenBitmap.getWidth();
         int height = screenBitmap.getHeight();
         if (xPixel < width && yPixel <= height)
-            screenBitmap = Bitmap.createBitmap(screenBitmap, 0, 0, xPixel, yPixel);  // remove right actiobar white area
+            screenBitmap = Bitmap.createBitmap(screenBitmap, 70, 0, xPixel-140, yPixel);  // remove right actiobar white area
 
         String fileName = phonePrefix + outFileName + "__ha.jpg";
 
@@ -221,23 +223,6 @@ class Utils {
 
     private File[] getFilesList(File fullPath) {
         return fullPath.listFiles();
-    }
-
-    public Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
-        int width = bm.getWidth();
-        int height = bm.getHeight();
-        float scaleWidth = ((float) newWidth) / width;
-        float scaleHeight = ((float) newHeight) / height;
-        // CREATE A MATRIX FOR THE MANIPULATION
-        Matrix matrix = new Matrix();
-        // RESIZE THE BIT MAP
-        matrix.postScale(scaleWidth, scaleHeight);
-
-        // "RECREATE" THE NEW BITMAP
-        Bitmap resizedBitmap = Bitmap.createBitmap(
-                bm, 0, 0, width, height, matrix, false);
-//        bm.recycle();
-        return resizedBitmap;
     }
 
 }

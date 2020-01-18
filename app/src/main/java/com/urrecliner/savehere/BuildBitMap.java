@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-import static com.urrecliner.savehere.Vars.bitMapCamera;
+import static com.urrecliner.savehere.Vars.cameraBitmap;
 import static com.urrecliner.savehere.Vars.cameraOrientation;
 import static com.urrecliner.savehere.Vars.latitude;
 import static com.urrecliner.savehere.Vars.longitude;
@@ -46,22 +46,26 @@ class BuildBitMap {
         String timeStamp;
         SimpleDateFormat dateTimeFormat = new SimpleDateFormat("`yy/MM/dd HH:mm", Locale.ENGLISH);
         timeStamp =  dateTimeFormat.format(nowTime);
-        int width = bitMapCamera.getWidth();
-        int height = bitMapCamera.getHeight();
+        int width = cameraBitmap.getWidth();
+        int height = cameraBitmap.getHeight();
 
         if (cameraOrientation == 6 && width > height)
-            bitMapCamera = utils.rotateBitMap(bitMapCamera, 90);
+            cameraBitmap = utils.rotateBitMap(cameraBitmap, 90);
         if (cameraOrientation == 1 && width < height)
-            bitMapCamera = utils.rotateBitMap(bitMapCamera, 90);
+            cameraBitmap = utils.rotateBitMap(cameraBitmap, 90);
         if (cameraOrientation == 3)
-            bitMapCamera = utils.rotateBitMap(bitMapCamera, 180);
+            cameraBitmap = utils.rotateBitMap(cameraBitmap, 180);
 
-//        width = bitMapCamera.getWidth();
-//        height = bitMapCamera.getHeight();
+//        width = cameraBitmap.getWidth();
+//        height = cameraBitmap.getHeight();
 //        utils.log(logID, "before Merge "+width+" x "+height+" orientation "+cameraOrientation+" ooooooo");
-        Bitmap mergedMap = markDateLocSignature(bitMapCamera, timeStamp);
-
-        File newFile = new File(utils.getPublicCameraDirectory(), phonePrefix + outFileName + " _ha.jpg");
+        final SimpleDateFormat imgDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.KOREA);
+        File newFile = new File(utils.getPublicCameraDirectory(), phonePrefix + imgDateFormat.format(nowTime) + ".jpg");
+        writeCameraFile(cameraBitmap, newFile);
+        setNewFileExif(newFile);
+        Bitmap mergedMap = markDateLocSignature(cameraBitmap, timeStamp);
+        outFileName  = imgDateFormat.format(nowTime) + "_" + strPlace;
+        newFile = new File(utils.getPublicCameraDirectory(), phonePrefix + outFileName + " _ha.jpg");
         writeCameraFile(mergedMap, newFile);
         setNewFileExif(newFile);
     }
@@ -113,9 +117,15 @@ class BuildBitMap {
         Bitmap newMap = Bitmap.createBitmap(width, height, photoMap.getConfig());
         Canvas canvas = new Canvas(newMap);
         canvas.drawBitmap(photoMap, 0f, 0f, null);
-        int fontSize = (cameraOrientation == 1) ? height/16 : width/16;
-        int xPos = (cameraOrientation == 1) ? width/5 : width*3/10;
-        int yPos = height/12;
+        int fontSize = height / 20;
+        int xPos = width / 6;
+        int yPos = height / 10;
+        if (cameraOrientation != 1) {
+            fontSize = width / 20;
+            xPos = width / 5;
+            yPos = height / 8;
+        }
+
         drawTextOnCanvas(canvas, dateTime, fontSize, xPos, yPos);
 
         int sigSize = (width + height) / 14;
@@ -126,35 +136,57 @@ class BuildBitMap {
 
         if (strPlace.length() == 0) strPlace = " ";
         xPos = width / 2;
-        fontSize = (height + width) / 60;  // gps
+        fontSize = (height + width) / 80;  // gps
         yPos = height - fontSize - fontSize / 5;
-        drawTextOnCanvas(canvas, strPosition, fontSize, xPos, yPos);
-        fontSize = fontSize * 12 / 10;  // address
+        yPos = drawTextOnCanvas(canvas, strPosition, fontSize, xPos, yPos);
+        fontSize = fontSize * 13 / 10;  // address
         yPos -= fontSize + fontSize / 5;
-        drawTextOnCanvas(canvas, strAddress, fontSize, xPos, yPos);
+        yPos = drawTextOnCanvas(canvas, strAddress, fontSize, xPos, yPos);
         fontSize = fontSize * 14 / 10;  // Place
         yPos -= fontSize + fontSize / 5;
         drawTextOnCanvas(canvas, strPlace, fontSize, xPos, yPos);
         return newMap;
     }
 
-    private void drawTextOnCanvas(Canvas canvas, String text, int fontSize, int xPos, int yPos) {
-        Paint paint = new Paint();
-        paint.setColor(Color.BLACK);
+    private int drawTextOnCanvas(Canvas canvas, String text, int fontSize, int xPos, int yPos) {
+        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setTextSize(fontSize);
 //        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.XOR));
         paint.setTypeface(Typeface.DEFAULT_BOLD);
         paint.setTextAlign(Paint.Align.CENTER);
+        int cWidth = canvas.getWidth() * 3 / 4;
+        float tWidth = paint.measureText(text);
+        int pos;
+        int d = fontSize / 14;
+        if (tWidth > cWidth) {
+//            utils.log("size","cWidth:"+cWidth+" tWidth:"+tWidth);
+            int length = text.length() / 2;
+            for (pos = length; pos < text.length(); pos++)
+                if (text.substring(pos,pos+1).equals(" "))
+                    break;
+            String text1 = text.substring(pos);
+            drawTextMultiple(canvas, text1, xPos, yPos, d, paint);
+            yPos -= fontSize + fontSize / 4;
+            text1 = text.substring(0, pos);
+            drawTextMultiple(canvas, text1, xPos, yPos, d, paint);
+            return yPos;
+        }
+        else
+            drawTextMultiple(canvas, text, xPos, yPos, d, paint);
+        return yPos;
+    }
+
+    private void drawTextMultiple (Canvas canvas, String text, int xPos, int yPos, int d, Paint paint) {
+        paint.setColor(Color.BLACK);
         paint.setTypeface(mContext.getResources().getFont(R.font.nanumbarungothic));
-        int d = fontSize / 16;
-        canvas.drawText(text, xPos-d, yPos-d, paint);
-        canvas.drawText(text, xPos+d, yPos-d, paint);
-        canvas.drawText(text, xPos-d, yPos+d, paint);
-        canvas.drawText(text, xPos+d, yPos+d, paint);
-        canvas.drawText(text, xPos-d, yPos, paint);
-        canvas.drawText(text, xPos+d, yPos, paint);
-        canvas.drawText(text, xPos, yPos-d, paint);
-        canvas.drawText(text, xPos, yPos+d, paint);
+        canvas.drawText(text, xPos - d, yPos - d, paint);
+        canvas.drawText(text, xPos + d, yPos - d, paint);
+        canvas.drawText(text, xPos - d, yPos + d, paint);
+        canvas.drawText(text, xPos + d, yPos + d, paint);
+        canvas.drawText(text, xPos - d, yPos, paint);
+        canvas.drawText(text, xPos + d, yPos, paint);
+        canvas.drawText(text, xPos, yPos - d, paint);
+        canvas.drawText(text, xPos, yPos + d, paint);
         paint.setColor(ContextCompat.getColor(mContext, R.color.foreColor));
         canvas.drawText(text, xPos, yPos, paint);
     }

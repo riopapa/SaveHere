@@ -106,7 +106,7 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
         Paint paint = new Paint();
         canvas.drawBitmap(mapImage, 0, 0, paint);
 //        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.XOR));
-        int xPos = mapImage.getWidth() - mapImage.getWidth()/20 - scaleMap.getWidth();
+        int xPos = mapImage.getWidth() - mapImage.getWidth()/15 - scaleMap.getWidth();
         int yPos = mapImage.getHeight() - mapImage.getHeight()/20 - scaleMap.getHeight();
         canvas.drawBitmap(scaleMap, xPos, yPos, paint);
         return mapImage;

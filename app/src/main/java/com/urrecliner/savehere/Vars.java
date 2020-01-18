@@ -19,7 +19,7 @@ public class Vars {
     static String strDateTime = null;
 
     static Camera mCamera;
-    static Bitmap bitMapCamera;
+    static Bitmap cameraBitmap;
     static double latitude = 0;
     static double longitude = 0;
     static GoogleMap mGoogleMap = null;
@@ -34,7 +34,6 @@ public class Vars {
     static String phonePrefix = "";
     static String galaxyS9 = "SM-G965N";
     static String nexus6P = "Nexus 6P";
-    static int xPixel, yPixel;
     static String outFileName = null;
     static int cameraOrientation;
     static long nowTime;

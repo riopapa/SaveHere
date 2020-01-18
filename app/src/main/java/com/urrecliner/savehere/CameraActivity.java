@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import static com.urrecliner.savehere.Vars.CameraMapBoth;
 import static com.urrecliner.savehere.Vars.mActivity;
 
@@ -23,9 +26,13 @@ public class CameraActivity extends AppCompatActivity {
             finish();
         }
         else {
-            mActivity.finishAffinity();
-            System.exit(0);
-            android.os.Process.killProcess(android.os.Process.myPid());
+            new Timer().schedule(new TimerTask() {
+                public void run() {
+                    mActivity.finishAffinity();
+                    System.exit(0);
+                    android.os.Process.killProcess(android.os.Process.myPid());
+                }
+            }, 500);    // allow some delay to finish write file
         }
     }
 }

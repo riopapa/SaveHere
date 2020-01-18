@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -26,7 +25,6 @@ import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.util.SparseIntArray;
 import android.view.KeyEvent;
 import android.view.SurfaceView;
@@ -55,7 +53,7 @@ import java.util.TimerTask;
 
 import static com.urrecliner.savehere.BuildBitMap.buildSignatureMap;
 import static com.urrecliner.savehere.Vars.CameraMapBoth;
-import static com.urrecliner.savehere.Vars.bitMapCamera;
+import static com.urrecliner.savehere.Vars.cameraBitmap;
 import static com.urrecliner.savehere.Vars.cameraOrientation;
 import static com.urrecliner.savehere.Vars.currActivity;
 import static com.urrecliner.savehere.Vars.isTimerOn;
@@ -79,8 +77,6 @@ import static com.urrecliner.savehere.Vars.strPlace;
 import static com.urrecliner.savehere.Vars.strPosition;
 import static com.urrecliner.savehere.Vars.terrain;
 import static com.urrecliner.savehere.Vars.utils;
-import static com.urrecliner.savehere.Vars.xPixel;
-import static com.urrecliner.savehere.Vars.yPixel;
 import static com.urrecliner.savehere.Vars.zoomValue;
 
 public class MainActivity extends AppCompatActivity {
@@ -187,8 +183,6 @@ public class MainActivity extends AppCompatActivity {
                 ConstraintLayout.LayoutParams lp = (ConstraintLayout.LayoutParams) v.getLayoutParams();
                 lp.width = lp.height * 10 / 17;
                 v.setLayoutParams(lp);
-                lp = (ConstraintLayout.LayoutParams) v.getLayoutParams();
-                Log.w("after w h",lp.width+" x "+lp.height);
                 utils.deleteOldLogFiles();
                 signatureMap = buildSignatureMap();
             }
@@ -345,8 +339,6 @@ public class MainActivity extends AppCompatActivity {
 
 
         button.setBackgroundColor(Color.parseColor("#205eaa"));
-        xPixel = Resources.getSystem().getDisplayMetrics().widthPixels;     // 2094, 2960
-        yPixel = Resources.getSystem().getDisplayMetrics().heightPixels;    // 1080, 1440
 
         int mDeviceRotation = ORIENTATIONS.get(deviceOrientation.getOrientation());
         utils.logE(logID, "*** rotation="+mDeviceRotation);
@@ -393,7 +385,7 @@ public class MainActivity extends AppCompatActivity {
         public void onPictureTaken(byte[] data, Camera camera) {
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-        bitMapCamera = BitmapFactory.decodeByteArray(data, 0, data.length, options);
+        cameraBitmap = BitmapFactory.decodeByteArray(data, 0, data.length, options);
             new SaveImageTask().execute("");
             }
         };
