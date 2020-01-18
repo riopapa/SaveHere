@@ -91,24 +91,25 @@ class BuildBitMap {
             e.printStackTrace();
         }
     }
-        private String latitudeRefGPS(double latitude) {
-            return latitude<0.0d?"S":"N";
-        }
-        private String longitudeRefGPS(double longitude) {
-            return longitude<0.0d?"W":"E";
-        }
 
-        private static String convertGPS(double latitude) {
-            latitude = Math.abs(latitude);
-            int degree = (int) latitude;
-            latitude *= 60;
-            latitude -= (degree * 60.0d);
-            int minute = (int) latitude;
-            latitude *= 60;
-            latitude -= (minute * 60.0d);
-            int second = (int) (latitude*10000.d);
-            return degree+"/1,"+minute+"/1,"+second+"/10000";
-        }
+    private String latitudeRefGPS(double latitude) {
+        return latitude<0.0d?"S":"N";
+    }
+    private String longitudeRefGPS(double longitude) {
+        return longitude<0.0d?"W":"E";
+    }
+
+    private static String convertGPS(double latitude) {
+        latitude = Math.abs(latitude);
+        int degree = (int) latitude;
+        latitude *= 60;
+        latitude -= (degree * 60.0d);
+        int minute = (int) latitude;
+        latitude *= 60;
+        latitude -= (minute * 60.0d);
+        int second = (int) (latitude*10000.d);
+        return degree+"/1,"+minute+"/1,"+second+"/10000";
+    }
 
     private Bitmap markDateLocSignature(Bitmap photoMap, String dateTime) {
 
