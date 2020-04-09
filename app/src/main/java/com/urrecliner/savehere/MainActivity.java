@@ -227,7 +227,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /* WHEEL related start */
     private void buildWheelView() {
 
         WheelView wheel = findViewById(R.id.wheel_zoom);
