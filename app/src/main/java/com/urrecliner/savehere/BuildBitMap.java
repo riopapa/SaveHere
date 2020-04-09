@@ -118,7 +118,7 @@ class BuildBitMap {
         Bitmap newMap = Bitmap.createBitmap(width, height, photoMap.getConfig());
         Canvas canvas = new Canvas(newMap);
         canvas.drawBitmap(photoMap, 0f, 0f, null);
-        int fontSize = height / 20;
+        int fontSize = height / 24;
         int xPos = width / 6;
         int yPos = height / 10;
         if (cameraOrientation != 1) {
@@ -129,7 +129,7 @@ class BuildBitMap {
 
         drawTextOnCanvas(canvas, dateTime, fontSize, xPos, yPos);
 
-        int sigSize = (width + height) / 14;
+        int sigSize = (width + height) / 32;
         Bitmap sigMap = Bitmap.createScaledBitmap(signatureMap, sigSize, sigSize, false);
         xPos = width - sigSize - width/20;
         yPos = height/20;
@@ -216,7 +216,7 @@ class BuildBitMap {
         Bitmap newBitmap = Bitmap.createBitmap(sigMap.getWidth(), sigMap.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(newBitmap);
         Paint alphaPaint = new Paint();
-        alphaPaint.setAlpha(120);
+//        alphaPaint.setAlpha(120);
         canvas.drawBitmap(sigMap, 0, 0, alphaPaint);
         return newBitmap;
     }
