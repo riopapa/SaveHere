@@ -14,6 +14,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorManager;
 import android.location.Geocoder;
 import android.location.Location;
+import android.media.AudioManager;
 import android.media.ExifInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -21,7 +22,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -223,6 +223,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         else {
+
+            AudioManager manager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            manager.setStreamVolume(AudioManager.STREAM_SYSTEM, 0 , AudioManager.FLAG_REMOVE_SOUND_AND_VIBRATE);
+//            }else{
+//                manager.setStreamVolume(AudioManager.STREAM_SYSTEM, manager.getStreamMaxVolume(AudioManager.STREAM_SYSTEM) , AudioManager.FLAG_ALLOW_RINGER_MODES);
+//            }
             mCamera.takePicture(null, null, rawCallback, jpegCallback); // null is for silent shot
         }
     }
@@ -414,7 +420,7 @@ public class MainActivity extends AppCompatActivity {
 
     private class MyOnConnectionFailedListener implements GoogleApiClient.OnConnectionFailedListener {
         @Override
-        public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        public void onConnectionFailed( ConnectionResult connectionResult) {
 //            utils.log(logID,"#oF");
         }
     }
@@ -474,7 +480,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 //        utils.log(logID,"#oP");
     }
