@@ -152,7 +152,6 @@ class BuildBitMap {
     private int drawTextOnCanvas(Canvas canvas, String text, int fontSize, int xPos, int yPos) {
         Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
         paint.setTextSize(fontSize);
-//        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.XOR));
         int cWidth = canvas.getWidth() * 3 / 4;
         float tWidth = paint.measureText(text);
         int pos;
@@ -191,19 +190,6 @@ class BuildBitMap {
         paint.setColor(color);
         paint.setStyle(Paint.Style.FILL);
         canvas.drawText(text, xPos, yPos, paint);
-
-
-//        paint.setColor(Color.BLACK);
-//        canvas.drawText(text, xPos - delta, yPos - delta, paint);
-//        canvas.drawText(text, xPos + delta, yPos - delta, paint);
-//        canvas.drawText(text, xPos - delta, yPos + delta, paint);
-//        canvas.drawText(text, xPos + delta, yPos + delta, paint);
-//        canvas.drawText(text, xPos - delta, yPos, paint);
-//        canvas.drawText(text, xPos + delta, yPos, paint);
-//        canvas.drawText(text, xPos, yPos - delta, paint);
-//        canvas.drawText(text, xPos, yPos + delta, paint);
-//        paint.setColor(ContextCompat.getColor(mContext, R.color.foreColor));
-//        canvas.drawText(text, xPos, yPos, paint);
     }
 
 
