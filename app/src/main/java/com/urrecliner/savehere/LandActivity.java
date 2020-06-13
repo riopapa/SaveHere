@@ -52,13 +52,9 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapFragment.getMapAsync(this);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         TextView tV = findViewById(R.id.placeText1); tV.setText(Vars.strPlace);
-        tV = findViewById(R.id.placeText2); tV.setText(Vars.strPlace);
         tV = findViewById(R.id.addressText1); tV.setText(Vars.strAddress);
-        tV = findViewById(R.id.addressText2); tV.setText(Vars.strAddress);
         tV = findViewById(R.id.datetimeText1); tV.setText(Vars.strDateTime);
-        tV = findViewById(R.id.datetimeText2); tV.setText(Vars.strDateTime);
         tV = findViewById(R.id.GPSText1); tV.setText(Vars.strPosition);
-        tV = findViewById(R.id.GPSText2); tV.setText(Vars.strPosition);
     }
 
     @Override
@@ -111,6 +107,7 @@ public class LandActivity extends AppCompatActivity implements OnMapReadyCallbac
         canvas.drawBitmap(scaleMap, xPos, yPos, paint);
         return mapImage;
     }
+
 
     private Bitmap getScaleMap(int zoom) {
                                 //      20,      19,     18,    17,     16,     15,     14,     13,     12,     11,     10,     9

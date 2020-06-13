@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CustomTextOutLineView">
+        <!--위의 name은 생성한 클래스명과 동일해야 합니다.-->
+        <attr name="textStroke" format="boolean" />
+        <attr name="textStrokeWidth" format="float" />
+        <attr name="textStrokeColor" format="integer" />
+    </declare-styleable>
+</resources>
