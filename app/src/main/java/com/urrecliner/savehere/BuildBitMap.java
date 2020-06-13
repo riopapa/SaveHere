@@ -177,17 +177,17 @@ class BuildBitMap {
         return yPos;
     }
 
-    private void drawTextMultiple (Canvas canvas, String text, int xPos, int yPos, int d, Paint paint) {
+    private void drawTextMultiple (Canvas canvas, String text, int xPos, int yPos, int delta, Paint paint) {
         paint.setColor(Color.BLACK);
         paint.setTypeface(mContext.getResources().getFont(R.font.nanumbarungothic));
-        canvas.drawText(text, xPos - d, yPos - d, paint);
-        canvas.drawText(text, xPos + d, yPos - d, paint);
-        canvas.drawText(text, xPos - d, yPos + d, paint);
-        canvas.drawText(text, xPos + d, yPos + d, paint);
-        canvas.drawText(text, xPos - d, yPos, paint);
-        canvas.drawText(text, xPos + d, yPos, paint);
-        canvas.drawText(text, xPos, yPos - d, paint);
-        canvas.drawText(text, xPos, yPos + d, paint);
+        canvas.drawText(text, xPos - delta, yPos - delta, paint);
+        canvas.drawText(text, xPos + delta, yPos - delta, paint);
+        canvas.drawText(text, xPos - delta, yPos + delta, paint);
+        canvas.drawText(text, xPos + delta, yPos + delta, paint);
+        canvas.drawText(text, xPos - delta, yPos, paint);
+        canvas.drawText(text, xPos + delta, yPos, paint);
+        canvas.drawText(text, xPos, yPos - delta, paint);
+        canvas.drawText(text, xPos, yPos + delta, paint);
         paint.setColor(ContextCompat.getColor(mContext, R.color.foreColor));
         canvas.drawText(text, xPos, yPos, paint);
     }
